@@ -23,7 +23,7 @@ public class KeyboardControls : MonoBehaviour
 
     void Start()
     { 
-            playerCharacter = target as IPlayerControls;
+      playerCharacter = target as IPlayerControls;
     }
 
     void Update()
