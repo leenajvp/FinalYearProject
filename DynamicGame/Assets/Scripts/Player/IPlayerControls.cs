@@ -2,16 +2,14 @@ public interface IPlayerControls
 {
     void Forward();
     void Backward();
-    void Jog();
-    void Run();
     void TurnRight();
     void TurnLeft();
-    void BasicAttack();
+    void WeaponAttack();
     void Kick();
-    void StrongAttack();
+    void ChangeGun();
 
     bool isRunning { get; set; }
-    bool isJogging { get; set; }
+    bool isCrawling { get; set; }
 
     bool isStopped { get; set; }
 }

@@ -7,13 +7,16 @@ public class KeyboardControls : MonoBehaviour
     [Header("ControlScrip")]
     public KeyCode forward = KeyCode.W;
     public KeyCode backward = KeyCode.S;
-    public KeyCode run = KeyCode.LeftShift;
-    public KeyCode stealth = KeyCode.F;
     public KeyCode right = KeyCode.D;
     public KeyCode left = KeyCode.A;
-    public KeyCode basicAttack = KeyCode.Q;
-    public KeyCode kick = KeyCode.E;
-    public KeyCode bigAttack = KeyCode.Tab;
+
+    public KeyCode run = KeyCode.LeftShift;
+    public KeyCode crouch = KeyCode.F;
+
+    public KeyCode attack = KeyCode.Mouse0;
+    public KeyCode kick = KeyCode.Mouse1;
+
+    public KeyCode changeGun = KeyCode.Alpha1;
 
     [Header("PlayerControllerScript")]
     [SerializeField]
@@ -30,28 +33,29 @@ public class KeyboardControls : MonoBehaviour
     {
         if (Input.GetKey(forward)) playerCharacter.Forward();
         if (Input.GetKey(backward)) playerCharacter.Backward();
+        if (Input.GetKey(right)) playerCharacter.TurnRight();
+        if (Input.GetKey(left)) playerCharacter.TurnLeft();
+
         if (Input.GetKeyDown(run) && Input.GetKey(forward)) 
         { 
-            playerCharacter.isJogging = true;
+            playerCharacter.isCrawling = true;
         }
         if (Input.GetKeyUp(run))
         {
-            playerCharacter.isJogging = false;
+            playerCharacter.isCrawling = false;
         }
 
-        if (Input.GetKeyDown(stealth) && Input.GetKey(forward))
+        if (Input.GetKeyDown(crouch) && Input.GetKey(forward))
         {
             playerCharacter.isRunning = true;
         }
-        if (Input.GetKeyUp(stealth))
+        if (Input.GetKeyUp(crouch))
         {
             playerCharacter.isRunning = false;
         }
 
-        if (Input.GetKey(right)) playerCharacter.TurnRight();
-        if (Input.GetKey(left)) playerCharacter.TurnLeft();
-        if (Input.GetKeyDown(basicAttack)) playerCharacter.BasicAttack();
+        if (Input.GetKeyDown(attack)) playerCharacter.WeaponAttack();
         if (Input.GetKeyDown(kick)) playerCharacter.Kick();
-        if (Input.GetKeyDown(bigAttack)) playerCharacter.StrongAttack();
+        if (Input.GetKeyDown(changeGun)) playerCharacter.ChangeGun();
     }
 }

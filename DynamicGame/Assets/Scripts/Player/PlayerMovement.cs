@@ -10,18 +10,24 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     [SerializeField]
     float walkingSpeed = 4f;
     [SerializeField]
-    float joggingSpeed = 8f;
+    float runSpeed = 8f;
     [SerializeField]
-    float runningSpeed = 11f;
+    float crawlSpeed = 11f;
     [SerializeField]
     float rotationSpeed = 10f;
 
     float lastReation = 0f;
 
-    List<GameObject> boidsDetected = new List<GameObject>();
-    public bool isDead = false;
+    [SerializeField]
+    GameObject sword;
+    private Sword swordScript;
+    [SerializeField]
+    GameObject gun;
+    private Gun gunScript;
+    public int currentGun = 0;
 
-    public bool isJogging { get; set; }
+    public bool isDead = false;
+    public bool isCrawling { get; set; }
     public bool isRunning { get; set; }
     public bool isStopped { get; set; }
 
@@ -30,16 +36,22 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     private KeyboardControls playerControls;
 
     private Animator animState;
+    private static readonly int activeGun = Animator.StringToHash("ActiveGun");
 
     void Start()
     {
         animState = GetComponent<Animator>();
         playerControls = GetComponent<KeyboardControls>();
+
+        swordScript = sword.GetComponent<Sword>();
+        gunScript = gun.GetComponent<Gun>();
+
+        currentGun = 0;
+        animState.SetBool(activeGun, true);
     }
 
     void Update()
     {
-
 
         if (health <= 0)
         {
@@ -50,18 +62,25 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
         {
             speed = 0f;
         }
+        Debug.DrawRay(holdPos.transform.position, holdPos.transform.forward * 100, Color.red);
 
+        Shoot();
+
+    }
+
+    public void ManageSpeed()
+    {
         if (isRunning)
         {
-            speed = runningSpeed;
+            speed = crawlSpeed;
         }
 
-        if (isJogging)
+        else if (isCrawling)
         {
-            speed = joggingSpeed;
+            speed = runSpeed;
         }
 
-        else if (!isRunning && !isJogging && !isStopped)
+        else// (!isRunning && !isCrawling && !isStopped)
         {
             speed = walkingSpeed;
         }
@@ -70,25 +89,19 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     public void Forward()
     {
         if (!isStopped)
+        {
             transform.position += transform.forward * speed * Time.deltaTime;
-
+            ManageSpeed();
+        }
     }
 
     public void Backward()
     {
         if (!isStopped)
+        {
             transform.position -= transform.forward * speed * Time.deltaTime;
-
-    }
-
-    public void Jog()
-    {
-
-    }
-
-    public void Run()
-    {
-
+            ManageSpeed();
+        }
     }
 
     public void TurnLeft()
@@ -106,54 +119,79 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
 
     }
 
-    public void Swat()
+    public void ChangeGun()
     {
-        if (Time.time < lastReation + 5.0f)
-            return;
+        if (currentGun == 1)
+        {
+            currentGun = 0;
+            animState.SetBool(activeGun, true);
+        }
 
-        lastReation = Time.time;
 
-        speed = walkingSpeed;
+        else 
+        {
+            currentGun = 1;
+            animState.SetBool(activeGun, false);
+        }
+            
     }
 
-
-
-    public void Magic()
+    public void WeaponAttack()
     {
-        //if (!isDisabled)
-        //{
-        //    Collider[] colliders = Physics.OverlapSphere(transform.position, 15);
+        if (currentGun == 1)
+            SwordAttack();
 
-        //    foreach (var col in colliders)
-        //    {
-        //        BoidBehaviour followBoids = col.gameObject.GetComponent<BoidBehaviour>();
-
-        //        if (followBoids != null)
-        //        {
-        //            boidsDetected.Add(col.gameObject);
-
-        //            foreach (GameObject boid in boidsDetected)
-        //            {
-        //                followBoids.boidHealth = 0;
-        //            }
-        //        }
-        //    }
-        //}
-
+        else
+            Shoot();    
     }
 
-    public void BasicAttack()
+    public void SwordAttack()
     {
-        //Debug.Log("Swing");
+        if(swordScript.isCollected && swordScript.inUse)
+        Debug.Log("Sword");
+    }
+
+    private float rayDistance = 10.0f;
+    public GameObject holdPos;
+    [SerializeField]
+    private float mSensitivity = 2;
+    [SerializeField]
+    private float maxDown = -60F;
+    [SerializeField]
+    private float maxUp = 60F;
+
+    private float rotationY = 0;
+    private RaycastHit hit;
+
+    public void Shoot()
+    {
+        if (gunScript.inUse)
+        {
+            float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
+            rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
+            rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
+
+            holdPos.transform.localEulerAngles = new Vector3(0, rotationX, 0);
+            holdPos.transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
+
+            if (Physics.Raycast(holdPos.transform.position, holdPos.transform.forward, out hit, rayDistance))
+            {
+
+                if(hit.collider != null)
+                {
+                    if (hit.collider.gameObject.tag == "Enemy")
+                    {
+                        Debug.Log("hit Enemy");
+                    }
+                }
+            }
+
+        }
     }
 
     public void Kick()
     {
-        //Debug.Log("Kick");
+        Debug.Log("Kick");
     }
 
-    public void StrongAttack()
-    {
-        //Debug.Log("BigHit");
-    }
 }

@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 257829af57c0ba1489669770a6521acf
+guid: 61469ea94d63a9e4eb69bd150196f257
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: DeadEnemy
+    second: kick
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: DeadEnemy
+      name: kick
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 92
+      lastFrame: 48
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

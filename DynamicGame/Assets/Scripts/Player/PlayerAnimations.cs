@@ -9,6 +9,12 @@ public class PlayerAnimations : MonoBehaviour
     private PlayerMovement playerMove;
     private Animator animState;
     private KeyboardControls playerControls;
+    private static readonly int currenAnim = Animator.StringToHash("AnimState");
+    private static readonly int kickAnim = Animator.StringToHash("Kick");
+    private static readonly int attackAnim = Animator.StringToHash("Attack");
+    private static readonly int isMoving = Animator.StringToHash("isMoving");
+    private float lastInteraction = 5.0f;
+
 
     void Awake()
     {
@@ -18,17 +24,20 @@ public class PlayerAnimations : MonoBehaviour
         animState.SetBool("isDead", false);
     }
 
+    private void Start()
+    {
+        lastInteraction = Time.time;
+
+    }
+
 
     void Update()
     {
-        // Animations: Animstate 1 = rIdle, 2 = attack, 3 = bigAttack, 4 = Kick, walk = 5, slowRun = 6, fast run = 7, walk back = 9, run back = 10 , Bool = isDead
-
         DisableMovement();
         MoveForwardAnimation();
         MoveBackwardsdAnimation();
         KickAnimation();
-        SpinHitAnimation();
-        BigHitAnimation();
+        AttackAnimation();
         DefeatAnimation();
     }
 
@@ -36,23 +45,25 @@ public class PlayerAnimations : MonoBehaviour
     {
         if (Input.GetKey(playerControls.forward))
         {
-            animState.SetInteger("AnimState", 5);
+            animState.SetBool(isMoving, true);
+            animState.SetInteger(currenAnim, 1);
 
             if (Input.GetKey(playerControls.run))
             {
-                animState.SetInteger("AnimState", 6);
+                animState.SetInteger(currenAnim, 2);
             }
 
-            if (Input.GetKey(playerControls.stealth))
+            if (Input.GetKey(playerControls.crouch))
             {
-                animState.SetInteger("AnimState", 7);
+                animState.SetInteger(currenAnim, 3);
             }
 
         }
 
         if (Input.GetKeyUp(playerControls.forward))
         {
-            animState.SetInteger("AnimState", 0);
+            animState.SetInteger(currenAnim, 0);
+            animState.SetBool(isMoving, false);
         }
     }
 
@@ -60,86 +71,79 @@ public class PlayerAnimations : MonoBehaviour
     {
         if (Input.GetKey(playerControls.backward))
         {
-            animState.SetInteger("AnimState", 9);
+            animState.SetInteger(currenAnim, 3);
 
             if (Input.GetKey(playerControls.run))
             {
-                animState.SetInteger("AnimState", 10);
+                animState.SetInteger(currenAnim, 4);
             }
 
             if (Input.GetKeyUp(playerControls.run))
             {
-                animState.SetInteger("AnimState", 9);
+                animState.SetInteger(currenAnim, 3);
             }
         }
 
         if (Input.GetKeyUp(playerControls.backward))
         {
-            animState.SetInteger("AnimState", 0);
+            animState.SetInteger(currenAnim, 0);
         }
     }
 
-    public void SpinHitAnimation()
+    public void AttackAnimation()
     {
-        if (Input.GetKeyDown(playerControls.basicAttack))
+        if (Time.time > lastInteraction + 1)
         {
-            animState.SetBool("SpinHit", true);
+            if (Input.GetKey(playerControls.attack))
+            {
+                lastInteraction = Time.time;
+                animState.SetBool(attackAnim, true);
+            }
         }
 
-        if (Input.GetKeyUp(playerControls.basicAttack))
+        if (Input.GetKeyUp(playerControls.attack))
         {
-            animState.SetBool("SpinHit", false);
-        }
-    }
-
-    public void BigHitAnimation()
-    {
-
-        if (Input.GetKeyDown(playerControls.bigAttack))
-        {
-            animState.SetBool("BigHit", true);
-        }
-
-        if (Input.GetKeyUp(playerControls.bigAttack))
-        {
-            animState.SetBool("BigHit", false);
+            animState.SetBool(attackAnim, false);
         }
     }
 
     public void KickAnimation()
     {
-        if (Input.GetKeyDown(playerControls.kick))
+        if (Time.time > lastInteraction + 1)
         {
-            
-            animState.SetBool("Kick", true);
+            if (Input.GetKey(playerControls.kick))
+            {
+                lastInteraction = Time.time;
+                animState.SetBool(kickAnim, true);
+            }
         }
 
         if (Input.GetKeyUp(playerControls.kick))
         {
-            animState.SetBool("Kick", false);
+            animState.SetBool(kickAnim, false);
         }
     }
 
     private void DisableMovement() 
     {
-        var checkKick = animState.GetCurrentAnimatorStateInfo(0).IsName("Kick");
-        var checkBigHit = animState.GetCurrentAnimatorStateInfo(0).IsName("BigHit");
-        var checkSpin = animState.GetCurrentAnimatorStateInfo(0).IsName("SpinHit");
+        //var checkKick = animState.GetCurrentAnimatorStateInfo(0).IsName("Kick");
+        //var checkBigHit = animState.GetCurrentAnimatorStateInfo(0).IsName("BigHit");
+        //var checkSpin = animState.GetCurrentAnimatorStateInfo(0).IsName("SpinHit");
 
-        if (checkBigHit || checkSpin || checkKick)
-        {
-            playerMove.isStopped = true;
-        }
+        //if (checkBigHit || checkSpin || checkKick)
+        //{
+        //    playerMove.isStopped = true;
+        //}
 
-        else
-        {
-            playerMove.isStopped = false;
-        }
+        //else
+        //{
+        //    playerMove.isStopped = false;
+        //}
     }
 
     public void DefeatAnimation()
     {
-        if (playerMove.isDead== true)
+        if (playerMove.isDead == true)
         {
             animState.SetBool("isDead", true);
         }
