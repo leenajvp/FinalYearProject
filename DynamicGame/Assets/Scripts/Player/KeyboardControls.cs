@@ -8,7 +8,7 @@ public class KeyboardControls : MonoBehaviour
     public KeyCode forward = KeyCode.W;
     public KeyCode backward = KeyCode.S;
     public KeyCode run = KeyCode.LeftShift;
-    public KeyCode runFast = KeyCode.LeftControl;
+    public KeyCode stealth = KeyCode.F;
     public KeyCode right = KeyCode.D;
     public KeyCode left = KeyCode.A;
     public KeyCode basicAttack = KeyCode.Q;
@@ -39,11 +39,11 @@ public class KeyboardControls : MonoBehaviour
             playerCharacter.isJogging = false;
         }
 
-        if (Input.GetKeyDown(runFast) && Input.GetKey(forward))
+        if (Input.GetKeyDown(stealth) && Input.GetKey(forward))
         {
             playerCharacter.isRunning = true;
         }
-        if (Input.GetKeyUp(runFast))
+        if (Input.GetKeyUp(stealth))
         {
             playerCharacter.isRunning = false;
         }

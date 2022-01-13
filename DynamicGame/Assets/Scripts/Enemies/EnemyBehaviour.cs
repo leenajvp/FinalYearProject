@@ -54,22 +54,16 @@ public class EnemyBehaviour : MonoBehaviour
     {
         agent.isStopped = true;
 
-        if (sitDown)
-        {
-            animState.SetInteger("AnimState", 1);
-        }
 
-        else
-        {
             animState.SetInteger("AnimState", 0);
-        }
+
 
     }
 
     void Patrolling()
     {
         agent.isStopped = false;
-        animState.SetInteger("AnimState", 3);
+        animState.SetInteger("AnimState", 1);
 
         if (!agent.pathPending && agent.remainingDistance < 0.5f)
         {
@@ -80,13 +74,7 @@ public class EnemyBehaviour : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        for (var i = 1; i < targets.Length; i++)
-        {
-            Debug.DrawLine(targets[i - 1].transform.position, targets[i].transform.position);
-        }
-    }
+
 
     private IEnumerator StopTimer()
     {

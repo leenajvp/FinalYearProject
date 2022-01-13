@@ -36,16 +36,16 @@ public class PlayerAnimations : MonoBehaviour
     {
         if (Input.GetKey(playerControls.forward))
         {
-            animState.SetInteger("AnimState", 6);
+            animState.SetInteger("AnimState", 5);
 
             if (Input.GetKey(playerControls.run))
             {
-                animState.SetInteger("AnimState", 7);
+                animState.SetInteger("AnimState", 6);
             }
 
-            if (Input.GetKey(playerControls.runFast))
+            if (Input.GetKey(playerControls.stealth))
             {
-                animState.SetInteger("AnimState", 8);
+                animState.SetInteger("AnimState", 7);
             }
 
         }
