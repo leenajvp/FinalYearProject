@@ -62,7 +62,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
         {
             speed = 0f;
         }
-        Debug.DrawRay(holdPos.transform.position, holdPos.transform.forward * 100, Color.red);
+        
 
         Shoot();
 
@@ -165,23 +165,47 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
 
     public void Shoot()
     {
+        
+
         if (gunScript.inUse)
         {
-            float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
-            rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
-            rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
-
-            holdPos.transform.localEulerAngles = new Vector3(0, rotationX, 0);
-            holdPos.transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
-
-            if (Physics.Raycast(holdPos.transform.position, holdPos.transform.forward, out hit, rayDistance))
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            Debug.DrawRay(holdPos.transform.position, holdPos.transform.forward * 100, Color.red);
+            if (Physics.Raycast(ray, out hit, 50))
             {
 
                 if(hit.collider != null)
                 {
-                    if (hit.collider.gameObject.tag == "Enemy")
+                    //transform.LookAt(hit.point);
+                    if (hit.collider.gameObject.tag != "Untagged")
                     {
+
+                        // transform.LookAt(Vector3.zero);
+                        //transform.localEulerAngles = new Vector3(0, hit.transform.position, 0);
+                        //transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
                         Debug.Log("hit Enemy");
+                        // float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
+                        // rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
+                        //  rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
+                        //values that will be set in the Inspector
+                        Transform Target = hit.transform;
+                        float RotationSpeed = 1;
+
+                        //values for internal use
+                        Quaternion _lookRotation;
+                        Vector3 _direction;
+
+                        // Update is called once per frame
+
+                        //find the vector pointing from our position to the target
+                        _direction = (Target.position - transform.position).normalized;
+
+                        //create the rotation we need to be in to look at the target
+                        _lookRotation = Quaternion.LookRotation(_direction);
+
+                        //rotate us over time according to speed until we are in the required rotation
+                        transform.rotation = Quaternion.Slerp(transform.rotation, _lookRotation, Time.deltaTime * RotationSpeed);
+
                     }
                 }
             }

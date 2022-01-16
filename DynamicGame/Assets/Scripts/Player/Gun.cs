@@ -26,21 +26,31 @@ public class Gun : WeaponsBase
     {
         base.Update();
 
-        Aim();
+        
     }
 
-    private void Aim()
+    private void Aim(GameObject bullet, Transform startPos, Transform endPos)
     {
+        float currentDist;
+
+        GameObject newBullet = Instantiate(bullet, startPos);
+        Rigidbody rb = newBullet.GetComponent<Rigidbody>();
+      //  newBullet.transform.localPosition = Vector3.Lerp(startPos, endPos);
+
+
+
+
+
         //RaycastHit hit = new RaycastHit();
         //Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         //float distZ = 20;
 
-        float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
-        rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
-        rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
+        //float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
+        //rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
+        //rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
 
-        holdPos.transform.localEulerAngles = new Vector3(0, rotationX, 0);
-        holdPos.transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
+        //holdPos.transform.localEulerAngles = new Vector3(0, rotationX, 0);
+        //holdPos.transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
     }
 
 
