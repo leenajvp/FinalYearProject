@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     public float health = 10;
     public float speed = 2f;
     [SerializeField]
+    float acceleration = 1f;
+    [SerializeField]
     float walkingSpeed = 4f;
     [SerializeField]
     float runSpeed = 8f;
@@ -24,6 +26,8 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     [SerializeField]
     GameObject gun;
     private Gun gunScript;
+
+    private Rigidbody rb;
     public int currentGun = 0;
 
     public bool isDead = false;
@@ -31,9 +35,14 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
     public bool isRunning { get; set; }
     public bool isStopped { get; set; }
 
+    public Camera maincam;
+
+    private bool isGrounded = true;
 
     public bool isDisabled = false;
     private KeyboardControls playerControls;
+    private Vector3 directionToMove;
+    private Vector3 directionVector;
 
     private Animator animState;
     private static readonly int activeGun = Animator.StringToHash("ActiveGun");
@@ -48,6 +57,7 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
 
         currentGun = 0;
         animState.SetBool(activeGun, true);
+        rb= GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -62,9 +72,22 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
         {
             speed = 0f;
         }
-        
 
-        Shoot();
+        if ((Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0) && isGrounded)
+        {
+            speed -= acceleration * Time.deltaTime;
+            ManageSpeed();
+        }
+        transform.Rotate(0, Input.GetAxis("Horizontal") * rotationSpeed,0);
+        directionToMove.z = Input.GetAxis("Vertical");
+        directionVector = (rb.transform.right * directionToMove.x) + (rb.transform.forward * directionToMove.z);
+
+        rb.MovePosition(rb.transform.position + Time.deltaTime * speed * directionVector);
+
+        //   float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * 10;
+        //directionToMove.x =Input.GetAxis("Horizontal");
+        //  transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
+       // Shoot();
 
     }
 
@@ -106,12 +129,12 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
 
     public void TurnLeft()
     {
-        transform.Rotate(0.0f, -rotationSpeed * Time.deltaTime, 0.0f);
+       // transform.Rotate(0.0f, -rotationSpeed * Time.deltaTime, 0.0f);
     }
 
     public void TurnRight()
     {
-        transform.Rotate(0.0f, rotationSpeed * Time.deltaTime, 0.0f);
+       // transform.Rotate(0.0f, rotationSpeed * Time.deltaTime, 0.0f);
     }
 
     public void PickUp()
@@ -165,7 +188,9 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
 
     public void Shoot()
     {
-        
+        float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * 10;
+        directionToMove.x = Input.GetAxis("Horizontal");
+        transform.localEulerAngles = new Vector3(-rotationY, rotationX, 0);
 
         if (gunScript.inUse)
         {
@@ -174,41 +199,41 @@ public class PlayerMovement : MonoBehaviour, IPlayerControls
             if (Physics.Raycast(ray, out hit, 50))
             {
 
-                if(hit.collider != null)
-                {
-                    //transform.LookAt(hit.point);
-                    if (hit.collider.gameObject.tag != "Untagged")
-                    {
+                //if(hit.collider != null)
+                //{
+                //    //transform.LookAt(hit.point);
+                //    if (hit.collider.gameObject.tag != "Untagged")
+                //    {
 
-                        // transform.LookAt(Vector3.zero);
-                        //transform.localEulerAngles = new Vector3(0, hit.transform.position, 0);
-                        //transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
-                        Debug.Log("hit Enemy");
-                        // float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
-                        // rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
-                        //  rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
-                        //values that will be set in the Inspector
-                        Transform Target = hit.transform;
-                        float RotationSpeed = 1;
+                //        // transform.LookAt(Vector3.zero);
+                //        //transform.localEulerAngles = new Vector3(0, hit.transform.position, 0);
+                //        //transform.localEulerAngles = new Vector3(-rotationY, 0, 0);
+                //        Debug.Log("hit Enemy");
+                //        // float rotationX = transform.localEulerAngles.y + Input.GetAxis("Mouse X") * mSensitivity;
+                //        // rotationY += Input.GetAxis("Mouse Y") * mSensitivity;
+                //        //  rotationY = Mathf.Clamp(rotationY, maxDown, maxUp);
+                //        //values that will be set in the Inspector
+                //        Transform Target = hit.transform;
+                //        float RotationSpeed = 1;
 
-                        //values for internal use
-                        Quaternion _lookRotation;
-                        Vector3 _direction;
+                //        //values for internal use
+                //        Quaternion _lookRotation;
+                //        Vector3 _direction;
 
-                        // Update is called once per frame
+                //        // Update is called once per frame
 
-                        //find the vector pointing from our position to the target
-                        _direction = (Target.position - transform.position).normalized;
+                //        //find the vector pointing from our position to the target
+                //        _direction = (Target.position - transform.position).normalized;
 
-                        //create the rotation we need to be in to look at the target
-                        _lookRotation = Quaternion.LookRotation(_direction);
+                //        //create the rotation we need to be in to look at the target
+                //        _lookRotation = Quaternion.LookRotation(_direction);
 
-                        //rotate us over time according to speed until we are in the required rotation
-                        transform.rotation = Quaternion.Slerp(transform.rotation, _lookRotation, Time.deltaTime * RotationSpeed);
-
+                //        //rotate us over time according to speed until we are in the required rotation
+                //        transform.rotation = Quaternion.Slerp(transform.rotation, _lookRotation, Time.deltaTime * RotationSpeed);
+            //
                     }
-                }
-            }
+               // }
+           // }
 
         }
     }
