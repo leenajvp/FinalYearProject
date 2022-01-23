@@ -1,11 +1,11 @@
 fileFormatVersion: 2
-guid: 54f0079e354c8884aacc498ab32afec4
+guid: 4dec3819e7914b44993f6fa2d9574a2e
 ModelImporter:
   serializedVersion: 20200
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: GunStrife
+    second: SwordRun
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -35,11 +35,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: GunStrife
+      name: SwordRun
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 43
+      lastFrame: 18
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
