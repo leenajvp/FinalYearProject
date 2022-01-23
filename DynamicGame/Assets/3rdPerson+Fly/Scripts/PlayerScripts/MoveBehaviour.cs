@@ -34,11 +34,30 @@ public class MoveBehaviour : GenericBehaviour
 	// Update is used to set features regardless the active behaviour.
 	void Update()
 	{
+		Rotating();
 		// Get jump input.
 		if (!jump && Input.GetButtonDown(jumpButton) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
 		{
 			jump = true;
 		}
+	}
+
+	void Rotating()
+	{
+		Vector3 forward = behaviourManager.playerCamera.TransformDirection(Vector3.forward);
+		// Player is moving on ground, Y component of camera facing is not relevant.
+		forward.y = 0.0f;
+		forward = forward.normalized;
+
+		// Always rotates the player according to the camera horizontal rotation in aim mode.
+		Quaternion targetRotation = Quaternion.Euler(0, behaviourManager.GetCamScript.GetH, 0);
+
+		float minSpeed = Quaternion.Angle(transform.rotation, targetRotation);
+
+		// Rotate entire player to face camera.
+		behaviourManager.SetLastDirection(forward);
+		transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, minSpeed * Time.deltaTime);
+
 	}
 
 	// LocalFixedUpdate overrides the virtual function of the base class.
