@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
+using Player;
+
 [RequireComponent(typeof(NavMeshAgent))]
 
 public class EnemyStates : MonoBehaviour
@@ -34,11 +36,20 @@ public class EnemyStates : MonoBehaviour
 
     public EnemyState CurrentState;
 
+    // DDA STUFF
+
+    private GameObject head;
+    private string headName;
+
+
+
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
         playerSript = player.GetComponent<PlayerController>();
         agent.autoBraking = false;
+
+
     }
 
     void Update()
@@ -83,6 +94,16 @@ public class EnemyStates : MonoBehaviour
                 break;
         }
     }
+
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other == gameObject.tag=="bullet")
+    //    {
+
+    //    }
+    //    // if head gets hit add headshot
+    //    // if any part gets hit add hit
+    //}
 
     void RaycastCheck()
     {

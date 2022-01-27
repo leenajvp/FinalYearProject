@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace bullets {
+namespace Bullets {
     public class BulletController : MonoBehaviour
     {
         [SerializeField] private float speed = 50.0f;
