@@ -26,7 +26,7 @@ bool gameOver;
         // PlayerPrefs DifLevel , FirstAttempt, Progression
         void Start()
     {
-        if (PlayerPrefs.GetInt("FirstAttempt") == 0)
+        if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
         {
             totalHeadShots = 0;
             totalHits = 0;

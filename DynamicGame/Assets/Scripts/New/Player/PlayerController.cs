@@ -34,7 +34,7 @@ namespace Player
 
         private void Awake()
         {
-            cameraTransform = Camera.main.transform;
+            
             controller = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
             moveAction = playerInput.actions["Move"];
@@ -55,6 +55,11 @@ namespace Player
         private void OnDisable()
         {
             shootAction.performed -= _ => Shoot();
+        }
+
+        private void Start()
+        {
+            cameraTransform = Camera.main.transform;
         }
 
         void Update()

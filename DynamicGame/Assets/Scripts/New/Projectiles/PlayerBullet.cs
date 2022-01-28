@@ -24,13 +24,13 @@ public class PlayerBullet : BulletController
 
             if(enemy != null && headShot == null)
             {
-                enemy.health -= bulletDamange;
+                enemy.currentHealth -= bulletDamange;
                 ddaManager.currentHits++;
             }
 
             else if(headShot!=null)
             {
-                enemy.health -= bulletDamange*2;
+                enemy.currentHealth -= bulletDamange*2;
                 ddaManager.currentHits++;
             }
 
