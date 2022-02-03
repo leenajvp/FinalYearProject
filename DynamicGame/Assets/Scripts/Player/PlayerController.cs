@@ -8,21 +8,18 @@ using DDA;
 
 namespace Player
 {
-    [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(PlayerController))]
+   [RequireComponent(typeof(PlayerController), typeof(PlayerInput))]
 
     public class PlayerController : MonoBehaviour
     {
-        [Header("Player Movement Settings")]
         [SerializeField] private Vector3 playerVelocity;
         [SerializeField] private bool groundedPlayer;
         [SerializeField] private float playerSpeed = 2.0f;
         [SerializeField] private float rotSpeed = 5.0f;
-
-
         [SerializeField] private GameObject bullet;
         [SerializeField] private Transform shootPoint;
         [SerializeField] private Transform bulletParent;
-        [SerializeField] private ObjectPool bulletPool;
+        [SerializeField] private ObjectPool bPool;
 
         private float jumpHeight = 1.0f;
         private float gravityValue = -9.81f;
@@ -68,9 +65,6 @@ namespace Player
 
         void Update()
         {
-            Vector3 forward = transform.TransformDirection(Vector3.forward) * 100;
-            Debug.DrawRay(transform.position, forward, Color.green);
-
             groundedPlayer = controller.isGrounded;
             if (groundedPlayer && playerVelocity.y < 0)
             {
@@ -103,12 +97,14 @@ namespace Player
             ddaManager.currentsShots++;
 
             RaycastHit hit;
-            GameObject g = bulletPool.GetObject();
-            g.transform.position = shootPoint.position;
-            g.transform.rotation = shootPoint.rotation;
-            g.SetActive(true);
 
-            BulletController bulletController = g.GetComponent<BulletController>();
+            GameObject newBullet = bPool.GetObject();
+            newBullet.transform.position = shootPoint.position;
+            newBullet.transform.rotation = shootPoint.rotation;
+            newBullet.SetActive(true);
+
+            //GameObject newBullet = GameObject.Instantiate(bullet, shootPoint.position, Quaternion.identity, bulletParent);
+            BulletController bulletController = newBullet.GetComponent<BulletController>();
 
             if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
             {

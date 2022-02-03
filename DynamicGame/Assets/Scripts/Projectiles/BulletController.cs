@@ -5,21 +5,25 @@ using UnityEngine;
 namespace Bullets {
     public class BulletController : MonoBehaviour
     {
+        [Header("Bullet Behaviour")]
         [SerializeField] private float speed = 50.0f;
-        private float timeToDestroy = 5.0f;
-        public ObjectPool pool;
+        [Tooltip("Bullet's living time")]
+        [SerializeField] private float timeToDestroy = 3.0f;
+
+        private ObjectPool pool;
 
         public Vector3 target { get; set; }
         public bool hit { get; set; }
 
-        private void OnEnable()
-        {
-            StartCoroutine(DestroyBulletTimer());
-        }
 
         protected virtual void Start()
         {
             pool = transform.parent.GetComponent<ObjectPool>();
+        }
+
+        private void OnEnable()
+        {
+            StartCoroutine(DestroyTimer());
         }
 
         private void Update()
@@ -37,11 +41,11 @@ namespace Bullets {
             pool.ReturnObject(gameObject);
         }
 
-        private IEnumerator DestroyBulletTimer()
+
+        private IEnumerator DestroyTimer()
         {
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(timeToDestroy);
             pool.ReturnObject(gameObject);
         }
-
     }
 }

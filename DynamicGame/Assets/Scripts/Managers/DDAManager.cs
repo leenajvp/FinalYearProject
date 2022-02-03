@@ -1,111 +1,72 @@
-using UnityEngine;
-using Player;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace DDA
 {
     public class DDAManager : MonoBehaviour
-    {
-        public int currentHeadShots;
-        public int currentHits;
-        public int currentKills;
-        public int currentsShots;
+{
+    public  int currentHeadShots;
+    public  int currentHits;
+    public  int currentKills;
+    public int currentsShots;
 
         public bool playerDead;
 
-        public static int totalHeadShots;
-        public static int totalHits;
-        public static int totalKills;
-        public static int totalDeaths;
-        public static int totalShots;
+    public static int totalHeadShots;
+    public static int totalHits;
+    public static int totalKills;
+    public static int totalDeaths;
+    public static int totalShots;
 
-        [SerializeField] private GameObject player;
-        private int pHealth;
-        [SerializeField] List<EnemyPools> ePools = new List<EnemyPools>();
+ 
 
-        private List<EnemyBehaviour> enemies = new List<EnemyBehaviour>();
-
-        bool gameOver;
-
-        private bool healthIncreased = false;
-
+bool gameOver;
 
         // PlayerPrefs DifLevel , FirstAttempt, Progression
-
-
         void Start()
+    {
+        if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
         {
-            pHealth = player.GetComponent<PlayerHealth>().currentHealth;
+            totalHeadShots = 0;
+            totalHits = 0;
+            totalDeaths = 0;
+            totalKills = 0;
+        }
 
-            if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
-            {
-                totalHeadShots = 0;
-                totalHits = 0;
-                totalDeaths = 0;
-                totalKills = 0;
-            }
+        currentHeadShots = 0;
+        currentHits = 0;
+        currentKills = 0;
+    }
+    
+    void Update()
+    {
+        if (Time.timeScale == 0 && playerDead)
+        {
+            totalDeaths++;
+            totalHeadShots += currentHeadShots;
+            totalHits += currentHits;
+            totalKills += currentKills;
+            playerDead = false;
+            ShowStats();
 
             currentHeadShots = 0;
             currentHits = 0;
             currentKills = 0;
-        }
-
-        void Update()
-        {
-            if (Time.timeScale == 0 && playerDead)
-            {
-                totalDeaths++;
-                totalHeadShots += currentHeadShots;
-                totalHits += currentHits;
-                totalKills += currentKills;
-                playerDead = false;
-                ShowStats();
-
-                currentHeadShots = 0;
-                currentHits = 0;
-                currentKills = 0;
             }
+    }
 
-            ManageEnemyHealth();
-        }
+    private void ShowStats()
+    {
+        Debug.Log("hits: " + totalHits + " kills: " + totalKills);
+    }
 
-        private void ShowStats()
+    private void UpdateDiffLevel()
         {
-            Debug.Log("hits: " + totalHits + " kills: " + totalKills);
+           // if(if (PlayerPrefs.GetInt("Progression") == 5)
         }
 
-        // Methods to manager Difficulty
-
-        public void ManageEnemyDetection()
-        {
-            // if player is not getting detected by X kill
-        }
-
-        public void ManageEnemyHealth()
-        {
-            // if player has more hits than damage
-
-            if(pHealth == currentHits && !healthIncreased)
-            {
-                foreach(EnemyPools pool in ePools)
-                {
-                    pool.AddEnemyHealth();
-                    healthIncreased = true;
-                }
-            }
-        }
-
-        public void ManageEnemyNumber()
-        {
-            // If player has triple hits to damage
-        }
-
-        public void ManageEnemyStrenght()
-        {
-            // If player has double hits to damage
-        }
-
-        private void AdjustEnemyHealth()
+    private void AdjustEnemyHealth()
         {
             if (PlayerPrefs.GetInt("DifLevel") == 5 || PlayerPrefs.GetInt("DifLevel") == 0)
                 return;
@@ -130,5 +91,5 @@ namespace DDA
 
             }
         }
-    }
+}
 }

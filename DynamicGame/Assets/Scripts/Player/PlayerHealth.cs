@@ -7,14 +7,9 @@ namespace Player
 {
     public class PlayerHealth : MonoBehaviour
     {
-        public int health = 10;
-        public int currentHealth;
+        public float health = 10;
+        public float currentHealth;
         DDAManager ddaManager;
-
-        private void Awake()
-        {
-            currentHealth = health;
-        }
 
         private void Start()
         {
@@ -23,7 +18,7 @@ namespace Player
                 ddaManager = FindObjectOfType<DDAManager>();
             }
 
-           
+            currentHealth = health;
         }
 
         private void Update()

@@ -87,12 +87,5 @@ UpdateEnemies();
         }
     }
 
-    public void AddEnemyHealth()
-    {
-        for (int i = 0; i < enemyPool.Count; i++)
-        {
-            enemyPool[i].health += 10;
-        }
-    }
 
 }

@@ -12,6 +12,7 @@ public class PlayerBullet : BulletController
     protected override void Start()
     {
         base.Start();
+
         ddaManager = FindObjectOfType<DDAManager>();
     }
 
@@ -32,8 +33,7 @@ public class PlayerBullet : BulletController
 
             else if(headShot!=null)
             {
-                // need to set headsjot to be under enemy or something as rn the nemy is not being aclled to health cant be reduced
-                enemy.currentHealth = 0;
+                enemy.currentHealth -= bulletDamange*2;
                 ddaManager.currentHits++;
             }
 
