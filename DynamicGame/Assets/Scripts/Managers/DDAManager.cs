@@ -61,9 +61,21 @@ bool gameOver;
         Debug.Log("hits: " + totalHits + " kills: " + totalKills);
     }
 
-    private void UpdateDiffLevel()
+// Different DDA measuring methods
+
+        private void IncreaseEnemyHealth()
         {
-           // if(if (PlayerPrefs.GetInt("Progression") == 5)
+
+        }
+
+        private void IncreaseEnemyNumber()
+        {
+
+        }
+
+        private void IncreaseEnemyDetection()
+        {
+
         }
 
     private void AdjustEnemyHealth()
