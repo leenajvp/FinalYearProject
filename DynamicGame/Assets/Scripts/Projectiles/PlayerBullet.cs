@@ -23,17 +23,10 @@ public class PlayerBullet : BulletController
         if(collision != null)
         {
             EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
-            HeadShot headShot = collision.gameObject.GetComponent<HeadShot>();
 
-            if(enemy != null && headShot == null)
+            if(enemy != null)
             {
                 enemy.currentHealth -= bulletDamange;
-                ddaManager.currentHits++;
-            }
-
-            else if(headShot!=null)
-            {
-                enemy.currentHealth -= bulletDamange*2;
                 ddaManager.currentHits++;
             }
 

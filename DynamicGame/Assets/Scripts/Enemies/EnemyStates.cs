@@ -14,46 +14,34 @@ public class EnemyStates : MonoBehaviour
         AlertOthers
     }
 
-    [Header("Patrol")]
+    [Header("Patroling targets")]
     [SerializeField] private Transform[] targets;
 
-    [Header("PlayerDetection")]
-    [SerializeField] private GameObject player;
-    [SerializeField] private float catchedDistance = 10;
-    [SerializeField] private float lostDistance = 20f;
-    [SerializeField] private float stopDistance = 3f;
-    [SerializeField] private GameObject gameBoss;
+    [Header("Enemy Speed Settings")]
+    [SerializeField] private float walkingSpeed;
+    [SerializeField] private float runningSpeed;
+    private float currentSpeed;
 
-    private NavMeshAgent agent;
-    private float defaultSpeed => agent.speed = 3.5f;
-    private float runningSpeed => agent.speed = 7;
-    private float speed;
+    [Header("PlayerDetection Settings")]
+    [SerializeField] private GameObject player;
+    [SerializeField] private float shootDistance = 10;
+    [SerializeField] private float lostDistance = 20f;
 
     private int destinationTarget = 0;
     private RaycastHit hit;
-
-    private PlayerController playerSript;
-
     public EnemyState CurrentState;
-
-    // DDA STUFF
-
-    private GameObject head;
-    private string headName;
-
-
+    private NavMeshAgent agent;
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        playerSript = player.GetComponent<PlayerController>();
         agent.autoBraking = false;
-
-
     }
 
     void Update()
     {
+        agent.speed = currentSpeed;
+
         if (Physics.Raycast(transform.position, transform.forward, out hit))
         Debug.DrawRay(transform.position, transform.forward * 50);
 
@@ -62,7 +50,7 @@ public class EnemyStates : MonoBehaviour
             case EnemyState.Patrol:
 
                 RaycastCheck();
-                speed = defaultSpeed;
+                currentSpeed = walkingSpeed;
                 agent.isStopped = false;
 
                 if (!agent.pathPending && agent.remainingDistance < 0.5f)
@@ -72,15 +60,15 @@ public class EnemyStates : MonoBehaviour
 
             case EnemyState.PlayerSeen:
                 
-                GoToPlayer();
-                speed = runningSpeed;
+                ShootPlayer();
+                currentSpeed = runningSpeed;
 
                 break;
 
             case EnemyState.ShootPlayer:
 
-                GoToPlayer();
-                speed = runningSpeed;
+                ShootPlayer();
+                currentSpeed = runningSpeed;
 
                 break;
 
@@ -94,16 +82,6 @@ public class EnemyStates : MonoBehaviour
                 break;
         }
     }
-
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if (other == gameObject.tag=="bullet")
-    //    {
-
-    //    }
-    //    // if head gets hit add headshot
-    //    // if any part gets hit add hit
-    //}
 
     void RaycastCheck()
     {
@@ -122,42 +100,39 @@ public class EnemyStates : MonoBehaviour
         }
     }
 
-    //patrol when player is lost
+    //patrol when player is lost between set positions
     void Patrolling()
     {
         gameObject.GetComponent<Renderer>().material.color = Color.blue;
-
         agent.destination = targets[destinationTarget].position;
         destinationTarget = (destinationTarget + 1) % targets.Length;
     }
 
 
     // if other npcs detect player go towards
-    void PLayerBeenSnitched()
+    void AlertMoreEnemies()
     {
-        gameObject.GetComponent<Renderer>().material.color = Color.yellow;
+        //gameObject.GetComponent<Renderer>().material.color = Color.yellow;
 
-        if (gameBoss.GetComponent<GameManager>().playerDetected == true)
-        {
-            agent.SetDestination(player.transform.position);
-        }
+        //if (gameBoss.GetComponent<GameManager>().playerDetected == true)
+        //{
+        //    agent.SetDestination(player.transform.position);
+        //}
 
-        else
-        {
-            CurrentState = EnemyState.Patrol;
-        }
+        //else
+        //{
+        //    CurrentState = EnemyState.Patrol;
+        //}
     }
 
 
     //Move towards player and stop when on shooting distance
-    void GoToPlayer()
+    void ShootPlayer()
     {
         gameObject.GetComponent<Renderer>().material.color = Color.red;
         agent.SetDestination(player.transform.position);
 
-       
-
-        if (Vector3.Distance(transform.position, player.transform.position) <= catchedDistance)
+        if (Vector3.Distance(transform.position, player.transform.position) <= shootDistance)
         {
             CurrentState = EnemyState.ShootPlayer;
         }

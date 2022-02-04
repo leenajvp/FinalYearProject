@@ -63,17 +63,27 @@ bool gameOver;
 
 // Different DDA measuring methods
 
-        private void IncreaseEnemyHealth()
+        private void ManageEnemyHealth()
+        {
+            // If player is not loosing health
+        }
+
+        private void ManageEnemyMovementSpeed()
+        {
+            // If player is not getting hit
+        }
+
+        private void ManageEnemyShootingSpeed()
+        {
+            //If player is not getting hit
+        }
+
+        private void ManageEnemyNumber()
         {
 
         }
 
-        private void IncreaseEnemyNumber()
-        {
-
-        }
-
-        private void IncreaseEnemyDetection()
+        private void ManageEnemyDetection()
         {
 
         }

@@ -5,24 +5,25 @@ using UnityEngine.InputSystem;
 using Bullets;
 using DDA;
 
-
 namespace Player
 {
-   [RequireComponent(typeof(PlayerController), typeof(PlayerInput))]
+   [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(CharacterController))]
 
     public class PlayerController : MonoBehaviour
     {
+        [Header("Player movement values")]
         [SerializeField] private Vector3 playerVelocity;
-        [SerializeField] private bool groundedPlayer;
         [SerializeField] private float playerSpeed = 2.0f;
         [SerializeField] private float rotSpeed = 5.0f;
-        [SerializeField] private GameObject bullet;
-        [SerializeField] private Transform shootPoint;
-        [SerializeField] private Transform bulletParent;
-        [SerializeField] private ObjectPool bPool;
+        [SerializeField] private float jumpHeight = 1.0f;
+        [SerializeField] private float gravityValue = -10f;
+        [SerializeField] private bool grounded;
 
-        private float jumpHeight = 1.0f;
-        private float gravityValue = -9.81f;
+        [Header("Shooting controls")]
+        [Tooltip("Position to shoot bullet from")]
+        [SerializeField] private Transform shootPoint;
+        [Tooltip("Object pool for bullets")]
+        [SerializeField] private ObjectPool bulletPool;
 
         private Transform cameraTransform;
         private CharacterController controller;
@@ -65,8 +66,8 @@ namespace Player
 
         void Update()
         {
-            groundedPlayer = controller.isGrounded;
-            if (groundedPlayer && playerVelocity.y < 0)
+            grounded = controller.isGrounded;
+            if (grounded && playerVelocity.y < 0)
             {
                 playerVelocity.y = 0f;
             }
@@ -78,7 +79,7 @@ namespace Player
             controller.Move(move * Time.deltaTime * playerSpeed);
 
             // Changes the height position of the player.
-            if (jumpAction.triggered && groundedPlayer)
+            if (jumpAction.triggered && grounded)
             {
                 playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
             }
@@ -97,13 +98,10 @@ namespace Player
             ddaManager.currentsShots++;
 
             RaycastHit hit;
-
-            GameObject newBullet = bPool.GetObject();
+            GameObject newBullet = bulletPool.GetObject();
             newBullet.transform.position = shootPoint.position;
             newBullet.transform.rotation = shootPoint.rotation;
             newBullet.SetActive(true);
-
-            //GameObject newBullet = GameObject.Instantiate(bullet, shootPoint.position, Quaternion.identity, bulletParent);
             BulletController bulletController = newBullet.GetComponent<BulletController>();
 
             if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
