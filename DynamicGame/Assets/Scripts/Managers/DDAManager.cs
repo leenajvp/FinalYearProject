@@ -1,67 +1,66 @@
-using System.Collections;
-using System.Collections.Generic;
+using Enemies;
 using UnityEngine;
 
 namespace DDA
 {
     public class DDAManager : MonoBehaviour
-{
-    public  int currentHeadShots;
-    public  int currentHits;
-    public  int currentKills;
-    public int currentsShots;
+    {
+        [SerializeField] private EnemyData enemyData;
+
+        public int currentHeadShots;
+        public int currentHits;
+        public int currentKills;
+        public int currentsShots;
 
         public bool playerDead;
 
-    public static int totalHeadShots;
-    public static int totalHits;
-    public static int totalKills;
-    public static int totalDeaths;
-    public static int totalShots;
+        public static int totalHeadShots;
+        public static int totalHits;
+        public static int totalKills;
+        public static int totalDeaths;
+        public static int totalShots;
 
- 
-
-bool gameOver;
+        bool gameOver;
 
         // PlayerPrefs DifLevel , FirstAttempt, Progression
         void Start()
-    {
-        if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
         {
-            totalHeadShots = 0;
-            totalHits = 0;
-            totalDeaths = 0;
-            totalKills = 0;
-        }
-
-        currentHeadShots = 0;
-        currentHits = 0;
-        currentKills = 0;
-    }
-    
-    void Update()
-    {
-        if (Time.timeScale == 0 && playerDead)
-        {
-            totalDeaths++;
-            totalHeadShots += currentHeadShots;
-            totalHits += currentHits;
-            totalKills += currentKills;
-            playerDead = false;
-            ShowStats();
+            if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
+            {
+                totalHeadShots = 0;
+                totalHits = 0;
+                totalDeaths = 0;
+                totalKills = 0;
+            }
 
             currentHeadShots = 0;
             currentHits = 0;
             currentKills = 0;
+        }
+
+        void Update()
+        {
+            if (Time.timeScale == 0 && playerDead)
+            {
+                totalDeaths++;
+                totalHeadShots += currentHeadShots;
+                totalHits += currentHits;
+                totalKills += currentKills;
+                playerDead = false;
+                ShowStats();
+
+                currentHeadShots = 0;
+                currentHits = 0;
+                currentKills = 0;
             }
-    }
+        }
 
-    private void ShowStats()
-    {
-        Debug.Log("hits: " + totalHits + " kills: " + totalKills);
-    }
+        private void ShowStats()
+        {
+            Debug.Log("hits: " + totalHits + " kills: " + totalKills);
+        }
 
-// Different DDA measuring methods
+        // Different DDA measuring methods
 
         private void ManageEnemyHealth()
         {
@@ -88,7 +87,7 @@ bool gameOver;
 
         }
 
-    private void AdjustEnemyHealth()
+        private void AdjustEnemyHealth()
         {
             if (PlayerPrefs.GetInt("DifLevel") == 5 || PlayerPrefs.GetInt("DifLevel") == 0)
                 return;
@@ -113,5 +112,5 @@ bool gameOver;
 
             }
         }
-}
+    }
 }

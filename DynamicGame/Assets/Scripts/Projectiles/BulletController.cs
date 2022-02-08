@@ -5,11 +5,7 @@ using UnityEngine;
 namespace Bullets {
     public class BulletController : MonoBehaviour
     {
-        [Header("Bullet Behaviour")]
-        [SerializeField] private float speed = 50.0f;
-        [Tooltip("Bullet's living time")]
-        [SerializeField] private float timeToDestroy = 3.0f;
-
+        [SerializeField] private BulletData bulletData;
         private ObjectPool pool;
 
         public Vector3 target { get; set; }
@@ -28,7 +24,7 @@ namespace Bullets {
 
         private void Update()
         {
-            transform.position = Vector3.MoveTowards(transform.position, target, speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, target, bulletData.speed * Time.deltaTime);
 
             if(!hit && Vector3.Distance(transform.position, target) < .01f)
             {
@@ -44,7 +40,7 @@ namespace Bullets {
 
         private IEnumerator DestroyTimer()
         {
-            yield return new WaitForSeconds(timeToDestroy);
+            yield return new WaitForSeconds(bulletData.timeToDestroy);
             pool.ReturnObject(gameObject);
         }
     }
