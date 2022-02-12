@@ -46,8 +46,6 @@ namespace Enemies
         {
             agent.speed = currentSpeed;
 
-
-
             switch (CurrentState)
             {
                 case EnemyState.Patrol:
@@ -63,14 +61,14 @@ namespace Enemies
 
                 case EnemyState.PlayerSeen:
 
-                    ShootPlayer();
+                    FollowPlayer();
                     currentSpeed = data.runningSpeed;
 
                     break;
 
                 case EnemyState.ShootPlayer:
 
-                    ShootPlayer();
+                    FollowPlayer();
                     currentSpeed = data.runningSpeed;
 
                     break;
@@ -98,7 +96,6 @@ namespace Enemies
                 {
                     if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
                     {
-                        Debug.DrawRay(transform.position, transform.forward * 50);
                         IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
 
                         if (hit.collider == null)
@@ -108,16 +105,16 @@ namespace Enemies
 
                         else if (playerHit != null)
                         {
-                            Debug.Log("Guard detected player");
+                            CurrentState = EnemyState.PlayerSeen;
                         }
                     }
                 }
             }
         }
 
-        void Patrolling()
+        //Patrol between set points when player is not detected
+        private void Patrolling()
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.blue;
             agent.destination = targets[destinationTarget].position;
             destinationTarget = (destinationTarget + 1) % targets.Length;
         }
@@ -141,20 +138,36 @@ namespace Enemies
 
 
         //Move towards player and stop when on shooting distance
-        void ShootPlayer()
+        private void FollowPlayer()
         {
-            gameObject.GetComponent<Renderer>().material.color = Color.red;
-            agent.SetDestination(player.transform.position);
+            //Get distance to player and maintain rotation towards
 
-            if (Vector3.Distance(transform.position, player.transform.position) <= data.shootDistance)
+            var distance = Vector3.Distance(transform.position, player.transform.position);
+            Quaternion lookRotation = Quaternion.LookRotation((player.transform.position - transform.position).normalized);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime);
+
+            if (distance <= data.shootDistance && distance >= data.retreatDistance)
             {
-                CurrentState = EnemyState.ShootPlayer;
+                agent.isStopped = true;
             }
 
-            if (Vector3.Distance(transform.position, player.transform.position) >= data.lostDistance)
+
+            //Maintain distance
+
+            else if (distance <= data.retreatDistance)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, player.transform.position, -data.walkingSpeed * Time.deltaTime);
+            }
+
+            else if (distance >= data.lostDistance)
             {
                 CurrentState = EnemyState.Patrol;
             }
+        }
+
+        private void Shoot()
+        {
+
         }
     }
 }

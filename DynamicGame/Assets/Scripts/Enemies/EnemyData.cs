@@ -14,5 +14,6 @@ namespace Enemies
         [Header("Enemy Attack Settings")]
         public int bulletDamage;
         public float shootDistance, lostDistance;
+        public float retreatDistance;
     }
 }
