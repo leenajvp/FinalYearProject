@@ -24,6 +24,10 @@ namespace Enemies
 
         [Header("PlayerDetection Settings")]
         [SerializeField] private GameObject player;
+        [Tooltip("The guard will detect if player enters this radius and begin raycast.")]
+        public float detectionRadius = 10f;
+        [Tooltip("Raycast distance when player is detected.")]
+        [SerializeField] private float detectionDistance = 10f;
 
         private float currentSpeed;
         private RaycastHit hit;
@@ -32,6 +36,7 @@ namespace Enemies
 
         private void Start()
         {
+            gameObject.transform.position = targets[0].position;
             agent = GetComponent<NavMeshAgent>();
             agent.autoBraking = false;
             currentSpeed = data.walkingSpeed;
@@ -41,14 +46,13 @@ namespace Enemies
         {
             agent.speed = currentSpeed;
 
-            if (Physics.Raycast(transform.position, transform.forward, out hit))
-                Debug.DrawRay(transform.position, transform.forward * 50);
+
 
             switch (CurrentState)
             {
                 case EnemyState.Patrol:
 
-                    RaycastCheck();
+                    PlayerDetection();
                     currentSpeed = data.walkingSpeed;
                     agent.isStopped = false;
 
@@ -82,24 +86,35 @@ namespace Enemies
             }
         }
 
-        void RaycastCheck()
+        void PlayerDetection()
         {
-            if (hit.collider == null)
-            {
-                return;
-            }
+            Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius);
 
-            else
+            foreach (var col in colliders)
             {
+                IPlayer player = col.gameObject.GetComponent<IPlayer>();
 
-                if (hit.collider.gameObject == player)
+                if (player != null)
                 {
-                    CurrentState = EnemyState.PlayerSeen;
+                    if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
+                    {
+                        Debug.DrawRay(transform.position, transform.forward * 50);
+                        IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+
+                        if (hit.collider == null)
+                        {
+                            return;
+                        }
+
+                        else if (playerHit != null)
+                        {
+                            Debug.Log("Guard detected player");
+                        }
+                    }
                 }
             }
         }
 
-        //patrol when player is lost between set positions
         void Patrolling()
         {
             gameObject.GetComponent<Renderer>().material.color = Color.blue;

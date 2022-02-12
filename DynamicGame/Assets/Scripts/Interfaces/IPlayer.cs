@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IPlayer 
 {
-    public float health { get; set; }
+// Tag interface 
 }

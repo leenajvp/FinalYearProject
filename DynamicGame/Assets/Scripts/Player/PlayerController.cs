@@ -9,7 +9,7 @@ namespace Player
 {
    [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(CharacterController))]
 
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IPlayer
     {
         [Header("Player movement values")]
         [SerializeField] private Vector3 playerVelocity;
