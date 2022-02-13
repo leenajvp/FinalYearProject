@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using Bullets;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace Enemies
 {
     [RequireComponent(typeof(NavMeshAgent))]
 
-    public class EnemyStates : MonoBehaviour
+    public class EnemyBehaviour : MonoBehaviour
     {
 
         public enum EnemyState
@@ -34,8 +35,17 @@ namespace Enemies
         public EnemyState CurrentState;
         private NavMeshAgent agent;
 
+        [Header("Shooting")]
+        [Tooltip("Position to shoot bullet from")]
+        [SerializeField] private Transform shootPoint;
+        [Tooltip("Object pool for bullets")]
+        [SerializeField] private ObjectPool bulletPool;
+
+        float shootTimer = 0f;
+
         private void Start()
         {
+            name = data.enemyName;
             gameObject.transform.position = targets[0].position;
             agent = GetComponent<NavMeshAgent>();
             agent.autoBraking = false;
@@ -107,6 +117,11 @@ namespace Enemies
                         {
                             CurrentState = EnemyState.PlayerSeen;
                         }
+
+                        else
+                        {
+                            //look for player, get player rotation and rotate and move towards player, if player is not found for X sec give up and return patrol
+                        }
                     }
                 }
             }
@@ -149,8 +164,8 @@ namespace Enemies
             if (distance <= data.shootDistance && distance >= data.retreatDistance)
             {
                 agent.isStopped = true;
+                Shoot();
             }
-
 
             //Maintain distance
 
@@ -163,11 +178,44 @@ namespace Enemies
             {
                 CurrentState = EnemyState.Patrol;
             }
+
+            else
+            {
+                transform.position = Vector3.MoveTowards(transform.position, player.transform.position, data.walkingSpeed * Time.deltaTime);
+            }
         }
 
         private void Shoot()
         {
+            if (Time.time < shootTimer + data.shootSpeed)
+                return;
 
+            Debug.Log("shoot");
+
+            RaycastHit hit;
+            GameObject newBullet = bulletPool.GetObject();
+            newBullet.transform.position = shootPoint.position;
+            newBullet.transform.rotation = shootPoint.rotation;
+            newBullet.SetActive(true);
+            BulletController bulletController = newBullet.GetComponent<BulletController>();
+            shootTimer = Time.time;
+
+            if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
+            {
+                IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+
+                if (playerHit != null)
+                {
+                    bulletController.target = hit.point;
+                    bulletController.hit = true;
+                }
+
+                else
+                {
+                    bulletController.target = transform.position + transform.forward * 25;
+                    bulletController.hit = false;
+                }
+            }
         }
     }
 }

@@ -6,14 +6,17 @@ namespace Enemies
     public class EnemyData : ScriptableObject
     {
         [Header("Enemy Settings")]
-        public string enemyName;
-        public int health;
+        public string enemyName = "Enemy";
+        public int health = 10;
         public GameObject prefab;
-        public float walkingSpeed, runningSpeed;
+        public float walkingSpeed = 3f, runningSpeed = 5f;
 
         [Header("Enemy Attack Settings")]
-        public int bulletDamage;
-        public float shootDistance, lostDistance;
-        public float retreatDistance;
+        public int bulletDamage = 1;
+        public float shootDistance = 8f, lostDistance = 20f, retreatDistance = 5f;
+        [Tooltip("Seconds between shots")]
+        public float shootSpeed = 1f;
+
+        // Search time?
     }
 }
