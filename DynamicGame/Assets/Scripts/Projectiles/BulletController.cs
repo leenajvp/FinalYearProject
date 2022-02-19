@@ -11,7 +11,6 @@ namespace Bullets {
         public Vector3 target { get; set; }
         public bool hit { get; set; }
 
-
         protected virtual void Start()
         {
             pool = transform.parent.GetComponent<ObjectPool>();

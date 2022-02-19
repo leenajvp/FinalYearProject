@@ -40,6 +40,8 @@ namespace Enemies
         [SerializeField] private Transform shootPoint;
         [Tooltip("Object pool for bullets")]
         [SerializeField] private ObjectPool bulletPool;
+        [SerializeField] private ParticleSystem muzzleFlash;
+        [SerializeField] private ParticleSystem impactEffect;
 
         float shootTimer = 0f;
 
@@ -106,24 +108,41 @@ namespace Enemies
                 {
                     if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
                     {
-                        IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+                        RaycastCheck();
+                    }
 
-                        if (hit.collider == null)
-                        {
-                            return;
-                        }
+                    if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
+                    {
+                        //Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
+                        RaycastCheck();
+                    }
 
-                        else if (playerHit != null)
-                        {
-                            CurrentState = EnemyState.PlayerSeen;
-                        }
-
-                        else
-                        {
-                            //look for player, get player rotation and rotate and move towards player, if player is not found for X sec give up and return patrol
-                        }
+                    if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
+                    {
+                        //Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
+                        RaycastCheck();
                     }
                 }
+            }
+        }
+
+        private void RaycastCheck()
+        {
+            IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+
+            if (hit.collider == null)
+            {
+                return;
+            }
+
+            else if (playerHit != null)
+            {
+                CurrentState = EnemyState.PlayerSeen;
+            }
+
+            else
+            {
+                //look for player, get player rotation and rotate and move towards player, if player is not found for X sec give up and return patrol
             }
         }
 
@@ -190,7 +209,7 @@ namespace Enemies
             if (Time.time < shootTimer + data.shootSpeed)
                 return;
 
-            Debug.Log("shoot");
+            muzzleFlash.Play();
 
             RaycastHit hit;
             GameObject newBullet = bulletPool.GetObject();

@@ -5,7 +5,7 @@ namespace DDA
 {
     public class DDAManager : MonoBehaviour
     {
-        [SerializeField] private EnemyData enemyData;
+        [SerializeField] public EnemyData enemyData;
 
         public int currentHeadShots;
         public int currentHits;
@@ -19,6 +19,10 @@ namespace DDA
         public static int totalKills;
         public static int totalDeaths;
         public static int totalShots;
+
+        [SerializeField] private GameObject[] EnemyPools;
+        public int currentProgression = 0;
+
 
         bool gameOver;
 
@@ -53,6 +57,10 @@ namespace DDA
                 currentHits = 0;
                 currentKills = 0;
             }
+
+            // if the player is not killed first enbemy pool easier faster
+            // if player is on second enemy pool easier slower
+            // final pool easier slowest
         }
 
         private void ShowStats()
@@ -62,9 +70,12 @@ namespace DDA
 
         // Different DDA measuring methods
 
-        private void ManageEnemyHealth()
+        public void ManageEnemyHealth()
         {
             // If player is not loosing health
+
+            enemyData.health += (int)(enemyData.health * 20 / 100);
+            Debug.Log("Increased");
         }
 
         private void ManageEnemyMovementSpeed()

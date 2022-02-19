@@ -9,6 +9,7 @@ public class PlayerBullet : BulletController
     public int bulletDamange;
     [SerializeField] private DDAManager ddaManager;
 
+
     protected override void Start()
     {
         base.Start();

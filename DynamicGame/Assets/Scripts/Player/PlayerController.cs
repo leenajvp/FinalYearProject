@@ -24,6 +24,8 @@ namespace Player
         [SerializeField] private Transform shootPoint;
         [Tooltip("Object pool for bullets")]
         [SerializeField] private ObjectPool bulletPool;
+        [SerializeField] private ParticleSystem muzzleFlash;
+        [SerializeField] private ParticleSystem impactEffect;
 
         private Transform cameraTransform;
         private CharacterController controller;
@@ -95,7 +97,10 @@ namespace Player
 
         private void Shoot()
         {
+           // ddaManager.ManageEnemyHealth();
             ddaManager.currentsShots++;
+
+            muzzleFlash.Play();
 
             RaycastHit hit;
             GameObject newBullet = bulletPool.GetObject();
@@ -108,6 +113,8 @@ namespace Player
             {
                 bulletController.target = hit.point;
                 bulletController.hit = true;
+                var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                Destroy(newImpact, 0.6f);
             }
 
             else
@@ -117,5 +124,9 @@ namespace Player
             }
         }
 
+        
+
     }
+
+    
 }

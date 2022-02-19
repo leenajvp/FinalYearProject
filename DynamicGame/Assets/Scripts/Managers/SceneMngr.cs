@@ -42,11 +42,7 @@ public class SceneMngr : MonoBehaviour
 
         foreach (EnemyPools checkPoint in checkPoints)
         {
-
-                
                     checkPoint.ResetEnemies();
-                
-            
         }
 
     }
