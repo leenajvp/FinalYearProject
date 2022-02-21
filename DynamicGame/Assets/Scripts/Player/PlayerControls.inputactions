@@ -11,7 +11,7 @@
                     "id": "853ce4ee-dea3-4dc3-b3be-8c671c23bc0f",
                     "expectedControlType": "Vector2",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Press"
                 },
                 {
                     "name": "Look",
@@ -41,6 +41,22 @@
                     "name": "Shoot",
                     "type": "Button",
                     "id": "0486d89e-41c1-4d82-a07b-39898cf8949a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Interact",
+                    "type": "Button",
+                    "id": "81835fde-f56e-4c21-9c9a-d5387f13721c",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Drag",
+                    "type": "Button",
+                    "id": "63f6138f-84fa-43cc-9d22-3ce0b749aba9",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -143,6 +159,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Shoot",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a3eab741-a06e-40a4-8219-09fafe4eb663",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "9315875d-b1c3-48e9-8ebc-01184a89ca0d",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Drag",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

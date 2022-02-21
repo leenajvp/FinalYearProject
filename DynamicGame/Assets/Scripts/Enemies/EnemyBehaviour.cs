@@ -113,13 +113,11 @@ namespace Enemies
 
                     if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
                     {
-                        //Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
                         RaycastCheck();
                     }
 
                     if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
                     {
-                        //Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
                         RaycastCheck();
                     }
                 }

@@ -1,44 +1,70 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class SlidingDoor : MonoBehaviour
 {
-    [Tooltip("Set to true if door is unlcoked from start")]
-    public bool unlocked = false;
-    [SerializeField] private float openDistance = 1f;
+    [Header("Door slides up on trigger enter")]
+    [SerializeField] private float openDistance = 2.5f;
     [SerializeField] private float openSpeed = 2f;
+    [Tooltip("Set to true if door is unlcoked from start")]
+    public bool active = false;
+    [Header("lock color indicating lock status")]
+    [SerializeField] private Color unlocked = Color.green;
+    [SerializeField] private Color locked = Color.red;
+    [Tooltip("Light to direct if door is locked or unlocked")]
+    [SerializeField] private GameObject[] lockLights;
 
     private Vector3 defaultPos;
-    private bool open= false;
+    private bool open = false;
 
     private Transform doorPos;
 
     private void Start()
     {
-        defaultPos = transform.position;    
+        defaultPos = transform.position;
         doorPos = gameObject.transform;
         open = false;
     }
 
     private void Update()
     {
-        if(open && unlocked)
-            doorPos.position = new Vector3(doorPos.position.x, doorPos.position.y, Mathf.Lerp(doorPos.position.z, defaultPos.z + (open ? openDistance : 0), Time.deltaTime * openSpeed));
-
-        else
-            doorPos.position = new Vector3(doorPos.position.x, doorPos.position.y, Mathf.Lerp(doorPos.position.z, defaultPos.z, Time.deltaTime * openSpeed));
+        MoveDoor();
+        UpdateLight();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(!open)
+        if (!open)
             open = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if(open)
-            open=false;
+        if (open)
+            open = false;
+    }
+
+    private void MoveDoor()
+    {
+        if (open && active)
+            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y + openDistance, Time.deltaTime * openSpeed), doorPos.position.z);
+
+        else
+            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y, Time.deltaTime * openSpeed), doorPos.position.z);
+    }
+
+    private void UpdateLight()
+    {
+        if(active)
+            foreach (var light in lockLights)
+            light.GetComponent<Renderer>().material.SetColor("_EmissionColor", unlocked);
+
+        else
+            foreach (var light in lockLights)
+                light.GetComponent<Renderer>().material.SetColor("_EmissionColor", locked);
+    }
+
+    public void Unlock()
+    {
+        active = true;
     }
 }
