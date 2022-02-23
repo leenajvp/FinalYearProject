@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 namespace Player
 {
     [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(CharacterController))]
+    [RequireComponent(typeof(PlayerInventory))]
 
     public class PlayerController : MonoBehaviour, IPlayer
     {
@@ -17,6 +18,7 @@ namespace Player
         [SerializeField] private float pushForce = 1.0f;
         [SerializeField] private float gravityValue = -10f;
         [SerializeField] private bool grounded;
+        [SerializeField] private float rayDetectionDistance = 5f;
         private float currentSpeed;
 
         [Header("Shooting controls")]
@@ -30,7 +32,7 @@ namespace Player
         [Header("Interactions")]
         public bool interacting = false;
         public bool availableInteraction = false;
-        [SerializeField] private Camera[] cinemachineCams;
+        [SerializeField] private GameObject interactHUD;
 
         private Transform cameraTransform;
         private CharacterController controller;
@@ -40,12 +42,10 @@ namespace Player
         private InputAction jumpAction;
         private InputAction shootAction;
         private InputAction interactAction;
-        private InputAction dragAction;
-        private Collider[] colliders;
+        private InputAction pauseGame;
 
+        private PlayerInventory inventory;
         private DDAManager ddaManager;
-
-        [SerializeField] private LayerMask playerMask;
 
         private void Awake()
         {
@@ -56,7 +56,10 @@ namespace Player
             jumpAction = playerInput.actions["Jump"];
             shootAction = playerInput.actions["Shoot"];
             interactAction = playerInput.actions["Interact"];
-            dragAction = playerInput.actions["Drag"];
+            pauseGame = playerInput.actions["Pause"];
+
+
+            inventory = GetComponent<PlayerInventory>();
 
             if (ddaManager == null)
             {
@@ -78,15 +81,17 @@ namespace Player
         {
             cameraTransform = Camera.main.transform;
             currentSpeed = playerSpeed;
-            colliders = Physics.OverlapSphere(transform.position, 3);
+            interactHUD.SetActive(false);
         }
 
         void Update()
         {
-            GetInteraction();
-           // PullObjects();
+            Interact();
             Jump();
             Move();
+
+            if (pauseGame.triggered)
+                PauseGame();
 
             if (interacting)
             {
@@ -97,7 +102,6 @@ namespace Player
                 Cursor.lockState = CursorLockMode.None;
             }
 
-
             else
             {
                 moveAction.Enable();
@@ -106,7 +110,6 @@ namespace Player
                 Cursor.visible = false;
                 Cursor.lockState = CursorLockMode.Locked;
             }
-
         }
 
         private void Move()
@@ -169,65 +172,73 @@ namespace Player
             }
         }
 
-        private void GetInteraction()
+        // Check if raycast hit on interactive objects
+        private void Interact()
         {
-            foreach (Collider col in colliders)
-            {
-                Iinteractive interactive = col.gameObject.GetComponent<Iinteractive>();
+            RaycastHit hit;
 
-                if (availableInteraction && interactive != null)
+            if (Physics.Raycast(transform.position, transform.forward, out hit, rayDetectionDistance))
+            {
+                Iinteractive interactive = hit.collider.gameObject.GetComponent<Iinteractive>();
+
+                if (interactive != null && interactive.available)
                 {
+                    interactHUD.SetActive(true);
+
                     if (interactAction.triggered)
                     {
                         interactive.GetPuzzle();
-                        moveAction.Disable();
-                        shootAction.Disable();
-                        jumpAction.Disable();
                     }
-
-                }
-            }
-        }
-
-        private void PullObjects()
-        {
-            if (dragAction.triggered)
-            {
-                Debug.Log("triggered");
-                Physics.queriesHitBackfaces = false;
-                RaycastHit hit;
-                Physics.Raycast(transform.position, transform.forward, out hit, 5f);
-                IMovable hitObject = hit.collider.gameObject.GetComponent<IMovable>();
-
-                if (hitObject != null)
-                {
-                    Debug.Log("hit");
-                    GameObject obj = hit.collider.gameObject;
-                    obj.GetComponent<FixedJoint>().connectedBody = this.GetComponent<Rigidbody>();
                 }
 
                 else
                 {
+                    interactHUD.SetActive(false);
                     return;
                 }
+            }
+        }
 
+        // Add push force to controller
+        private void OnControllerColliderHit(ControllerColliderHit hit)
+        {
+            Rigidbody rb = hit.collider.attachedRigidbody;
+
+            if (rb != null && !rb.isKinematic && rb.mass < 2f)
+            {
+                rb.velocity = hit.moveDirection * pushForce;
+            }
+
+            BulletCollectable bullets = hit.gameObject.GetComponent<BulletCollectable>();
+
+            if (bullets != null)
+            {
+                Debug.Log("bullets");
+                inventory.bullets += bullets.numberOfBullets;
+                bullets.gameObject.SetActive(false);
+            }
+        }
+
+        public Vector3 GetPosition()
+        {
+            return transform.position;
+        }
+
+        private void PauseGame()
+        {
+            if (Time.timeScale == 1)
+            {
+                interacting = true;
+                Time.timeScale = 0;
             }
 
             else
             {
-                Debug.Log("button up");
+                interacting = false;
+                Time.timeScale = 1;
             }
-        }
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
-        {
-            Rigidbody rb = hit.collider.attachedRigidbody;
-            if(rb!=null && !rb.isKinematic && rb.mass < 2f)
-            {
-                rb.velocity = hit.moveDirection * pushForce;
-            }
         }
     }
-
 }
 

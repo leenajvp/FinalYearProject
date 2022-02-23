@@ -4,10 +4,11 @@ using UnityEngine;
 public class ElectricLock : MonoBehaviour, Iinteractive
 {
     public bool available { get; set; }
-    [SerializeField] protected GameObject DoorToOpen;
+    [Tooltip("Set to True if lock is available even after completion")]
+    [SerializeField] private bool keepAvailable;
+    [SerializeField] protected GameObject DoorToManage;
     [Header("Puzzle UI")]
     [Tooltip("HUD to inform player of available interaction")]
-    [SerializeField] protected GameObject puzzleHUDAlert;
     [SerializeField] protected GameObject puzzle;
 
     protected GameObject player;
@@ -18,18 +19,18 @@ public class ElectricLock : MonoBehaviour, Iinteractive
     {
         available = true;
         playerController = FindObjectOfType<PlayerController>();
-        door = DoorToOpen.GetComponent<SlidingDoor>();
         player = playerController.gameObject;
+        door = DoorToManage.GetComponent<SlidingDoor>();
         puzzle.SetActive(false);
-        puzzleHUDAlert.SetActive(false);
     }
 
     public void SetUnAvailable()
     {
         playerController.interacting = false;
-        available = false;
         puzzle.SetActive(false);
-        puzzleHUDAlert.SetActive(false);   
+
+        if(!keepAvailable)
+            available = false;
     }
 
     public void GetPuzzle()
@@ -46,22 +47,31 @@ public class ElectricLock : MonoBehaviour, Iinteractive
             playerController.interacting = false;
         }
     }
-
-    private void OnTriggerEnter(Collider other)
+    public void Unlock()
     {
-        if (other.gameObject == player && available)
-        {
-            playerController.availableInteraction = true;
-            puzzleHUDAlert.SetActive(true);
-        }
+        door.active = true;
     }
 
-    private void OnTriggerExit(Collider other)
+    public void Lock()
     {
-        if (other.gameObject == player && isActiveAndEnabled)
-        {
-            playerController.availableInteraction = false;
-            puzzleHUDAlert.SetActive(false);
-        }
+        door.active = false;
     }
+
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.gameObject == player && available)
+    //    {
+    //       // playerController.availableInteraction = true;
+    //        puzzleHUDAlert.SetActive(true);
+    //    }
+    //}
+
+    //private void OnTriggerExit(Collider other)
+    //{
+    //    if (other.gameObject == player && isActiveAndEnabled)
+    //    {
+    //       // playerController.availableInteraction = false;
+    //        puzzleHUDAlert.SetActive(false);
+    //    }
+    //}
 }

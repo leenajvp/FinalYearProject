@@ -1,14 +1,14 @@
-using Enemies;
 using UnityEditor;
 using UnityEngine;
+using Enemies;
 
-[CustomEditor(typeof(EnemyBehaviour))]
+[CustomEditor(typeof(EnemyBehaviourBase))]
 public class GuardRadiusHandle : Editor
 {
     private void OnSceneGUI()
     {
         Handles.color = Color.red;
-        EnemyBehaviour guard = (EnemyBehaviour)target;
-        Handles.DrawWireArc(guard.transform.position, guard.transform.up, -guard.transform.right, 360, guard.detectionRadius);
+        EnemyBehaviourBase enemy = (EnemyBehaviourBase)target;
+        Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.detectionRadius);
     }
 }

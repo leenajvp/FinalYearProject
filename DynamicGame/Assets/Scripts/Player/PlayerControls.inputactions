@@ -54,9 +54,9 @@
                     "interactions": ""
                 },
                 {
-                    "name": "Drag",
+                    "name": "Pause",
                     "type": "Button",
-                    "id": "63f6138f-84fa-43cc-9d22-3ce0b749aba9",
+                    "id": "5eee2646-a5b7-4e49-a03d-f98d4c0e69cf",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -175,12 +175,12 @@
                 },
                 {
                     "name": "",
-                    "id": "9315875d-b1c3-48e9-8ebc-01184a89ca0d",
-                    "path": "<Keyboard>/e",
+                    "id": "13894279-a0d5-4ec5-bb30-89b283a42210",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Drag",
+                    "action": "Pause",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

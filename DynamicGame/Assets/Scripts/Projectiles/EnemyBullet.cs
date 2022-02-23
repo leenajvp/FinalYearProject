@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Bullets;
 using DDA;
+using Player;
 
-public class PlayerBullet : BulletController
+public class EnemyBullet : BulletController
 {
     public int bulletDamange;
     [SerializeField] private DDAManager ddaManager;
@@ -23,12 +24,13 @@ public class PlayerBullet : BulletController
 
         if(collision != null)
         {
-            EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
+            PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
 
-            if(enemy != null)
+            if(player != null)
             {
-                enemy.currentHealth -= bulletDamange;
-                ddaManager.currentEHits++;
+                Debug.Log("Player hit");
+                player.currentHealth -= bulletDamange;
+                ddaManager.currentPHits++;
             }
 
             else

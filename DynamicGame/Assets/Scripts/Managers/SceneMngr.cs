@@ -3,10 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class SceneMngr : MonoBehaviour
 {
     [SerializeField] private GameObject menu;
+    [SerializeField] private GameObject endGameMenu;
     [SerializeField] private GameObject player;
     [SerializeField] private List<EnemyPools> checkPoints = new List<EnemyPools>();
 
@@ -15,8 +17,6 @@ public class SceneMngr : MonoBehaviour
         menu.SetActive(false);
         Time.timeScale = 1;
         Cursor.lockState = CursorLockMode.None;
-
-        
     }
 
     void Update()

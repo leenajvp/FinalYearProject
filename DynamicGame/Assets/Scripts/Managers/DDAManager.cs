@@ -8,7 +8,8 @@ namespace DDA
         [SerializeField] public EnemyData enemyData;
 
         public int currentHeadShots;
-        public int currentHits;
+        public int currentEHits;
+        public int currentPHits;
         public int currentKills;
         public int currentsShots;
 
@@ -38,7 +39,8 @@ namespace DDA
             }
 
             currentHeadShots = 0;
-            currentHits = 0;
+            currentEHits = 0;
+            currentPHits = 0;
             currentKills = 0;
         }
 
@@ -48,13 +50,14 @@ namespace DDA
             {
                 totalDeaths++;
                 totalHeadShots += currentHeadShots;
-                totalHits += currentHits;
+                totalHits += currentEHits;
                 totalKills += currentKills;
                 playerDead = false;
                 ShowStats();
 
                 currentHeadShots = 0;
-                currentHits = 0;
+                currentEHits = 0;
+                currentPHits = 0;
                 currentKills = 0;
             }
 

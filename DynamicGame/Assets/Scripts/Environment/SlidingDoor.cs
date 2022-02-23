@@ -13,6 +13,11 @@ public class SlidingDoor : MonoBehaviour
     [Tooltip("Light to direct if door is locked or unlocked")]
     [SerializeField] private GameObject[] lockLights;
 
+    [Header("UI Sprites")]
+    [SerializeField] private GameObject currentIcon;
+    [SerializeField] private Sprite unlockedIcon;
+    [SerializeField] private Sprite lockedIcon;
+
     private Vector3 defaultPos;
     private bool open = false;
 
@@ -29,6 +34,7 @@ public class SlidingDoor : MonoBehaviour
     {
         MoveDoor();
         UpdateLight();
+        UpdateMapSprite();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -63,8 +69,17 @@ public class SlidingDoor : MonoBehaviour
                 light.GetComponent<Renderer>().material.SetColor("_EmissionColor", locked);
     }
 
-    public void Unlock()
+    private void UpdateMapSprite()
     {
-        active = true;
+        if (active)
+        {
+            currentIcon.GetComponent<SpriteRenderer>().sprite = unlockedIcon;
+        }
+
+        else
+        {
+            currentIcon.GetComponent<SpriteRenderer>().sprite = lockedIcon;   
+        }
     }
+
 }
