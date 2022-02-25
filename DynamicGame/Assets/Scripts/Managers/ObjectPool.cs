@@ -39,7 +39,7 @@ public class ObjectPool : MonoBehaviour
 
     public void ReturnObject(GameObject obj)
     {
-        Debug.Assert(usedObjects.Contains(obj));
+       // Debug.Assert(usedObjects.Contains(obj));
         obj.SetActive(false);
         usedObjects.Remove(obj);
         availableObjects.Add(obj);

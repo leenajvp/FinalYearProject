@@ -73,6 +73,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Map"",
+                    ""type"": ""Button"",
+                    ""id"": ""8de6ec8d-204c-4b9c-919b-f0faf45f4c3e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -196,6 +204,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Pause"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""865063fd-1db3-473e-b8c2-8f64955efcb6"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Map"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -211,6 +230,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
+        m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -267,6 +287,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Pause;
+    private readonly InputAction m_Player_Map;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -278,6 +299,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Shoot => m_Wrapper.m_Player_Shoot;
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
+        public InputAction @Map => m_Wrapper.m_Player_Map;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -308,6 +330,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Pause.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
                 @Pause.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
                 @Pause.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnPause;
+                @Map.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
+                @Map.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
+                @Map.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -333,6 +358,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Pause.started += instance.OnPause;
                 @Pause.performed += instance.OnPause;
                 @Pause.canceled += instance.OnPause;
+                @Map.started += instance.OnMap;
+                @Map.performed += instance.OnMap;
+                @Map.canceled += instance.OnMap;
             }
         }
     }
@@ -346,5 +374,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnShoot(InputAction.CallbackContext context);
         void OnInteract(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
+        void OnMap(InputAction.CallbackContext context);
     }
 }

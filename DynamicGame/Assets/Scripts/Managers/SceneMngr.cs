@@ -1,54 +1,59 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;
 using UnityEngine;
-using UnityEngine.InputSystem;
+using Player;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class SceneMngr : MonoBehaviour
 {
-    [SerializeField] private GameObject menu;
-    [SerializeField] private GameObject endGameMenu;
-    [SerializeField] private GameObject player;
+    [SerializeField] private GameObject gameOver;
+    [SerializeField] private GameObject newGameMenu;
     [SerializeField] private List<EnemyPools> checkPoints = new List<EnemyPools>();
+
+    private GameObject player;
+    private PlayerHealth pHealth;
+    private PlayerController pController;
 
     void Start()
     {
-        menu.SetActive(false);
-        Time.timeScale = 1;
-        Cursor.lockState = CursorLockMode.None;
+        pController = FindObjectOfType<PlayerController>();
+        pHealth = FindObjectOfType<PlayerHealth>();
+        player = pHealth.gameObject;
+
+        pController.PauseGame();
+        newGameMenu.SetActive(true);
+        gameOver.SetActive(false);
     }
 
     void Update()
     {
-        if (Time.timeScale == 0)
+        if (pHealth.currentHealth <= 0)
         {
-            menu.SetActive(true);
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-
-        else
-        {
-            menu.SetActive(false);
-            Cursor.lockState = CursorLockMode.Locked;
+            pController.PauseGame();
+            gameOver.SetActive(true);
         }
     }
 
     public void NewGame()
     {
+        pController.PauseGame();
         Time.timeScale = 1;
+        newGameMenu.SetActive(false);
         PlayerPrefs.SetInt("Progression", 0);
 
         foreach (EnemyPools checkPoint in checkPoints)
         {
-                    checkPoint.ResetEnemies();
+            checkPoint.ResetEnemies();
         }
 
     }
     public void Restart()
     {
+        pController.PauseGame();
         Time.timeScale = 1;
+        gameOver.SetActive(false);
 
         int progression = PlayerPrefs.GetInt("Progression");
 
@@ -56,7 +61,7 @@ public class SceneMngr : MonoBehaviour
         {
             for (int i = 0; i < checkPoints.Count; i++)
             {
-                if(checkPoints[i].checkPointID == progression)
+                if (checkPoints[i].checkPointID == progression)
                 {
                     player.transform.position = checkPoints[i].gameObject.transform.position;
                 }
@@ -67,6 +72,15 @@ public class SceneMngr : MonoBehaviour
                 }
             }
         }
-        
+
+    }
+
+    public void QuitGame()
+    {
+#if UNITY_EDITOR
+        EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
     }
 }

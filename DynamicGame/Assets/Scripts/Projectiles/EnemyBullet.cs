@@ -28,14 +28,8 @@ public class EnemyBullet : BulletController
 
             if(player != null)
             {
-                Debug.Log("Player hit");
                 player.currentHealth -= bulletDamange;
                 ddaManager.currentPHits++;
-            }
-
-            else
-            {
-                return;
             }
         }
     }

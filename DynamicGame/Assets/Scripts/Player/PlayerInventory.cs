@@ -1,27 +1,31 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
-namespace Player
+
+public class PlayerInventory : MonoBehaviour
 {
-    public class PlayerInventory : MonoBehaviour
+    public Image slotPrefab;
+    // private readonly List<ICodePiece> collectedObjects = new List<ICodePiece>();
+    public int bullets;
+    public int codes;
+    public List<ICodePiece> codePieces = new List<ICodePiece>();
+    public event EventHandler<InventoryEventArgs> ItemAdded;
+    [SerializeField]private InventoryHUD hud;
+
+    public void AddItem(ICodePiece item)
     {
-        public int bullets;
-        public List<GameObject> codePieces = new List<GameObject>();
+        Image slot = Instantiate(slotPrefab);
+        slot.transform.SetParent(hud.transform, false);
+        codePieces.Add(item);
+        codes = codePieces.Count;
+        //  item.Collect();
 
-
-        // Start is called before the first frame update
-        void Start()
+        if (ItemAdded != null)
         {
-            // player can collect bullets and exploration items
+            ItemAdded(this, new InventoryEventArgs(item));
         }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
-
-
     }
 }
+

@@ -27,6 +27,7 @@ public class ElectricLock : MonoBehaviour, Iinteractive
     public void SetUnAvailable()
     {
         playerController.interacting = false;
+        playerController.DisablePlayer();
         puzzle.SetActive(false);
 
         if(!keepAvailable)
@@ -39,12 +40,14 @@ public class ElectricLock : MonoBehaviour, Iinteractive
         {
             puzzle.SetActive(true);
             playerController.interacting = true;
+            playerController.DisablePlayer();
         }
 
         else
         {
             puzzle.SetActive(false);
             playerController.interacting = false;
+            playerController.DisablePlayer();
         }
     }
     public void Unlock()

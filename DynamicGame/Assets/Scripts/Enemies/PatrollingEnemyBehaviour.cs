@@ -26,15 +26,16 @@ namespace Enemies
             gameObject.transform.position = targets[0].position;
         }
 
-        void Update()
+        protected override void Update()
         {
+            base.Update();
             agent.speed = currentSpeed;
 
             switch (CurrentState)
             {
                 case EnemyState.Patrol:
 
-                    Raycasting();
+                    Raycast();
                     currentSpeed = data.walkingSpeed;
                     agent.isStopped = false;
                     if (playerFound)

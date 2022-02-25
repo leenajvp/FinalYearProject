@@ -2,6 +2,7 @@ using Bullets;
 using DDA;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Cinemachine;
 
 namespace Player
 {
@@ -34,6 +35,10 @@ namespace Player
         public bool availableInteraction = false;
         [SerializeField] private GameObject interactHUD;
 
+        [Header("UI")]
+        [SerializeField] private GameObject pauseMenu;
+        [SerializeField] private GameObject map;
+
         private Transform cameraTransform;
         private CharacterController controller;
         private PlayerInput playerInput;
@@ -41,8 +46,9 @@ namespace Player
         private InputAction lookAction;
         private InputAction jumpAction;
         private InputAction shootAction;
-        private InputAction interactAction;
+        public  InputAction interactAction;
         private InputAction pauseGame;
+        private InputAction openMap;
 
         private PlayerInventory inventory;
         private DDAManager ddaManager;
@@ -57,6 +63,7 @@ namespace Player
             shootAction = playerInput.actions["Shoot"];
             interactAction = playerInput.actions["Interact"];
             pauseGame = playerInput.actions["Pause"];
+            openMap = playerInput.actions["Map"];
 
 
             inventory = GetComponent<PlayerInventory>();
@@ -82,6 +89,8 @@ namespace Player
             cameraTransform = Camera.main.transform;
             currentSpeed = playerSpeed;
             interactHUD.SetActive(false);
+            map.SetActive(false);
+            pauseMenu.SetActive(false);
         }
 
         void Update()
@@ -89,26 +98,30 @@ namespace Player
             Interact();
             Jump();
             Move();
+          //  DisablePlayer();
+
+            // Check for GamePause and Map inputs
 
             if (pauseGame.triggered)
+            {
                 PauseGame();
 
-            if (interacting)
-            {
-                moveAction.Disable();
-                jumpAction.Disable();
-                lookAction.Disable();
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
+                if (pauseMenu.activeSelf)
+                    pauseMenu.SetActive(false);
+
+                else
+                    pauseMenu.SetActive(true);
             }
 
-            else
+            if (openMap.triggered)
             {
-                moveAction.Enable();
-                jumpAction.Enable();
-                lookAction.Enable();
-                Cursor.visible = false;
-                Cursor.lockState = CursorLockMode.Locked;
+                PauseGame();
+
+                if (map.activeSelf)
+                    map.SetActive(false);
+
+                else
+                    map.SetActive(true);
             }
         }
 
@@ -145,30 +158,60 @@ namespace Player
 
         private void Shoot()
         {
-            // ddaManager.ManageEnemyHealth();
-            ddaManager.currentsShots++;
-
-            muzzleFlash.Play();
-
-            RaycastHit hit;
-            GameObject newBullet = bulletPool.GetObject();
-            newBullet.transform.position = shootPoint.position;
-            newBullet.transform.rotation = shootPoint.rotation;
-            newBullet.SetActive(true);
-            BulletController bulletController = newBullet.GetComponent<BulletController>();
-
-            if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
+            if (inventory.bullets > 0)
             {
-                bulletController.target = hit.point;
-                bulletController.hit = true;
-                var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                Destroy(newImpact, 0.6f);
+                inventory.bullets--;
+                ddaManager.currentsShots++;
+
+                muzzleFlash.Play();
+
+                RaycastHit hit;
+                GameObject newBullet = bulletPool.GetObject();
+                newBullet.transform.position = shootPoint.position;
+                newBullet.transform.rotation = shootPoint.rotation;
+                newBullet.SetActive(true);
+                BulletController bulletController = newBullet.GetComponent<BulletController>();
+
+                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
+                {
+                    bulletController.target = hit.point;
+                    bulletController.hit = true;
+                    var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                    Destroy(newImpact, 0.6f);
+                }
+
+                else
+                {
+                    bulletController.target = cameraTransform.position + cameraTransform.forward * 25;
+                    bulletController.hit = false;
+                }
+            }
+            // ddaManager.ManageEnemyHealth();
+
+        }
+
+        public void DisablePlayer()
+        {
+            if (interacting)
+            {
+                Camera.main.GetComponent<CinemachineBrain>().enabled = false;
+                moveAction.Disable();
+                jumpAction.Disable();
+                lookAction.Disable();
+                shootAction.Disable();
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
             }
 
             else
             {
-                bulletController.target = cameraTransform.position + cameraTransform.forward * 25;
-                bulletController.hit = false;
+                Camera.main.GetComponent<CinemachineBrain>().enabled = true;
+                moveAction.Enable();
+                jumpAction.Enable();
+                lookAction.Enable();
+                shootAction.Enable();
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
             }
         }
 
@@ -180,6 +223,7 @@ namespace Player
             if (Physics.Raycast(transform.position, transform.forward, out hit, rayDetectionDistance))
             {
                 Iinteractive interactive = hit.collider.gameObject.GetComponent<Iinteractive>();
+                ICollectable collectable = hit.collider.gameObject.GetComponent<ICollectable>();
 
                 if (interactive != null && interactive.available)
                 {
@@ -191,12 +235,32 @@ namespace Player
                     }
                 }
 
+                else if (collectable != null && collectable.isInventoryItem)
+                {
+                    interactHUD.SetActive(true);
+                    ICodePiece code = hit.collider.gameObject.GetComponent<ICodePiece>();
+
+                    if (interactAction.triggered)
+                    {
+                        interactHUD.SetActive(false);
+                        collectable.collected = true;
+                        inventory.AddItem(code);
+                    }
+                }
+
                 else
                 {
                     interactHUD.SetActive(false);
                     return;
                 }
             }
+
+            else if (hit.collider == null)
+            {
+                interactHUD.SetActive(false);
+                return;
+            }
+                
         }
 
         // Add push force to controller
@@ -209,13 +273,12 @@ namespace Player
                 rb.velocity = hit.moveDirection * pushForce;
             }
 
-            BulletCollectable bullets = hit.gameObject.GetComponent<BulletCollectable>();
+            BulletCollectable cBullet = hit.gameObject.GetComponent<BulletCollectable>();
 
-            if (bullets != null)
+            if (cBullet != null)
             {
-                Debug.Log("bullets");
-                inventory.bullets += bullets.numberOfBullets;
-                bullets.gameObject.SetActive(false);
+                inventory.bullets += cBullet.numberOfBullets;
+                cBullet.gameObject.SetActive(false);
             }
         }
 
@@ -224,18 +287,22 @@ namespace Player
             return transform.position;
         }
 
-        private void PauseGame()
+        public void PauseGame()
         {
             if (Time.timeScale == 1)
             {
                 interacting = true;
                 Time.timeScale = 0;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
 
             else
             {
                 interacting = false;
                 Time.timeScale = 1;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
             }
 
         }

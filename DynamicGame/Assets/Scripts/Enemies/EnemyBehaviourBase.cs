@@ -5,6 +5,7 @@ using UnityEngine.AI;
 
 namespace Enemies
 {
+    [RequireComponent(typeof(SphereCollider))]
     public class EnemyBehaviourBase : MonoBehaviour
     {
         public EnemyData data;
@@ -16,7 +17,10 @@ namespace Enemies
         [Tooltip("Raycast distance when player is detected.")]
         [SerializeField] protected float detectionDistance = 10f;
         protected Collider[] colliders;
+        public bool playerNear = false;
         public bool playerFound = false;
+
+        protected SphereCollider collider;
 
         [Header("Shooting")]
         [Tooltip("Position to shoot bullet from")]
@@ -32,7 +36,13 @@ namespace Enemies
         protected RaycastHit hit;
         protected PatrollingEnemyBehaviour enemyBehaviour;
 
-        // Start is called before the first frame update
+        private void Awake()
+        {
+            collider = GetComponent<SphereCollider>();
+            collider.isTrigger = true;
+            collider.radius = detectionRadius;
+        }
+
         protected virtual void Start()
         {
             name = data.enemyName;
@@ -50,31 +60,46 @@ namespace Enemies
 
         }
 
-        protected virtual void Raycasting()
+        protected virtual void Update()
         {
-            
-            foreach (var col in colliders)
+            collider.radius = detectionRadius;
+        }
+
+        protected void OnTriggerEnter(Collider other)
+        {
+            if (other.gameObject == player)
             {
-                IPlayer player = col.gameObject.GetComponent<IPlayer>();
+                playerNear = true;
+            }
+        }
 
-                if (player != null)
+        protected void OnTriggerExit(Collider other)
+        {
+            if (other.gameObject == player)
+            {
+                playerNear = false;
+            }
+        }
+
+        protected void Raycast()
+        {
+            if (playerNear)
+            {
+                if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
                 {
-                    if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
-                    {
-                        CheckRaycastHit();
-                    }
+                    CheckRaycastHit();
+                }
 
-                    if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
-                    {
-                        Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
-                        CheckRaycastHit();
-                    }
+                if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
+                {
+                    Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
+                    CheckRaycastHit();
+                }
 
-                    if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
-                    {
-                        Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
-                        CheckRaycastHit();
-                    }
+                if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
+                {
+                    Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
+                    CheckRaycastHit();
                 }
             }
         }
@@ -103,7 +128,6 @@ namespace Enemies
             }
 
             //Maintain distance
-
             else if (distance <= data.retreatDistance)
             {
                 transform.position = Vector3.MoveTowards(transform.position, player.transform.position, -data.walkingSpeed * Time.deltaTime);
@@ -165,5 +189,36 @@ namespace Enemies
                 //enemies.CurrentState = EnemyState.PlayerSeen;
             }
         }
+
+
+        //protected virtual void Raycasting()
+        //{
+        //    foreach (var col in colliders)
+        //    {
+        //        IPlayer player = col.gameObject.GetComponent<IPlayer>();
+
+        //        if (player != null)
+        //        {
+        //            Debug.Log("playerin col");
+
+        //            if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
+        //            {
+        //                CheckRaycastHit();
+        //            }
+
+        //            if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
+        //            {
+        //                Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
+        //                CheckRaycastHit();
+        //            }
+
+        //            if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
+        //            {
+        //                Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
+        //                CheckRaycastHit();
+        //            }
+        //        }
+        //    }
+        //}
     }
 }
