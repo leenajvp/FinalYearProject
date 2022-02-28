@@ -11,6 +11,10 @@ namespace Enemies
         public GameObject prefab;
         public float walkingSpeed = 3f, runningSpeed = 5f;
 
+        [Header("Player Detection")]
+        public float detectionRadius = 20f;
+        public float detectionRayDistance = 20f;
+
         [Header("Enemy Attack Settings")]
         public int bulletDamage = 1;
         public float shootDistance = 8f, lostDistance = 20f, retreatDistance = 5f;

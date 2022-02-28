@@ -45,7 +45,7 @@ namespace Player
             if (cHealth != null)
             {
                 currentHealth += cHealth.numberOfHealth;
-                cHealth.gameObject.SetActive(false);
+                cHealth.Collect();
             }
         }
 

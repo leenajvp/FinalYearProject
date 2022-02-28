@@ -278,7 +278,7 @@ namespace Player
             if (cBullet != null)
             {
                 inventory.bullets += cBullet.numberOfBullets;
-                cBullet.gameObject.SetActive(false);
+                cBullet.Collect();
             }
         }
 

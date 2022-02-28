@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Player;
+using UnityEngine;
 
 public class CollectableBase : MonoBehaviour, ICollectable
 {
@@ -12,11 +10,13 @@ public class CollectableBase : MonoBehaviour, ICollectable
 
     protected PlayerController playerController;
     protected Transform player;
+    protected float uiYPos;
 
     protected virtual void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
         player = playerController.transform;
+        uiYPos = transform.position.y + 0.3f;
     }
 
     protected virtual void Update()
@@ -26,13 +26,28 @@ public class CollectableBase : MonoBehaviour, ICollectable
 
         if (distance < detectionDistance && !collected)
         {
-            itemUI.enabled = true;
-            itemUI.transform.forward = Camera.main.transform.forward;
+            ActivateUI();
         }
 
-        else
-        {
+        else if (distance > detectionDistance && distance < detectionDistance + 3)
             itemUI.enabled = false;
-        }
+    }
+
+    public void Collect()
+    {
+        itemUI.enabled = false;
+        gameObject.SetActive(false);
+    }
+
+    protected virtual void ActivateUI()
+    {
+        itemUI.transform.position = new Vector3(transform.position.x, uiYPos, transform.position.z);
+        itemUI.enabled = true;
+        itemUI.transform.forward = Camera.main.transform.forward;
+    }
+
+    protected virtual void DeactivateUI()
+    {
+        itemUI.enabled = false;
     }
 }

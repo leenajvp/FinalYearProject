@@ -62,7 +62,7 @@ namespace Enemies
 
         protected virtual void Update()
         {
-            collider.radius = detectionRadius;
+            collider.radius = data.detectionRadius;
         }
 
         protected void OnTriggerEnter(Collider other)
@@ -112,14 +112,21 @@ namespace Enemies
             {
                 playerFound = true;
             }
+
+            else
+                playerFound = false;
         }
 
         protected virtual void FollowPlayer()
         {
+            currentSpeed = data.runningSpeed;
+
             //Get distance to player and maintain rotation towards
-            var distance = Vector3.Distance(transform.position, player.transform.position);
+            agent.isStopped = true;
+            var distance = Vector3.Distance(player.transform.position,transform.position);
             Quaternion lookRotation = Quaternion.LookRotation((player.transform.position - transform.position).normalized);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime);
+
 
             if (distance <= data.shootDistance && distance >= data.retreatDistance)
             {
@@ -127,21 +134,23 @@ namespace Enemies
                 ShootPlayer();
             }
 
-            //Maintain distance
+            ////Maintain distance
             else if (distance <= data.retreatDistance)
             {
                 transform.position = Vector3.MoveTowards(transform.position, player.transform.position, -data.walkingSpeed * Time.deltaTime);
+
             }
 
+            // Return to default state if player is lost
             else if (distance >= data.lostDistance)
             {
-                // CurrentState = EnemyState.Patrol;
-                // set up a boolean that player is not seen so enemy can return to their idle behaviour?
+                playerFound = false;
             }
 
             else
             {
-                transform.position = Vector3.MoveTowards(transform.position, player.transform.position, data.walkingSpeed * Time.deltaTime);
+                agent.isStopped = false;
+                agent.destination = player.transform.position;
             }
         }
 

@@ -36,27 +36,38 @@ namespace Enemies
                 case EnemyState.Patrol:
 
                     Raycast();
-                    currentSpeed = data.walkingSpeed;
+                    agent.speed = data.walkingSpeed;
                     agent.isStopped = false;
-                    if (playerFound)
-                        CurrentState = EnemyState.PlayerSeen;
 
                     if (!agent.pathPending && agent.remainingDistance < 0.5f)
                         Patrolling();
+
+                    if (playerFound)
+                    {
+                        CurrentState = EnemyState.PlayerSeen;
+                    }
 
                     break;
 
                 case EnemyState.PlayerSeen:
 
-                    FollowPlayer();
-                    currentSpeed = data.runningSpeed;
+                        FollowPlayer();
+
+                    if (!playerNear)
+                    {
+                        agent.destination = targets[0].position;
+                        CurrentState = EnemyState.Patrol;
+                    }
+
 
                     break;
 
                 case EnemyState.ShootPlayer:
 
                     FollowPlayer();
-                    currentSpeed = data.runningSpeed;
+
+                        
+
 
                     break;
 
@@ -75,12 +86,8 @@ namespace Enemies
         //Patrol between set points when player is not detected
         private void Patrolling()
         {
-
-
-
             agent.destination = targets[destinationTarget].position;
             destinationTarget = (destinationTarget + 1) % targets.Length;
-
         }
 
     }
