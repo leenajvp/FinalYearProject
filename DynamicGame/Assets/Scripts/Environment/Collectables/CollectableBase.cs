@@ -1,13 +1,17 @@
 using Player;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CollectableBase : MonoBehaviour, ICollectable
 {
-    [SerializeField] protected Canvas itemUI;
     [SerializeField] protected float detectionDistance = 6f;
+
+    [Header("Ite Spatial UI")]
+    [Tooltip("The canvas to be activated")]
+    [SerializeField] protected Canvas itemUICanvas;
+
     public bool isInventoryItem { get; set; }
     public bool collected { get; set; }
-
     protected PlayerController playerController;
     protected Transform player;
     protected float uiYPos;
@@ -16,7 +20,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
     {
         playerController = FindObjectOfType<PlayerController>();
         player = playerController.transform;
-        uiYPos = transform.position.y + 0.3f;
+        uiYPos = transform.position.y + 0.4f;
     }
 
     protected virtual void Update()
@@ -30,24 +34,25 @@ public class CollectableBase : MonoBehaviour, ICollectable
         }
 
         else if (distance > detectionDistance && distance < detectionDistance + 3)
-            itemUI.enabled = false;
+            itemUICanvas.enabled = false;
     }
 
     public void Collect()
     {
-        itemUI.enabled = false;
+        itemUICanvas.enabled = false;
         gameObject.SetActive(false);
     }
 
     protected virtual void ActivateUI()
     {
-        itemUI.transform.position = new Vector3(transform.position.x, uiYPos, transform.position.z);
-        itemUI.enabled = true;
-        itemUI.transform.forward = Camera.main.transform.forward;
+
+        itemUICanvas.transform.position = new Vector3(transform.position.x, uiYPos, transform.position.z);
+        itemUICanvas.enabled = true;
+        itemUICanvas.transform.forward = Camera.main.transform.forward;
     }
 
     protected virtual void DeactivateUI()
     {
-        itemUI.enabled = false;
+        itemUICanvas.enabled = false;
     }
 }

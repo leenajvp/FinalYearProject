@@ -38,17 +38,6 @@ namespace Player
             }
         }
 
-        private void OnControllerColliderHit(ControllerColliderHit hit)
-        {
-            HealthCollectable cHealth = hit.gameObject.GetComponent<HealthCollectable>();
-
-            if (cHealth != null)
-            {
-                currentHealth += cHealth.numberOfHealth;
-                cHealth.Collect();
-            }
-        }
-
         private void OnCollisionEnter(Collision collision)
         {
            // EnemyBullet eBullet = hit.collider.GetComponent<EnemyBullet>();

@@ -7,7 +7,7 @@ using Cinemachine;
 namespace Player
 {
     [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(CharacterController))]
-    [RequireComponent(typeof(PlayerInventory))]
+    [RequireComponent(typeof(PlayerInventory), typeof (PlayerHealth))]
 
     public class PlayerController : MonoBehaviour, IPlayer
     {
@@ -52,6 +52,7 @@ namespace Player
 
         private PlayerInventory inventory;
         private DDAManager ddaManager;
+        private PlayerHealth pHealth;
 
         private void Awake()
         {
@@ -65,7 +66,7 @@ namespace Player
             pauseGame = playerInput.actions["Pause"];
             openMap = playerInput.actions["Map"];
 
-
+            pHealth = GetComponent<PlayerHealth>();
             inventory = GetComponent<PlayerInventory>();
 
             if (ddaManager == null)
@@ -273,12 +274,21 @@ namespace Player
                 rb.velocity = hit.moveDirection * pushForce;
             }
 
-            BulletCollectable cBullet = hit.gameObject.GetComponent<BulletCollectable>();
+            GeneralCollectable collectable = hit.gameObject.GetComponent<GeneralCollectable>();
 
-            if (cBullet != null)
+            if (collectable != null)
             {
-                inventory.bullets += cBullet.numberOfBullets;
-                cBullet.Collect();
+                if(collectable.type == GeneralCollectable.CollectableType.Bullets)
+                {
+                    inventory.bullets += collectable.quantity;
+                }
+
+                else
+                {
+                    pHealth.currentHealth += collectable.quantity;
+                }
+
+                collectable.Collect();
             }
         }
 
