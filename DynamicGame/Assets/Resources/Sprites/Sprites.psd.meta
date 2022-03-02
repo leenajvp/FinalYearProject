@@ -4,7 +4,7 @@ TextureImporter:
   internalIDToNameTable:
   - first:
       213: 4773600122041589604
-    second: bullet
+    second: screwDriver
   - first:
       213: -4789670105439411607
     second: redLock
@@ -115,12 +115,12 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: bullet
+      name: screwDriver
       rect:
         serializedVersion: 2
-        x: 61
+        x: 18
         y: 787
-        width: 58
+        width: 136
         height: 96
       alignment: 0
       pivot: {x: 0.5, y: 0.5}

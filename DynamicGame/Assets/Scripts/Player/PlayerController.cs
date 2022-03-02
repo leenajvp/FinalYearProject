@@ -232,14 +232,14 @@ namespace Player
 
                     if (interactAction.triggered)
                     {
-                        interactive.GetPuzzle();
+                        interactive.GetInteraction();
                     }
                 }
 
                 else if (collectable != null && collectable.isInventoryItem)
                 {
                     interactHUD.SetActive(true);
-                    ICodePiece code = hit.collider.gameObject.GetComponent<ICodePiece>();
+                    IQuestItems code = hit.collider.gameObject.GetComponent<IQuestItems>();
 
                     if (interactAction.triggered)
                     {

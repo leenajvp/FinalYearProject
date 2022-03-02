@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Shootable
   - Environment
+  - Enemy
+  - NPC
   layers:
   - Default
   - TransparentFX

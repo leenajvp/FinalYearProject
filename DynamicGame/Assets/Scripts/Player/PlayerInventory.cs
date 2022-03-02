@@ -6,15 +6,16 @@ using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
 {
+    
     public Image slotPrefab;
     // private readonly List<ICodePiece> collectedObjects = new List<ICodePiece>();
     public int bullets;
     public int codes;
-    public List<ICodePiece> codePieces = new List<ICodePiece>();
+    public List<IQuestItems> codePieces = new List<IQuestItems>();
     public event EventHandler<InventoryEventArgs> ItemAdded;
     [SerializeField]private InventoryHUD hud;
 
-    public void AddItem(ICodePiece item)
+    public void AddItem(IQuestItems item)
     {
         Image slot = Instantiate(slotPrefab);
         slot.transform.SetParent(hud.transform, false);

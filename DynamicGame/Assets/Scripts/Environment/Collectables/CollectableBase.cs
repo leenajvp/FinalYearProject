@@ -20,7 +20,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
     {
         playerController = FindObjectOfType<PlayerController>();
         player = playerController.transform;
-        uiYPos = transform.position.y + 0.4f;
+        collected = false;
     }
 
     protected virtual void Update()
@@ -29,10 +29,8 @@ public class CollectableBase : MonoBehaviour, ICollectable
         float distance = Vector3.Distance(transform.position, playerPos);
 
         if (distance < detectionDistance && !collected)
-        {
             ActivateUI();
-        }
-
+        
         else if (distance > detectionDistance && distance < detectionDistance + 3)
             itemUICanvas.enabled = false;
     }
@@ -45,7 +43,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
 
     protected virtual void ActivateUI()
     {
-
+        uiYPos = transform.position.y + 0.4f;
         itemUICanvas.transform.position = new Vector3(transform.position.x, uiYPos, transform.position.z);
         itemUICanvas.enabled = true;
         itemUICanvas.transform.forward = Camera.main.transform.forward;

@@ -26,7 +26,7 @@ namespace Enemies
         protected override void Start()
         {
             base.Start();
-            gameObject.transform.position = targets[0].position;
+           // gameObject.transform.position = targets[0].position;
         }
 
         protected override void Update()

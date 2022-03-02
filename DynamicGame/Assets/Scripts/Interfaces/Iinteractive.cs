@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface Iinteractive
 {
-    public void GetPuzzle();
+    public void GetInteraction();
     public bool available { get; set; }
 }

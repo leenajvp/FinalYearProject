@@ -30,7 +30,8 @@ namespace Enemies
         [SerializeField] protected ParticleSystem muzzleFlash;
         [SerializeField] protected ParticleSystem impactEffect;
         protected float shootTimer = 0f;
-
+        protected float distance;
+        protected Vector3 playerPos;
         protected float currentSpeed;
         protected NavMeshAgent agent;
         protected RaycastHit hit;
@@ -38,9 +39,9 @@ namespace Enemies
 
         private void Awake()
         {
-            collider = GetComponent<SphereCollider>();
-            collider.isTrigger = true;
-            collider.radius = detectionRadius;
+           // collider = GetComponent<SphereCollider>();
+           // collider.isTrigger = true;
+            //collider.radius = detectionRadius;
         }
 
         protected virtual void Start()
@@ -62,24 +63,33 @@ namespace Enemies
 
         protected virtual void Update()
         {
-            collider.radius = data.detectionRadius;
-        }
+           // collider.radius = data.detectionRadius;
 
-        protected void OnTriggerEnter(Collider other)
-        {
-            if (other.gameObject == player)
-            {
+             playerPos = player.transform.position;
+             distance = Vector3.Distance(transform.position, playerPos);
+
+            if (distance < detectionRadius)
                 playerNear = true;
-            }
+
+            else
+                playerNear = false;
         }
 
-        protected void OnTriggerExit(Collider other)
-        {
-            if (other.gameObject == player)
-            {
-                playerNear = false;
-            }
-        }
+        //protected void OnTriggerEnter(Collider other)
+        //{
+        //    if (other.gameObject == player)
+        //    {
+        //        playerNear = true;
+        //    }
+        //}
+
+        //protected void OnTriggerExit(Collider other)
+        //{
+        //    if (other.gameObject == player)
+        //    {
+        //        playerNear = false;
+        //    }
+        //}
 
         protected void Raycast()
         {
@@ -123,7 +133,7 @@ namespace Enemies
 
             //Get distance to player and maintain rotation towards
             agent.isStopped = true;
-            var distance = Vector3.Distance(player.transform.position,transform.position);
+           // var distance = Vector3.Distance(player.transform.position,transform.position);
             Quaternion lookRotation = Quaternion.LookRotation((player.transform.position - transform.position).normalized);
             transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime);
 

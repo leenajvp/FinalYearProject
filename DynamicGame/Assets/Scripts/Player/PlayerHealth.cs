@@ -40,7 +40,7 @@ namespace Player
 
         private void OnCollisionEnter(Collision collision)
         {
-           // EnemyBullet eBullet = hit.collider.GetComponent<EnemyBullet>();
+            //EnemyBullet eBullet = hit.collider.GetComponent<EnemyBullet>();
 
             //if (collision.gameObject == gameObject.GetComponent<EnemyBullet>())
             //{
