@@ -12,7 +12,7 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Camera
   - Water
   - UI
   - Environment
@@ -21,7 +21,7 @@ TagManager:
   - Ground
   - Postprocessing
   - MiniMap
-  - 
+  - Objects
   - 
   - 
   - 

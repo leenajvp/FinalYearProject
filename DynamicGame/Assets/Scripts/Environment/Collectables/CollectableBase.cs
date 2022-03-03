@@ -35,7 +35,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
             itemUICanvas.enabled = false;
     }
 
-    public void Collect()
+    public virtual void Collect()
     {
         itemUICanvas.enabled = false;
         gameObject.SetActive(false);

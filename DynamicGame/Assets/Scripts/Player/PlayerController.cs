@@ -99,7 +99,6 @@ namespace Player
             Interact();
             Jump();
             Move();
-          //  DisablePlayer();
 
             // Check for GamePause and Map inputs
 
@@ -239,13 +238,13 @@ namespace Player
                 else if (collectable != null && collectable.isInventoryItem)
                 {
                     interactHUD.SetActive(true);
-                    IQuestItems code = hit.collider.gameObject.GetComponent<IQuestItems>();
+                    IQuestItems qItem = hit.collider.gameObject.GetComponent<IQuestItems>();
 
                     if (interactAction.triggered)
                     {
                         interactHUD.SetActive(false);
                         collectable.collected = true;
-                        inventory.AddItem(code);
+                        inventory.AddItem(qItem);
                     }
                 }
 

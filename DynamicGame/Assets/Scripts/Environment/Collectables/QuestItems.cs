@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
+using System.Collections;
 
 public class QuestItems : CollectableBase, IQuestItems
 {
@@ -19,6 +21,9 @@ public class QuestItems : CollectableBase, IQuestItems
     [Header("Sprite in Inventory")]
     [SerializeField] private Sprite image = null;
     [HideInInspector] public bool inInventory = false;
+
+
+    protected float shootTimer = 0f;
     public Sprite setImage { get { return image; } }
     public string name { get { return ObjectName; } }
 
@@ -33,6 +38,12 @@ public class QuestItems : CollectableBase, IQuestItems
     {
         base.Update();
         CheckStatus();
+
+
+        //if (playerController.interactAction.triggered)
+        //{
+        //    Debug.Log("triggered");
+        //}
     }
 
     private void CheckStatus()
@@ -41,21 +52,30 @@ public class QuestItems : CollectableBase, IQuestItems
         {
             BringObjectToCam();
 
-            if (playerController.interactAction.triggered)
-            {
-                MoveToInventory();
-            }
+            //Unity input actions trigger multiple times... IEnumerator as workaround for now
+            StartCoroutine(status());
         }
     }
 
+    private IEnumerator status()
+    {
+        yield return new WaitForSeconds(1);
+        if (playerController.interactAction.triggered)
+        {
+            Debug.Log("triggered");
+            MoveToInventory();
+        }
+    }
+
+    // When player triggers collected, object moves to centre of camera for inspection
     protected virtual void BringObjectToCam()
     {
-        // When player triggers collected, object moves to centre of camera for inspection
-        pieceInformation.text = itemInfo;
         playerController.interacting = true;
-        playerController.DisablePlayer();
+        //set UI
         itemUICanvas.enabled = false;
+        pieceInformation.text = itemInfo;
         informationPanel.SetActive(true);
+        // Move object to camera and rotate to look towards
         Vector3 displayPoint = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, Camera.main.nearClipPlane + displayDistance));
         transform.position = Vector3.Lerp(transform.position, displayPoint, moveToCamSpeed * Time.timeScale);
         transform.LookAt(Camera.main.transform.position);
