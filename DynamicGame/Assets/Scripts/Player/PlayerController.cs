@@ -160,6 +160,7 @@ namespace Player
         {
             if (inventory.bullets > 0)
             {
+                
                 inventory.bullets--;
                 ddaManager.currentsShots++;
 
@@ -289,11 +290,6 @@ namespace Player
 
                 collectable.Collect();
             }
-        }
-
-        public Vector3 GetPosition()
-        {
-            return transform.position;
         }
 
         public void PauseGame()

@@ -13,15 +13,15 @@ public class GuardRadiusHandle : Editor
     }
 }
 
-[CustomEditor(typeof(StillEnemy))]
-public class StillEnemy : Editor
-{
-    //private void OnSceneGUI()
-    //{
-    //    Handles.color = Color.red;
-    //    StillEnemy enemy = (StillEnemy)target;
-    //    Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.detectionRadius);
-    //}
-}
+//[CustomEditor(typeof(GuardingEnemy))]
+//public class GuardingEnemy : Editor
+//{
+//    private void OnSceneGUI()
+//    {
+//        Handles.color = Color.red;
+//        GuardingEnemy enemy = (GuardingEnemy)target;
+//        Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.detectionRadius);
+//    }
+//}
 
 

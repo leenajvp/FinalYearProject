@@ -17,7 +17,9 @@ MonoBehaviour:
   prefab: {fileID: 6085086730759123922, guid: d29aa3590431dfc48ae18cb0341c7669, type: 3}
   walkingSpeed: 3
   runningSpeed: 7
-  bulletDamage: 0
+  detectionRadius: 20
+  detectionRayDistance: 20
+  bulletDamage: 1
   shootDistance: 5
   lostDistance: 20
   retreatDistance: 3

@@ -34,10 +34,9 @@ namespace Enemies
             switch (CurrentState)
             {
                 case EnemyState.Patrol:
-
-                    Raycast();
                     agent.speed = data.walkingSpeed;
                     agent.isStopped = false;
+                    Raycast();
 
                     if (!agent.pathPending && agent.remainingDistance < 0.5f)
                         Patrolling();
@@ -65,9 +64,6 @@ namespace Enemies
                 case EnemyState.ShootPlayer:
 
                     FollowPlayer();
-
-                        
-
 
                     break;
 

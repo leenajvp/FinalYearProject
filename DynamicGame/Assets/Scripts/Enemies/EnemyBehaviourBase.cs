@@ -35,19 +35,11 @@ namespace Enemies
         protected float currentSpeed;
         protected NavMeshAgent agent;
         protected RaycastHit hit;
-        protected PatrollingEnemyBehaviour enemyBehaviour;
 
-        private void Awake()
-        {
-           // collider = GetComponent<SphereCollider>();
-           // collider.isTrigger = true;
-            //collider.radius = detectionRadius;
-        }
 
         protected virtual void Start()
         {
             name = data.enemyName;
-            enemyBehaviour = GetComponent<PatrollingEnemyBehaviour>();
             colliders = Physics.OverlapSphere(transform.position, detectionRadius);
             agent = GetComponent<NavMeshAgent>();
             agent.autoBraking = false;
@@ -74,22 +66,6 @@ namespace Enemies
             else
                 playerNear = false;
         }
-
-        //protected void OnTriggerEnter(Collider other)
-        //{
-        //    if (other.gameObject == player)
-        //    {
-        //        playerNear = true;
-        //    }
-        //}
-
-        //protected void OnTriggerExit(Collider other)
-        //{
-        //    if (other.gameObject == player)
-        //    {
-        //        playerNear = false;
-        //    }
-        //}
 
         protected void Raycast()
         {
@@ -166,7 +142,7 @@ namespace Enemies
 
         protected virtual void ShootPlayer()
         {
-            if (Time.time < shootTimer + enemyBehaviour.data.shootSpeed)
+            if (Time.time < shootTimer + data.shootSpeed)
                 return;
 
             muzzleFlash.Play();
