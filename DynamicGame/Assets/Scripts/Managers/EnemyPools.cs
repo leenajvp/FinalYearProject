@@ -13,35 +13,13 @@ public class EnemyPools : MonoBehaviour
 
     private void Start()
     {
-        enemies = enemyPool.Count; 
+        //enemies = enemyPool.Count;
+        enemies = transform.childCount;
     }
 
     void Update()
     {
-UpdateEnemies();
         UpdateProgress();
-
-    }
-
-    private void UpdateEnemies()
-    {
-        foreach (EnemyHealth enemy in enemyPool)
-        {
-            for(int i = 0; i <= enemies; i++)
-            {
-                if (enemy.currentHealth <= 0 && enemy.gameObject.activeInHierarchy)
-                {
-                    //enemy.gameObject.SetActive(false);
-                    defeats++;
-                    return;
-                }
-            }
-
-        }
-
-       
-
-        //Debug.Log(PlayerPrefs.GetInt("Progression"));
     }
 
     private void UpdateProgress()
@@ -50,7 +28,7 @@ UpdateEnemies();
         {
             if(enemyPool[i].currentHealth <= 0)
             {
-                //defeats++;
+                defeats++;
 
                 if(defeats >= enemies)
                 {

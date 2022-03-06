@@ -18,13 +18,13 @@ public class EnemyBullet : BulletController
         ddaManager = FindObjectOfType<DDAManager>();
     }
 
-    protected override void OnCollisionEnter(Collision collision)
+    protected override void OnTriggerEnter(Collider other)
     {
-        base.OnCollisionEnter(collision);
+        base.OnTriggerEnter(other);
 
-        if(collision != null)
+        if(other != null)
         {
-            PlayerHealth player = collision.gameObject.GetComponent<PlayerHealth>();
+            PlayerHealth player = other.gameObject.GetComponent<PlayerHealth>();
 
             if(player != null)
             {

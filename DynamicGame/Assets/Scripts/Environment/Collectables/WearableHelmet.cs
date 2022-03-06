@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(QuestItems))]
 public class WearableHelmet : MonoBehaviour
 {
+    [Tooltip("Player's helmet mesh that will change material")]
     [SerializeField] private GameObject playerHelmet;
-    [SerializeField] private GameObject thisHelmet;
     private Color helmetColor;
     private Renderer pRenderer;
     private QuestItems qItem;
@@ -14,8 +12,8 @@ public class WearableHelmet : MonoBehaviour
     private void Start()
     {
         qItem = GetComponent<QuestItems>();
-        helmetColor = thisHelmet.GetComponent<Renderer>().material.color;
-        pRenderer = playerHelmet.GetComponent<Renderer>();   
+        helmetColor = GetComponent<Renderer>().material.color;
+        pRenderer = playerHelmet.GetComponent<Renderer>();
     }
 
     private void Update()

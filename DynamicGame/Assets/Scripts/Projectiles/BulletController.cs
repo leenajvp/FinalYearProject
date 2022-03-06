@@ -31,7 +31,7 @@ namespace Bullets {
             }
         }
 
-        protected virtual void OnCollisionEnter(Collision collision)
+        protected virtual void OnTriggerEnter(Collider other)
         {
             pool.ReturnObject(gameObject);
         }

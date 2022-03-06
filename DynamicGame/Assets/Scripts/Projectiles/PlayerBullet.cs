@@ -17,15 +17,15 @@ public class PlayerBullet : BulletController
         ddaManager = FindObjectOfType<DDAManager>();
     }
 
-    protected override void OnCollisionEnter(Collision collision)
+    protected override void OnTriggerEnter(Collider other)
     {
-        base.OnCollisionEnter(collision);
+        base.OnTriggerEnter(other);
 
-        if(collision != null)
+        if (other != null)
         {
-            EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
+            EnemyHealth enemy = other.gameObject.GetComponent<EnemyHealth>();
 
-            if(enemy != null)
+            if (enemy != null)
             {
                 enemy.currentHealth -= bulletDamange;
                 ddaManager.currentEHits++;

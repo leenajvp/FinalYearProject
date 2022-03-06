@@ -1,11 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
-using System;
-using UnityEngine;
 using DDA;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using UnityEngine;
 
 public class EnemyHealth : MonoBehaviour
 {
@@ -26,45 +20,20 @@ public class EnemyHealth : MonoBehaviour
 
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if(currentHealth <= 0)
+        if (currentHealth <= 0)
         {
             ddaManager.currentKills++;
 
             if (spawnObject)
             {
-                // -- BUG -- object collection on instantiate
-                //Instantiate(objectToSpawn, transform.position, objectToSpawn.transform.rotation);
-                // Temp solution
-                objectToSpawn.transform.position = transform.position;
-                objectToSpawn.SetActive(true);
+                Instantiate(objectToSpawn, transform.position, objectToSpawn.transform.rotation);
                 gameObject.SetActive(false);
             }
 
             else
-            gameObject.SetActive(false);
+                gameObject.SetActive(false);
         }
     }
-
-    //Custom editor for obejct spawn on death
-//#if UNITY_EDITOR
-//    [CustomEditor(typeof(EnemyHealth))]
-//    public class EnemyHealthEditor : Editor
-//    {
-//        public override void OnInspectorGUI()
-//        {
-//            DrawDefaultInspector();
-
-//            EnemyHealth script = (EnemyHealth)target;
-
-//            script.spawnObject = EditorGUILayout.Toggle("Spawn Object", script.spawnObject);
-//            if (script.spawnObject)
-//            {
-//                script.objectToSpawn = EditorGUILayout.ObjectField("Object to Spawn", script.objectToSpawn, typeof(GameObject), true) as GameObject;
-//            }
-//        }
-//    }
-//#endif
 }

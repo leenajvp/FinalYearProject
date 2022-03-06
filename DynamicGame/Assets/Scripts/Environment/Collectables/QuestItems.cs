@@ -1,29 +1,27 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
-using System.Collections;
 
 public class QuestItems : CollectableBase, IQuestItems
 {
     [SerializeField] private string ObjectName = "quest item";
     [Header("Code Piece Moves to camera when interacted with")]
-    [SerializeField] private float displayDistance = 1f;
+    [SerializeField] private float displayDistance = 1.0f;
     [SerializeField] private float moveToCamSpeed = 0.1f;
     [Header("Information displayed below item when displayed")]
-    [Header("UI information")]
     [SerializeField] GameObject informationPanel;
+    [Tooltip("Description of collected item")]
     [SerializeField] private Text pieceInformation;
+    [Tooltip("Advises player how to proceed")]
     [SerializeField] private Text actionText;
-    [TextArea(2,2)]
+    [TextArea(2, 2)]
     [SerializeField] private string itemInfo = "";
     [TextArea(2, 2)]
     [SerializeField] private string actionInfo = "";
     [Header("Sprite in Inventory")]
     [SerializeField] private Sprite image = null;
     [HideInInspector] public bool inInventory = false;
-
-
-    protected float shootTimer = 0f;
+    protected float shootTimer = 0.0f;
     public Sprite setImage { get { return image; } }
     public string name { get { return ObjectName; } }
 
@@ -38,12 +36,6 @@ public class QuestItems : CollectableBase, IQuestItems
     {
         base.Update();
         CheckStatus();
-
-
-        //if (playerController.interactAction.triggered)
-        //{
-        //    Debug.Log("triggered");
-        //}
     }
 
     private void CheckStatus()
@@ -51,9 +43,7 @@ public class QuestItems : CollectableBase, IQuestItems
         if (collected)
         {
             BringObjectToCam();
-
-            //Unity input actions trigger multiple times... IEnumerator as workaround for now
-            StartCoroutine(status());
+            StartCoroutine(status());   //Unity input actions trigger multiple times... IEnumerator as workaround for now
         }
     }
 
@@ -62,7 +52,6 @@ public class QuestItems : CollectableBase, IQuestItems
         yield return new WaitForSeconds(1);
         if (playerController.interactAction.triggered)
         {
-            Debug.Log("triggered");
             MoveToInventory();
         }
     }
@@ -84,7 +73,7 @@ public class QuestItems : CollectableBase, IQuestItems
 
     public virtual void MoveToInventory()
     {
-        //WHen player has collected the item and presses E the item will be removed and moved to the inventory
+        //When player has collected the item and presses E the item will be removed and moved to the inventory
         inInventory = true;
         playerController.interacting = false;
         playerController.DisablePlayer();

@@ -135,7 +135,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   health: 10
   currentHealth: 10
-  spawnObject: 1
+  spawnObject: 0
   objectToSpawn: {fileID: 0}
 --- !u!195 &1125556127005672096
 NavMeshAgent:

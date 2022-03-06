@@ -1,24 +1,24 @@
 using Player;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CollectableBase : MonoBehaviour, ICollectable
 {
-    [SerializeField] protected float detectionDistance = 6f;
-
-    [Header("Ite Spatial UI")]
-    [Tooltip("The canvas to be activated")]
+    [Header("Item's Spatial UI")]
     [SerializeField] protected Canvas itemUICanvas;
-
+    [Header("Distance to player for UI activation")]
+    [SerializeField] protected float detectionDistance = 6f;
+    [SerializeField] protected PlayerController playerController;
     public bool isInventoryItem { get; set; }
     public bool collected { get; set; }
-    protected PlayerController playerController;
+    
     protected Transform player;
     protected float uiYPos;
 
     protected virtual void Start()
     {
-        playerController = FindObjectOfType<PlayerController>();
+        if (player == null)
+            playerController = FindObjectOfType<PlayerController>();
+
         player = playerController.transform;
         collected = false;
     }
@@ -30,7 +30,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
 
         if (distance < detectionDistance && !collected)
             ActivateUI();
-        
+
         else if (distance > detectionDistance && distance < detectionDistance + 3)
             itemUICanvas.enabled = false;
     }
