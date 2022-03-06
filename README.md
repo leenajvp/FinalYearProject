@@ -1,7 +1,7 @@
 # Final Year Project
 This project is created to be used in a study to measure the impact of dynamic game features on the player experience.
 
-The repository does not include any sourced models such as the guns, helmets and particle systems.
+The shared project files does not include any sourced models such as the guns, helmets and particle systems.
 
 
 Collectable items and inventory system demonstration:
