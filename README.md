@@ -7,5 +7,7 @@ The shared project files does not include any sourced models such as the guns, h
 Collectable items and inventory system demonstration:
 
 
-https://user-images.githubusercontent.com/58009594/156942918-1d2984c9-e209-4ee7-b1c7-e495d7d8ab75.mp4
+https://user-images.githubusercontent.com/58009594/156943650-8bc8ba23-831e-41e2-a7ec-6bd7f2dfdd95.mp4
+
+
 
