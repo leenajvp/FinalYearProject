@@ -1,16 +1,17 @@
-using UnityEngine;
-using System;
-using System.Collections;
-using Player;
 using Enemies;
+using Player;
+using System.Collections;
+using UnityEngine;
 
 public class SlidingDoor : MonoBehaviour
 {
     [Header("Door slides up on trigger enter")]
     [SerializeField] private float openDistance = 2.5f;
     [SerializeField] private float openSpeed = 2f;
+    [SerializeField] protected PlayerController player;
     [Tooltip("Set to true if door is unlcoked from start")]
     public bool active = false;
+
     [Header("lock color indicating lock status")]
     [SerializeField] private Color unlocked = Color.green;
     [SerializeField] private Color locked = Color.red;
@@ -26,15 +27,18 @@ public class SlidingDoor : MonoBehaviour
     protected bool open = false;
 
     private Transform doorPos;
-    protected GameObject player;
+    protected GameObject playerObj;
     protected EnemyBehaviourBase npc;
 
     protected virtual void Start()
     {
+        if (player == null)
+            player = FindObjectOfType<PlayerController>();
+
+        playerObj = player.gameObject;
         defaultPos = transform.position;
         doorPos = gameObject.transform;
         open = false;
-        player = FindObjectOfType<PlayerController>().gameObject;
     }
 
     protected virtual void Update()
@@ -46,7 +50,7 @@ public class SlidingDoor : MonoBehaviour
 
     protected virtual void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject == player || other.gameObject.tag == "NPC")
+        if (other.gameObject == playerObj || other.gameObject.tag == "NPC")
         {
             if (!open)
                 open = true;
@@ -55,35 +59,34 @@ public class SlidingDoor : MonoBehaviour
 
     protected virtual void OnTriggerExit(Collider other)
     {
-        if (other.gameObject == player || other.gameObject.tag == "NPC")
+        if (other.gameObject == playerObj || other.gameObject.tag == "NPC")
         {
             if (open)
                 StartCoroutine(OpenTimer());
         }
     }
 
-
     private void MoveDoor()
     {
         if (open && active)
-            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y + openDistance, Time.deltaTime * openSpeed), doorPos.position.z);
+            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y + openDistance, Time.deltaTime * openSpeed), doorPos.position.z); //open up
 
-        else 
-            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y, Time.deltaTime * openSpeed), doorPos.position.z);
+        else
+            doorPos.position = new Vector3(doorPos.position.x, Mathf.Lerp(doorPos.position.y, defaultPos.y, Time.deltaTime * openSpeed), doorPos.position.z); //back to default
     }
 
     private void UpdateLight()
     {
-        if(active)
+        if (active)
             foreach (var light in lockLights)
-            light.GetComponent<Renderer>().material.SetColor("_EmissionColor", unlocked);
+                light.GetComponent<Renderer>().material.SetColor("_EmissionColor", unlocked);
 
         else
             foreach (var light in lockLights)
                 light.GetComponent<Renderer>().material.SetColor("_EmissionColor", locked);
     }
 
-    private void UpdateMapSprite()
+    private void UpdateMapSprite() //Mini-map
     {
         if (active)
         {
@@ -92,7 +95,7 @@ public class SlidingDoor : MonoBehaviour
 
         else
         {
-            currentIcon.GetComponent<SpriteRenderer>().sprite = lockedIcon;   
+            currentIcon.GetComponent<SpriteRenderer>().sprite = lockedIcon;
         }
     }
 

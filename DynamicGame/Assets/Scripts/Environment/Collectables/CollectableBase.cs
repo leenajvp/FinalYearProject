@@ -5,6 +5,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
 {
     [Header("Item's Spatial UI")]
     [SerializeField] protected Canvas itemUICanvas;
+
     [Header("Distance to player for UI activation")]
     [SerializeField] protected float detectionDistance = 6f;
     [SerializeField] protected PlayerController playerController;

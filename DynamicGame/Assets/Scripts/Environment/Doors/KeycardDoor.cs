@@ -1,25 +1,20 @@
-using Player;
 using UnityEngine;
-using Enemies;
 
 public class KeycardDoor : SlidingDoor
 {
+    [Header("Required item to open")]
     [SerializeField] private GameObject requiredObject;
     private string requiredObjName;
-    private PlayerController pController;
     private PlayerInventory pInventory;
 
-    // Start is called before the first frame update
     protected override void Start()
     {
         base.Start();
         requiredObjName = requiredObject.name;
-        pController = FindObjectOfType<PlayerController>();
-        pInventory = pController.GetComponent<PlayerInventory>();
+        pInventory = player.GetComponent<PlayerInventory>();
         active = false;
     }
 
-    // Update is called once per frame
     protected override void Update()
     {
         base.Update();
@@ -29,7 +24,7 @@ public class KeycardDoor : SlidingDoor
     {
         var collectedObjs = pInventory.codePieces;
 
-        if (other.gameObject == player)
+        if (other.gameObject == base.playerObj)
         {
             if (collectedObjs.Count != 0)
             {
@@ -48,29 +43,22 @@ public class KeycardDoor : SlidingDoor
             }
         }
 
-
-        if ( other.gameObject.tag == "NPC")
+        if (other.gameObject.tag == "NPC")
         {
             if (!open)
             {
                 active = true;
                 open = true;
             }
-
         }
     }
 
-
-
     protected override void OnTriggerExit(Collider other)
     {
-
-            if (open)
+        if (open)
         {
             open = false;
             active = false;
-
         }
-
     }
 }

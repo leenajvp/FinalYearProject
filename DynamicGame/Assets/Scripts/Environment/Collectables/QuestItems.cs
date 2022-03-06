@@ -5,9 +5,11 @@ using UnityEngine.UI;
 public class QuestItems : CollectableBase, IQuestItems
 {
     [SerializeField] private string ObjectName = "quest item";
+
     [Header("Code Piece Moves to camera when interacted with")]
     [SerializeField] private float displayDistance = 1.0f;
     [SerializeField] private float moveToCamSpeed = 0.1f;
+
     [Header("Information displayed below item when displayed")]
     [SerializeField] GameObject informationPanel;
     [Tooltip("Description of collected item")]
@@ -20,6 +22,7 @@ public class QuestItems : CollectableBase, IQuestItems
     [SerializeField] private string actionInfo = "";
     [Header("Sprite in Inventory")]
     [SerializeField] private Sprite image = null;
+
     [HideInInspector] public bool inInventory = false;
     protected float shootTimer = 0.0f;
     public Sprite setImage { get { return image; } }

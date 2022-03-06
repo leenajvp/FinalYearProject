@@ -4,9 +4,11 @@ using UnityEngine;
 public class ElectricLock : MonoBehaviour, Iinteractive
 {
     public bool available { get; set; }
+    [Header("Connected door settings")]
     [Tooltip("Set to True if lock is available even after completion")]
     [SerializeField] private bool keepAvailable;
     [SerializeField] protected GameObject DoorToManage;
+
     [Header("Puzzle UI")]
     [Tooltip("HUD to inform player of available interaction")]
     [SerializeField] protected GameObject puzzle;
@@ -30,7 +32,7 @@ public class ElectricLock : MonoBehaviour, Iinteractive
         playerController.DisablePlayer();
         puzzle.SetActive(false);
 
-        if(!keepAvailable)
+        if (!keepAvailable)
             available = false;
     }
 

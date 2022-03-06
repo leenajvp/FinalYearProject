@@ -1,11 +1,13 @@
 using Player;
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class QuestObstacles : MonoBehaviour, Iinteractive
 {
     public bool available { get; set; }
+    [Header("Object required to pass")]
+    [SerializeField] private PlayerController player;
+    [SerializeField] private GameObject requiredObject;
     [Header("Item UI")]
     [Tooltip("UI to inform player of available interaction")]
     [SerializeField] private GameObject itemInfo;
@@ -23,48 +25,46 @@ public class QuestObstacles : MonoBehaviour, Iinteractive
     [Tooltip("Text to inform how to proceed")]
     [TextArea(2, 2)]
     [SerializeField] private string failedAction = "";
-    [SerializeField] private GameObject requiredObject;
     private string requiredObjName;
     private bool canOpen = false;
-    private PlayerController pController;
     private PlayerInventory pInventory;
-
-    private PlayerInput playerInput;
 
     protected virtual void Start()
     {
+        if (player == null)
+            player = FindObjectOfType<PlayerController>();
+
         requiredObjName = requiredObject.name;
         available = true;
-        pController = FindObjectOfType<PlayerController>();
-        pInventory = pController.GetComponent<PlayerInventory>();
+        pInventory = player.GetComponent<PlayerInventory>();
         itemInfo.SetActive(false);
     }
 
     public void SetUnAvailable()
     {
-        pController.interacting = false;
-        pController.DisablePlayer();
+        player.interacting = false;
+        player.DisablePlayer();
         itemInfo.SetActive(false);
         gameObject.SetActive(false);
     }
 
     private void Update()
     {
-        if (canOpen && pController.interactAction.triggered)
+        if (canOpen && player.interactAction.triggered) // interaction triggered with same key after correct item checked
         {
             itemInfo.SetActive(false);
-            pController.interacting = false;
-            pController.DisablePlayer();
+            player.interacting = false;
+            player.DisablePlayer();
             gameObject.SetActive(false);
         }
     }
 
     public void GetInteraction()
     {
-        if (!itemInfo.activeSelf)
+        if (!itemInfo.activeSelf) // If interaction triggered while canvas is not active, pause game and activate item UI
         {
-            pController.interacting = true;
-            pController.DisablePlayer();
+            player.interacting = true;
+            player.DisablePlayer();
 
             var collectedObjs = pInventory.codePieces;
 
@@ -78,30 +78,23 @@ public class QuestObstacles : MonoBehaviour, Iinteractive
                         displayText.text = succeedText;
                         itemInfo.SetActive(true);
                         canOpen = true;
+                        return;
                     }
 
                     else
-                    {
-                        actionText.text = failedAction;
-                        displayText.text = failedText;
-                        itemInfo.SetActive(true);
-                    }
+                        continue;
                 }
             }
 
-            else
-            {
-                actionText.text = failedAction;
-                displayText.text = failedText;
-                itemInfo.SetActive(true);
-            }
+            actionText.text = failedAction;
+            displayText.text = failedText;
+            itemInfo.SetActive(true);
+            return;
         }
 
-        else
-        {
-            itemInfo.SetActive(false);
-            pController.interacting = false;
-            pController.DisablePlayer();
-        }
+        // if item UI is currently active, return to game
+        itemInfo.SetActive(false);
+        player.interacting = false;
+        player.DisablePlayer();
     }
 }

@@ -8,6 +8,7 @@ public class GeneralCollectable : CollectableBase
         Health,
         Bullets
     }
+
     [Header("Collectable item type")]
     public CollectableType type;
 
