@@ -46,11 +46,11 @@ public class QuestItems : CollectableBase, IQuestItems
         if (collected)
         {
             BringObjectToCam();
-            StartCoroutine(status());   //Unity input actions trigger multiple times... IEnumerator as workaround for now
+            StartCoroutine(InteractionTimer());   //Unity input actions trigger multiple times... IEnumerator as workaround for now
         }
     }
 
-    private IEnumerator status()
+    private IEnumerator InteractionTimer()
     {
         yield return new WaitForSeconds(1);
         if (playerController.interactAction.triggered)
