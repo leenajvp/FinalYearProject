@@ -24,7 +24,6 @@ public class QuestItems : CollectableBase, IQuestItems
     [SerializeField] private Sprite image = null;
 
     [HideInInspector] public bool inInventory = false;
-    protected float shootTimer = 0.0f;
     public Sprite setImage { get { return image; } }
     public string name { get { return ObjectName; } }
 
