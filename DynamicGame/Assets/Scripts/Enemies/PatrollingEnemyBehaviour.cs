@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.AI;
 
 namespace Enemies
@@ -17,7 +18,7 @@ namespace Enemies
         public EnemyState CurrentState;
 
         [Header("Patroling targets")]
-        [SerializeField] private Transform[] targets;
+        [SerializeField] protected Transform[] targets;
         private int destinationTarget = 0;
 
         protected override void Start()
@@ -50,14 +51,13 @@ namespace Enemies
 
                 case EnemyState.PlayerSeen:
 
-                        FollowPlayer();
+                    FollowPlayer();
 
-                    if (!playerNear)
+                    if (!playerFound)
                     {
                         agent.destination = targets[0].position;
                         CurrentState = EnemyState.Patrol;
                     }
-
 
                     break;
 
@@ -80,10 +80,33 @@ namespace Enemies
         }
 
         //Patrol between set points when player is not detected
-        private void Patrolling()
+        protected virtual void Patrolling()
         {
             agent.destination = targets[destinationTarget].position;
             destinationTarget = (destinationTarget + 1) % targets.Length;
+
+            if (isHit)
+                StartCoroutine(ReactionTimer());
+        }
+
+        private IEnumerator ReactionTimer()
+        {
+            yield return new WaitForSeconds(1);
+            CurrentState = EnemyState.ShootPlayer;
+            isHit = false;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            for (int i = 0; i < targets.Length; i++)
+            {
+                Gizmos.DrawWireSphere(targets[i].position, 0.30f);
+
+                if (i + 1 < targets.Length)
+                    Gizmos.DrawLine(targets[i].position, targets[i + 1].position);
+                else
+                    Gizmos.DrawLine(targets[i].position, targets[0].position);
+            }
         }
 
     }

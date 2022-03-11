@@ -5,5 +5,5 @@ using UnityEngine;
 public interface Iinteractive
 {
     public void GetInteraction();
-    public bool available { get; set; }
+    public bool notCompleted { get; set; }
 }

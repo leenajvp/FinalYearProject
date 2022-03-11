@@ -18,10 +18,8 @@ public class EnemyBullet : BulletController
         ddaManager = FindObjectOfType<DDAManager>();
     }
 
-    protected override void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
-        base.OnTriggerEnter(other);
-
         if(other != null)
         {
             PlayerHealth player = other.gameObject.GetComponent<PlayerHealth>();
@@ -31,6 +29,8 @@ public class EnemyBullet : BulletController
                 player.currentHealth -= bulletDamange;
                 ddaManager.currentPHits++;
             }
+
+            pool.ReturnObject(gameObject);
         }
     }
 }

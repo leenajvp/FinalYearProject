@@ -31,9 +31,9 @@ namespace Player
         {
             if (currentHealth <= 0)
             {
-                player.PauseGame();
-                ddaManager.playerDead = true;
-                Time.timeScale = 0;
+                //player.PauseGame();
+                //ddaManager.playerDead = true;
+                //Time.timeScale = 0;
                 currentHealth = health;
             }
         }

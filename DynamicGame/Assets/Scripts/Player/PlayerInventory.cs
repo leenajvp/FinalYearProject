@@ -5,19 +5,22 @@ using UnityEngine.UI;
 
 public class PlayerInventory : MonoBehaviour
 {
+    [Header("UI for inventory items")]
+    [Tooltip("Slot prefab for item in inventory")]
     public Image slotPrefab;
-    public int bullets;
-    public int codes;
-    public List<IQuestItems> codePieces = new List<IQuestItems>();
-    public event EventHandler<InventoryEventArgs> ItemAdded;
+    [Tooltip("Panel to display collected items")]
     [SerializeField] private GameObject inventoryPanel;
+    [Header("Starting bullet amount")]
+    public int bullets;
+    [HideInInspector]
+    public List<IQuestItems> collectedQItems = new List<IQuestItems>();
+    public event EventHandler<InventoryEventArgs> ItemAdded;
 
     public void AddItem(IQuestItems item)
     {
         Image slot = Instantiate(slotPrefab);
         slot.transform.SetParent(inventoryPanel.transform, false);
-        codePieces.Add(item);
-        codes = codePieces.Count;
+        collectedQItems.Add(item);
         slot.gameObject.GetComponent<Image>().sprite = item.setImage;
     }
 }

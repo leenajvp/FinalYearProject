@@ -28,7 +28,7 @@ namespace Player
         [Tooltip("Object pool for bullets")]
         [SerializeField] private ObjectPool bulletPool;
         [SerializeField] private ParticleSystem muzzleFlash;
-        [SerializeField] private ParticleSystem impactEffect;
+        [SerializeField] private ParticleSystem impact;
 
         [Header("Interactions")]
         public bool interacting = false;
@@ -39,6 +39,8 @@ namespace Player
         [SerializeField] private GameObject pauseMenu;
         [SerializeField] private GameObject map;
 
+         public bool isDisguised = false;
+
         private Transform cameraTransform;
         private CharacterController controller;
         private PlayerInput playerInput;
@@ -46,7 +48,7 @@ namespace Player
         private InputAction lookAction;
         private InputAction jumpAction;
         private InputAction shootAction;
-        public  InputAction interactAction;
+        [HideInInspector] public  InputAction interactAction;
         private InputAction pauseGame;
         private InputAction openMap;
 
@@ -92,6 +94,7 @@ namespace Player
             interactHUD.SetActive(false);
             map.SetActive(false);
             pauseMenu.SetActive(false);
+            isDisguised = false;
         }
 
         void Update()
@@ -105,23 +108,39 @@ namespace Player
             if (pauseGame.triggered)
             {
                 PauseGame();
+                DisablePlayer();
 
                 if (pauseMenu.activeSelf)
+                {
                     pauseMenu.SetActive(false);
-
+                    openMap.Enable();
+                }
                 else
+                {
                     pauseMenu.SetActive(true);
+                    openMap.Disable();
+                }
+                    
             }
 
             if (openMap.triggered)
             {
                 PauseGame();
+                DisablePlayer();
 
                 if (map.activeSelf)
+                {
                     map.SetActive(false);
+                    pauseGame.Enable();
+                }
+                    
 
                 else
+                {
                     map.SetActive(true);
+                    pauseGame.Disable();
+                }
+                    
             }
         }
 
@@ -177,14 +196,14 @@ namespace Player
                 {
                     bulletController.target = hit.point;
                     bulletController.hit = true;
-                    var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(newImpact, 0.6f);
+                    var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
+                    Destroy(newImpact, 0.1f);
                 }
 
                 else
                 {
                     bulletController.target = cameraTransform.position + cameraTransform.forward * 25;
-                    bulletController.hit = false;
+                    //bulletController.hit = false;
                 }
             }
             // ddaManager.ManageEnemyHealth();
@@ -226,7 +245,7 @@ namespace Player
                 Iinteractive interactive = hit.collider.gameObject.GetComponent<Iinteractive>();
                 ICollectable collectable = hit.collider.gameObject.GetComponent<ICollectable>();
 
-                if (interactive != null && interactive.available)
+                if (interactive != null && interactive.notCompleted)
                 {
                     interactHUD.SetActive(true);
 
@@ -309,7 +328,21 @@ namespace Player
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
+        }
 
+        public void DisableMenus()
+        {
+            if (Time.timeScale == 0)
+            {
+                openMap.Disable();
+                pauseGame.Disable();
+            }
+
+            else
+            {
+                openMap.Enable();  
+                pauseGame.Enable();
+            }
         }
     }
 }

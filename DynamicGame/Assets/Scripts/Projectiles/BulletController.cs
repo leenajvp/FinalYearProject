@@ -6,7 +6,7 @@ namespace Bullets {
     public class BulletController : MonoBehaviour
     {
         [SerializeField] private BulletData bulletData;
-        private ObjectPool pool;
+        protected ObjectPool pool;
 
         public Vector3 target { get; set; }
         public bool hit { get; set; }
@@ -14,11 +14,6 @@ namespace Bullets {
         protected virtual void Start()
         {
             pool = transform.parent.GetComponent<ObjectPool>();
-        }
-
-        private void OnEnable()
-        {
-            StartCoroutine(DestroyTimer());
         }
 
         private void Update()
@@ -30,12 +25,6 @@ namespace Bullets {
                 pool.ReturnObject(gameObject);
             }
         }
-
-        protected virtual void OnTriggerEnter(Collider other)
-        {
-            pool.ReturnObject(gameObject);
-        }
-
 
         private IEnumerator DestroyTimer()
         {

@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class ElectricLock : MonoBehaviour, Iinteractive
 {
-    public bool available { get; set; }
+    public bool notCompleted { get; set; }
     [Header("Connected door settings")]
     [Tooltip("Set to True if lock is available even after completion")]
     [SerializeField] private bool keepAvailable;
@@ -14,12 +14,12 @@ public class ElectricLock : MonoBehaviour, Iinteractive
     [SerializeField] protected GameObject puzzle;
 
     protected GameObject player;
-    protected PlayerController playerController;
+    protected Player.PlayerController playerController;
     protected SlidingDoor door;
 
     protected virtual void Start()
     {
-        available = true;
+        notCompleted = true;
         playerController = FindObjectOfType<PlayerController>();
         player = playerController.gameObject;
         door = DoorToManage.GetComponent<SlidingDoor>();
@@ -33,12 +33,12 @@ public class ElectricLock : MonoBehaviour, Iinteractive
         puzzle.SetActive(false);
 
         if (!keepAvailable)
-            available = false;
+            notCompleted = false;
     }
 
     public void GetInteraction()
     {
-        if (!puzzle.activeSelf && available)
+        if (!puzzle.activeSelf && notCompleted)
         {
             puzzle.SetActive(true);
             playerController.interacting = true;

@@ -31,13 +31,13 @@ public class ButtonPuzzleManager : ElectricLock
             {
                 bool isEqual = Enumerable.SequenceEqual(correctSequence, enteredNums);
 
-                if (isEqual && available)
+                if (isEqual && notCompleted)
                 {
                     puzzle.SetActive(false);
                     playerController.interacting = false;
                     playerController.DisablePlayer();
                     door.active = true;
-                    available = false;
+                    notCompleted = false;
                 }
 
                 else

@@ -1,26 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Enemies;
 using Bullets;
 using DDA;
+using Player;
 
 public class PlayerBullet : BulletController
 {
     public int bulletDamange;
-    [SerializeField] private DDAManager ddaManager;
-
+    private DDAManager ddaManager;
+    private PlayerController player;
 
     protected override void Start()
     {
         base.Start();
 
         ddaManager = FindObjectOfType<DDAManager>();
+        player = FindObjectOfType<PlayerController>();
     }
 
-    protected override void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        base.OnTriggerEnter(other);
+        ContactPoint contact = collision.GetContact(0);
+    }
 
+    private void OnTriggerEnter(Collider other)
+    {
         if (other != null)
         {
             EnemyHealth enemy = other.gameObject.GetComponent<EnemyHealth>();
@@ -29,12 +35,16 @@ public class PlayerBullet : BulletController
             {
                 enemy.currentHealth -= bulletDamange;
                 ddaManager.currentEHits++;
+                enemy.gameObject.GetComponent<EnemyBehaviourBase>().isHit = true;
+
+                if (player.isDisguised && !enemy.explorationNPC)
+                    player.isDisguised = false;
             }
 
-            else
-            {
-                return;
-            }
+            pool.ReturnObject(gameObject);
         }
+
+        
     }
 }
+

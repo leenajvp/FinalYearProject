@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,28 +13,30 @@ public class EnemyPools : MonoBehaviour
     private void Start()
     {
         //enemies = enemyPool.Count;
-        enemies = transform.childCount;
+        enemies = enemyPool.Count;
     }
 
     void Update()
     {
-        UpdateProgress();
+        
     }
 
-    private void UpdateProgress()
+    public void UpdateProgress()
     {
-        for(int i = 0; i < enemyPool.Count - 1; i++)
+        for (int i = 0; i < gameObject.transform.childCount; i++)
         {
-            if(enemyPool[i].currentHealth <= 0)
+            if (enemyPool[i].gameObject.activeInHierarchy)
             {
                 defeats++;
-
-                if(defeats >= enemies)
-                {
-                    PlayerPrefs.SetInt("Progression", checkPointID);
-                    Debug.Log(PlayerPrefs.GetInt("Progression"));
-                }
+                break;
             }
+
+        }
+
+        if (defeats >= enemies)
+        {
+            PlayerPrefs.SetInt("Progression", checkPointID);
+            Debug.Log(PlayerPrefs.GetInt("Progression"));
         }
     }
 
@@ -46,6 +47,7 @@ public class EnemyPools : MonoBehaviour
             foreach (EnemyHealth enemy in enemyPool)
             {
                 enemy.gameObject.SetActive(false);
+                return;
             }
         }
 
@@ -60,7 +62,7 @@ public class EnemyPools : MonoBehaviour
         foreach (EnemyHealth enemy in enemyPool)
         {
             enemy.currentHealth = enemy.health;
-            isDefeated=false;
+            isDefeated = false;
             enemy.gameObject.SetActive(true);
         }
     }

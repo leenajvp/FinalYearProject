@@ -4,9 +4,9 @@ using UnityEngine.UI;
 
 public class QuestObstacles : MonoBehaviour, Iinteractive
 {
-    public bool available { get; set; }
+    public bool notCompleted { get; set; }
     [Header("Object required to pass")]
-    [SerializeField] private PlayerController player;
+    [SerializeField] private Player.PlayerController player;
     [SerializeField] private GameObject requiredObject;
     [Header("Item UI")]
     [Tooltip("UI to inform player of available interaction")]
@@ -35,7 +35,7 @@ public class QuestObstacles : MonoBehaviour, Iinteractive
             player = FindObjectOfType<PlayerController>();
 
         requiredObjName = requiredObject.name;
-        available = true;
+        notCompleted = true;
         pInventory = player.GetComponent<PlayerInventory>();
         itemInfo.SetActive(false);
     }
@@ -66,7 +66,7 @@ public class QuestObstacles : MonoBehaviour, Iinteractive
             player.interacting = true;
             player.DisablePlayer();
 
-            var collectedObjs = pInventory.codePieces;
+            var collectedObjs = pInventory.collectedQItems;
 
             if (collectedObjs.Count != 0)
             {

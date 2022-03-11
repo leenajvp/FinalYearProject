@@ -19,4 +19,9 @@ public class BulletsHUD : MonoBehaviour
     {
         bulletTxt.text = currentBullets.bullets.ToString();
     }
+
+    public void UpdateHUD()
+    {
+        bulletTxt.text = currentBullets.bullets.ToString();
+    }
 }

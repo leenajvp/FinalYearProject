@@ -1,6 +1,8 @@
 using DDA;
+using Enemies;
 using UnityEngine;
 
+[RequireComponent(typeof(EnemyBehaviourBase))]
 public class EnemyHealth : MonoBehaviour
 {
     public float health = 10.0f;
@@ -8,6 +10,9 @@ public class EnemyHealth : MonoBehaviour
     DDAManager ddaManager;
     [SerializeField] public bool spawnObject;
     [SerializeField] public GameObject objectToSpawn;
+    [SerializeField] private EnemyPools pool;
+
+    public bool explorationNPC = false;
 
     private void Start()
     {
@@ -16,8 +21,10 @@ public class EnemyHealth : MonoBehaviour
             ddaManager = FindObjectOfType<DDAManager>();
         }
 
-        currentHealth = health;
+        if(pool == null)
+            pool = transform.parent.GetComponent<EnemyPools>();
 
+        currentHealth = health;
     }
 
     void Update()
@@ -25,15 +32,14 @@ public class EnemyHealth : MonoBehaviour
         if (currentHealth <= 0)
         {
             ddaManager.currentKills++;
+            pool.UpdateProgress();
 
             if (spawnObject)
             {
                 Instantiate(objectToSpawn, transform.position, objectToSpawn.transform.rotation);
-                gameObject.SetActive(false);
             }
 
-            else
-                gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
     }
 }

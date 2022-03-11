@@ -1,6 +1,6 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections;
 
 namespace Enemies
 {
@@ -46,7 +46,7 @@ namespace Enemies
             switch (CurrentState)
             {
                 case EnemyState.Guard:
-                    
+
                     Raycast();
                     Quarding();
 
@@ -60,12 +60,8 @@ namespace Enemies
                     FollowPlayer();
                     currentSpeed = data.runningSpeed;
 
-                    if (!playerNear)
-                    {
+                    if (!playerFound)
                         CurrentState = EnemyState.ReturnGuard;
-
-                    }
-                        
 
                     break;
 
@@ -76,7 +72,7 @@ namespace Enemies
                     agent.isStopped = false;
                     agent.destination = guardPos;
 
-                    if(agent.remainingDistance < 0.5f)
+                    if (agent.remainingDistance < 0.5f)
                         CurrentState = EnemyState.Guard;
 
 
@@ -116,8 +112,21 @@ namespace Enemies
                 transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Mathf.LerpAngle(currentRot, defaultRot + newTurnAngle, turnTime), transform.localEulerAngles.z);
                 currentRot = transform.localEulerAngles.y;
                 turnTime = 0;
+                if (isHit)
+                {
+                    StartCoroutine(ReactionTimer());
+                }
+                    
             }
         }
+
+        private IEnumerator ReactionTimer()
+        {
+            yield return new WaitForSeconds(1);
+            CurrentState = EnemyState.PlayerSeen;
+            isHit = false;
+        }
+
 
         private void TurnTimer()
         {

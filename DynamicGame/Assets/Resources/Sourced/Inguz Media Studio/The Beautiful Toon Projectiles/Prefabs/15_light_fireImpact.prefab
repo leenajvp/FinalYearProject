@@ -4855,7 +4855,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &846711057147349062
 Transform:
   m_ObjectHideFlags: 0
@@ -9765,7 +9765,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1284392543666554617
 Transform:
   m_ObjectHideFlags: 0
@@ -33949,6 +33949,7 @@ GameObject:
   - component: {fileID: 4638561767631157097}
   - component: {fileID: 4633480664341527695}
   - component: {fileID: 4633480664341527694}
+  - component: {fileID: 8774455155607992736}
   m_Layer: 0
   m_Name: 15_light_fireImpact
   m_TagString: Untagged
@@ -38762,6 +38763,18 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &8774455155607992736
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4633480664341527689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a80de86a8f1894080fed23f271838f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6556636326080539527
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,22 +5,20 @@ using UnityEngine.AI;
 
 namespace Enemies
 {
-    [RequireComponent(typeof(SphereCollider))]
     public class EnemyBehaviourBase : MonoBehaviour
     {
         public EnemyData data;
 
         [Header("PlayerDetection Settings")]
         [SerializeField] protected GameObject player;
+        private bool playerDisguised;
         [Tooltip("The guard will detect if player enters this radius and begin raycast.")]
-        public float detectionRadius = 20f;
+        public float detectionRadiusf;
         [Tooltip("Raycast distance when player is detected.")]
         [SerializeField] protected float detectionDistance = 10f;
         protected Collider[] colliders;
         public bool playerNear = false;
         public bool playerFound = false;
-
-        protected SphereCollider collider;
 
         [Header("Shooting")]
         [Tooltip("Position to shoot bullet from")]
@@ -35,12 +33,18 @@ namespace Enemies
         protected float currentSpeed;
         protected NavMeshAgent agent;
         protected RaycastHit hit;
+        [HideInInspector] public bool isHit = false;
 
+        public bool hitFront;
+        public bool hitRight;
+        public bool hitLeft;
+
+        public float timer = 0;
 
         protected virtual void Start()
         {
+            timer = 0;
             name = data.enemyName;
-            colliders = Physics.OverlapSphere(transform.position, detectionRadius);
             agent = GetComponent<NavMeshAgent>();
             agent.autoBraking = false;
             currentSpeed = data.walkingSpeed;
@@ -51,68 +55,113 @@ namespace Enemies
             if (player == null)
                 player = FindObjectOfType<PlayerController>().gameObject;
 
+            playerDisguised = player.GetComponent<PlayerController>().isDisguised;
         }
 
         protected virtual void Update()
         {
-           // collider.radius = data.detectionRadius;
+            Raycast();
+            playerPos = player.transform.position;
+            distance = Vector3.Distance(transform.position, playerPos);
 
-             playerPos = player.transform.position;
-             distance = Vector3.Distance(transform.position, playerPos);
-
-            if (distance < detectionRadius)
+            if (distance < data.detectionRadius)
                 playerNear = true;
 
             else
                 playerNear = false;
         }
 
-        protected void Raycast()
+        protected virtual void Raycast()
         {
-            if (playerNear)
+            if (playerNear && !player.GetComponent<PlayerController>().isDisguised)
             {
+                LostTimerI();
+
                 if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
                 {
-                    CheckRaycastHit();
+                    CheckFront();
                 }
 
                 if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
                 {
                     Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
-                    CheckRaycastHit();
+                    CheckLeft();
                 }
 
                 if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
                 {
                     Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
-                    CheckRaycastHit();
+                    CheckRight();
                 }
             }
         }
 
-        protected virtual void CheckRaycastHit()
+
+        protected virtual void CheckFront()
         {
             IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
 
             if (playerHit != null)
             {
-                playerFound = true;
+                hitFront = true;
             }
 
             else
-                playerFound = false;
+                hitFront = false;
+        }
+
+        protected virtual void CheckLeft()
+        {
+            IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+
+            if (playerHit != null)
+            {
+                hitLeft = true;
+            }
+
+            else
+                hitLeft = false;
+        }
+
+        protected virtual void CheckRight()
+        {
+            IPlayer playerHit = hit.collider.gameObject.GetComponent<IPlayer>();
+
+            if (playerHit != null)
+            {
+                hitRight = true;
+            }
+
+            else
+                hitRight = false;
+        }
+
+        protected void LostTimerI()
+        {
+            if (!hitFront && !hitRight && !hitLeft)
+            {
+                timer += 1 * Time.deltaTime;
+
+                if (timer > 20)
+                    playerFound = false;
+            }
+
+            else
+            {
+                timer = 0;
+                playerFound = true;
+            }
+                
+
         }
 
         protected virtual void FollowPlayer()
         {
             currentSpeed = data.runningSpeed;
 
-            //Get distance to player and maintain rotation towards
             agent.isStopped = true;
-           // var distance = Vector3.Distance(player.transform.position,transform.position);
-            Quaternion lookRotation = Quaternion.LookRotation((player.transform.position - transform.position).normalized);
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime);
-
+            Quaternion lookRotation = Quaternion.LookRotation((player.transform.position - transform.position).normalized); 
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, 5f * Time.deltaTime); // Maintain rotation towards player
 
             if (distance <= data.shootDistance && distance >= data.retreatDistance)
             {
@@ -120,11 +169,10 @@ namespace Enemies
                 ShootPlayer();
             }
 
-            ////Maintain distance
+            // Maintain distance
             else if (distance <= data.retreatDistance)
             {
                 transform.position = Vector3.MoveTowards(transform.position, player.transform.position, -data.walkingSpeed * Time.deltaTime);
-
             }
 
             // Return to default state if player is lost
@@ -184,36 +232,5 @@ namespace Enemies
                 //enemies.CurrentState = EnemyState.PlayerSeen;
             }
         }
-
-
-        //protected virtual void Raycasting()
-        //{
-        //    foreach (var col in colliders)
-        //    {
-        //        IPlayer player = col.gameObject.GetComponent<IPlayer>();
-
-        //        if (player != null)
-        //        {
-        //            Debug.Log("playerin col");
-
-        //            if (Physics.Raycast(transform.position, transform.forward, out hit, detectionDistance))
-        //            {
-        //                CheckRaycastHit();
-        //            }
-
-        //            if (Physics.Raycast(transform.position, transform.forward - transform.right, out hit, detectionDistance))
-        //            {
-        //                Debug.DrawRay(transform.position, transform.forward - transform.right, Color.red, detectionDistance);
-        //                CheckRaycastHit();
-        //            }
-
-        //            if (Physics.Raycast(transform.position, transform.forward + transform.right, out hit, detectionDistance))
-        //            {
-        //                Debug.DrawRay(transform.position, transform.forward + transform.right, Color.red, detectionDistance);
-        //                CheckRaycastHit();
-        //            }
-        //        }
-        //    }
-        //}
     }
 }

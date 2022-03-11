@@ -22,7 +22,7 @@ public class KeycardDoor : SlidingDoor
 
     protected override void OnTriggerEnter(Collider other)
     {
-        var collectedObjs = pInventory.codePieces;
+        var collectedObjs = pInventory.collectedQItems;
 
         if (other.gameObject == base.playerObj)
         {

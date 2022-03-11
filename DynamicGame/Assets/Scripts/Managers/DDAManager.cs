@@ -61,6 +61,8 @@ namespace DDA
                 currentKills = 0;
             }
 
+            currentProgression = PlayerPrefs.GetInt("Progression");
+
             // if the player is not killed first enbemy pool easier faster
             // if player is on second enemy pool easier slower
             // final pool easier slowest

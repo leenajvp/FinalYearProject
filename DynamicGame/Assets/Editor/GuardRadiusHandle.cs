@@ -9,7 +9,7 @@ public class GuardRadiusHandle : Editor
     {
         Handles.color = Color.red;
         PatrollingEnemyBehaviour enemy = (PatrollingEnemyBehaviour)target;
-        Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.detectionRadius);
+        Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.data.detectionRadius);
     }
 }
 

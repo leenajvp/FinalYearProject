@@ -129,7 +129,6 @@ GameObject:
   - component: {fileID: 6085086730759123925}
   - component: {fileID: 6085086730759123926}
   - component: {fileID: 6085086730759123927}
-  - component: {fileID: 7697202814136444077}
   m_Layer: 0
   m_Name: PatrolNPC
   m_TagString: Untagged
@@ -285,7 +284,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   data: {fileID: 11400000, guid: 7cf8419fc75a7864d873765801c8bade, type: 2}
   player: {fileID: 0}
-  detectionRadius: 20
+  detectionRadiusf: 0
   detectionDistance: 10
   playerNear: 0
   playerFound: 0
@@ -293,21 +292,14 @@ MonoBehaviour:
   bulletPool: {fileID: 0}
   muzzleFlash: {fileID: 2987067716029729445}
   impactEffect: {fileID: 0}
+  isHit: 0
+  hF: 0
+  hR: 0
+  hL: 0
+  timer: 0
+  resetTimer: 0
   CurrentState: 0
   targets: []
---- !u!135 &7697202814136444077
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6085086730759123922}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1001 &6085086731626910212
 PrefabInstance:
   m_ObjectHideFlags: 0

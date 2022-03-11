@@ -10,38 +10,41 @@ public class SceneMngr : MonoBehaviour
 {
     [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject newGameMenu;
+    [SerializeField] public Transform startpos;
     [SerializeField] private List<EnemyPools> checkPoints = new List<EnemyPools>();
 
     private GameObject player;
     private PlayerHealth pHealth;
-    private PlayerController pController;
+    private Player.PlayerController pController;
 
     void Start()
     {
+        PlayerPrefs.SetInt("Progression", 0);
         pController = FindObjectOfType<PlayerController>();
         pHealth = FindObjectOfType<PlayerHealth>();
         player = pHealth.gameObject;
 
-        pController.PauseGame();
         newGameMenu.SetActive(true);
         gameOver.SetActive(false);
+        DisablePlayer();
     }
 
     void Update()
     {
         if (pHealth.currentHealth <= 0)
         {
-            pController.PauseGame();
+            DisablePlayer();
             gameOver.SetActive(true);
         }
     }
 
     public void NewGame()
     {
-        pController.PauseGame();
+        DisablePlayer();
         Time.timeScale = 1;
         newGameMenu.SetActive(false);
         PlayerPrefs.SetInt("Progression", 0);
+        player.transform.position = startpos.position;
 
         foreach (EnemyPools checkPoint in checkPoints)
         {
@@ -51,28 +54,37 @@ public class SceneMngr : MonoBehaviour
     }
     public void Restart()
     {
-        pController.PauseGame();
+        DisablePlayer();
         Time.timeScale = 1;
         gameOver.SetActive(false);
 
         int progression = PlayerPrefs.GetInt("Progression");
 
+        if (PlayerPrefs.GetInt("Progression") == 0)
+        {
+            player.transform.position = startpos.position;
+            return;
+        }
+
         foreach (EnemyPools checkPoint in checkPoints)
         {
             for (int i = 0; i < checkPoints.Count; i++)
             {
-                if (checkPoints[i].checkPointID == progression)
+                if (checkPoints[i].checkPointID == progression && PlayerPrefs.GetInt("ExplorationSave") == 0)
                 {
                     player.transform.position = checkPoints[i].gameObject.transform.position;
                 }
 
-                else
-                {
-                    checkPoint.ResetEnemies();
-                }
+                checkPoint.ResetToLast();
             }
         }
+    }
 
+    private void DisablePlayer()
+    {
+        pController.PauseGame();
+        pController.DisablePlayer();
+        pController.DisableMenus();
     }
 
     public void QuitGame()

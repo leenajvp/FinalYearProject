@@ -2,6 +2,7 @@ using Enemies;
 using Player;
 using System.Collections;
 using UnityEngine;
+using Player;
 
 public class SlidingDoor : MonoBehaviour
 {
