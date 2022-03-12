@@ -110,9 +110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bulletData: {fileID: 11400000, guid: 3d131e024f7d1434fb3c345467e8f31e, type: 2}
-  impact: {fileID: 4633480664341527695, guid: 3c23a98d0e16cfa4c98fc180a943272d, type: 3}
   bulletDamange: 1
-  ddaManager: {fileID: 0}
 --- !u!54 &-862387244251336797
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -128,4 +126,4 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 126
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1

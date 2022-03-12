@@ -3,7 +3,7 @@ using UnityEngine;
 using Enemies;
 
 [CustomEditor(typeof(PatrollingEnemyBehaviour))]
-public class GuardRadiusHandle : Editor
+public class EnemyRadiusHandle : Editor
 {
     private void OnSceneGUI()
     {
@@ -13,15 +13,15 @@ public class GuardRadiusHandle : Editor
     }
 }
 
-//[CustomEditor(typeof(GuardingEnemy))]
-//public class GuardingEnemy : Editor
-//{
-//    private void OnSceneGUI()
-//    {
-//        Handles.color = Color.red;
-//        GuardingEnemy enemy = (GuardingEnemy)target;
-//        Handles.DrawWireArc(enemy.transform.position, enemy.transform.up, -enemy.transform.right, 360, enemy.detectionRadius);
-//    }
-//}
+[CustomEditor(typeof(GuardingEnemy))]
+public class GuardRadiusHandle : Editor
+{
+    private void OnSceneGUI()
+    {
+        Handles.color = Color.red;
+        GuardingEnemy guard = (GuardingEnemy)target;
+        Handles.DrawWireArc(guard.transform.position, guard.transform.up, -guard.transform.right, 360, guard.data.detectionRadius);
+    }
+}
 
 

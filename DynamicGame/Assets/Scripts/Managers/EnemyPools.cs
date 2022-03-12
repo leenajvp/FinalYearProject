@@ -9,6 +9,7 @@ public class EnemyPools : MonoBehaviour
     public int enemies;
     public bool completed = false;
     private bool isDefeated;
+    private DDA.DDAManager ddaManager;
 
     private void Start()
     {
@@ -30,13 +31,14 @@ public class EnemyPools : MonoBehaviour
                 defeats++;
                 break;
             }
-
         }
 
-        if (defeats >= enemies)
+        if (defeats >= enemies && PlayerPrefs.GetInt("Progression") < checkPointID)
         {
+
             PlayerPrefs.SetInt("Progression", checkPointID);
             Debug.Log(PlayerPrefs.GetInt("Progression"));
+
         }
     }
 

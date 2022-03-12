@@ -5,43 +5,32 @@ namespace DDA
 {
     public class DDAManager : MonoBehaviour
     {
-        [SerializeField] public EnemyData enemyData;
+        [SerializeField] public EnemyHealth[] npcHealth;
+        [SerializeField] public EnemyBehaviourBase[] npcBheaviour;
 
-        public int currentHeadShots;
-        public int currentEHits;
-        public int currentPHits;
-        public int currentKills;
-        public int currentsShots;
-
+        public int currentHeadShots, currentEHits, currentPHits, currentKills, currentsShots;
+        public int totalHeadShots, totalHits, totalKills, totalDeaths, totalShots;
         public bool playerDead;
-
-        public static int totalHeadShots;
-        public static int totalHits;
-        public static int totalKills;
-        public static int totalDeaths;
-        public static int totalShots;
-
-        [SerializeField] private GameObject[] EnemyPools;
+        [SerializeField] private GameObject extraEnemies; // place hidden enemies that can be set active
         public int currentProgression = 0;
+        public bool adjusted;
 
-
-        bool gameOver;
-
-        // PlayerPrefs DifLevel , FirstAttempt, Progression
         void Start()
         {
-            if (PlayerPrefs.GetInt("FirstAttempt") == 0 || PlayerPrefs.GetInt("Progression") == 0)
-            {
-                totalHeadShots = 0;
-                totalHits = 0;
-                totalDeaths = 0;
-                totalKills = 0;
-            }
+
+            totalHeadShots = 0;
+            totalHits = 0;
+            totalDeaths = 0;
+            totalKills = 0;
 
             currentHeadShots = 0;
             currentEHits = 0;
             currentPHits = 0;
             currentKills = 0;
+
+            extraEnemies.SetActive(false);
+
+            //get all enemies and add them to an array
         }
 
         void Update()
@@ -49,10 +38,10 @@ namespace DDA
             if (Time.timeScale == 0 && playerDead)
             {
                 totalDeaths++;
+                playerDead = false;
                 totalHeadShots += currentHeadShots;
                 totalHits += currentEHits;
                 totalKills += currentKills;
-                playerDead = false;
                 ShowStats();
 
                 currentHeadShots = 0;
@@ -61,11 +50,19 @@ namespace DDA
                 currentKills = 0;
             }
 
-            currentProgression = PlayerPrefs.GetInt("Progression");
+
 
             // if the player is not killed first enbemy pool easier faster
             // if player is on second enemy pool easier slower
             // final pool easier slowest
+            currentProgression = PlayerPrefs.GetInt("Progression");
+
+            if (currentProgression == 1 && totalDeaths == 0 && adjusted == false)
+            {
+                extraEnemies.SetActive(true);
+                ManageEnemyHealth();
+            }
+
         }
 
         private void ShowStats()
@@ -77,24 +74,42 @@ namespace DDA
 
         public void ManageEnemyHealth()
         {
-            // If player is not loosing health
+            if (!adjusted)
+            {
+                foreach (EnemyHealth npcs in npcHealth)
+                {
+                    npcs.currentHealth += (int)(npcs.currentHealth * 20 / 100); // increase health by 20%
+                }
 
-            enemyData.health += (int)(enemyData.health * 20 / 100);
-            Debug.Log("Increased");
+                Debug.Log("Increased");
+                adjusted = true;
+            }
         }
 
         private void ManageEnemyMovementSpeed()
         {
             // If player is not getting hit
+            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            {
+                npcs.data.walkingSpeed += (int)(npcs.data.walkingSpeed * 20 / 100); // increase health by 20%
+                npcs.data.runningSpeed += (int)(npcs.data.runningSpeed * 20 / 100); // increase health by 20%
+            }
         }
 
         private void ManageEnemyShootingSpeed()
         {
             //If player is not getting hit
+            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            {
+                if (npcs.data.shootSpeed > 0.2f)
+                    npcs.data.shootSpeed += (int)(npcs.data.shootSpeed -= 0.2f); ; // shorten shoot wait time by 0.2, this can be done up till the shoort timer is left with 0.2f
+            }
         }
 
         private void ManageEnemyNumber()
         {
+            // if player have not died before third pool, increase enemy number for final stage
+
 
         }
 

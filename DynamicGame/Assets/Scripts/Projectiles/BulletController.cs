@@ -20,7 +20,7 @@ namespace Bullets {
         {
             transform.position = Vector3.MoveTowards(transform.position, target, bulletData.speed * Time.deltaTime);
 
-            if(!hit && Vector3.Distance(transform.position, target) < .01f)
+            if(!hit && Vector3.Distance(transform.position, target) < .03f)
             {
                 pool.ReturnObject(gameObject);
             }

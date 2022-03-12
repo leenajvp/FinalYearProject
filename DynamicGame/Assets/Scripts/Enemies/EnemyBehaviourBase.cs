@@ -13,10 +13,10 @@ namespace Enemies
         [SerializeField] protected GameObject player;
         private bool playerDisguised;
         [Tooltip("The guard will detect if player enters this radius and begin raycast.")]
-        public float detectionRadiusf;
+        public float detectionRadius;
         [Tooltip("Raycast distance when player is detected.")]
-        [SerializeField] protected float detectionDistance = 10f;
-        protected Collider[] colliders;
+        public float detectionDistance;
+       // protected Collider[] colliders;
         public bool playerNear = false;
         public bool playerFound = false;
 
@@ -27,7 +27,7 @@ namespace Enemies
         [SerializeField] protected ObjectPool bulletPool;
         [SerializeField] protected ParticleSystem muzzleFlash;
         [SerializeField] protected ParticleSystem impactEffect;
-        protected float shootTimer = 0f;
+        public float shootTimer = 0f;
         protected float distance;
         protected Vector3 playerPos;
         protected float currentSpeed;
@@ -63,6 +63,8 @@ namespace Enemies
             Raycast();
             playerPos = player.transform.position;
             distance = Vector3.Distance(transform.position, playerPos);
+            detectionDistance = data.detectionRayDistance;
+            detectionRadius = data.detectionRadius;
 
             if (distance < data.detectionRadius)
                 playerNear = true;
@@ -224,13 +226,13 @@ namespace Enemies
         }
 
         // if other npcs detect player go towards
-        protected virtual void AlertMoreEnemies()
-        {
-            foreach (var col in colliders)
-            {
-                PatrollingEnemyBehaviour enemies = col.gameObject.GetComponent<PatrollingEnemyBehaviour>();
-                //enemies.CurrentState = EnemyState.PlayerSeen;
-            }
-        }
+        //protected virtual void AlertMoreEnemies()
+        //{
+        //    foreach (var col in colliders)
+        //    {
+        //        PatrollingEnemyBehaviour enemies = col.gameObject.GetComponent<PatrollingEnemyBehaviour>();
+        //        //enemies.CurrentState = EnemyState.PlayerSeen;
+        //    }
+        //}
     }
 }

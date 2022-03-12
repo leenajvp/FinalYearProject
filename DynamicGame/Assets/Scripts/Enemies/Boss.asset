@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dba3e966159e7546862e1d8cef25f98, type: 3}
+  m_Name: Boss
+  m_EditorClassIdentifier: 
+  enemyName: Enemy
+  health: 30
+  prefab: {fileID: 0}
+  walkingSpeed: 2
+  runningSpeed: 3
+  detectionRadius: 50
+  detectionRayDistance: 50
+  bulletDamage: 5
+  shootDistance: 10
+  lostDistance: 30
+  retreatDistance: 7
+  shootSpeed: 2

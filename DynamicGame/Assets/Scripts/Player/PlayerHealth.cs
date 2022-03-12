@@ -12,7 +12,6 @@ namespace Player
         public float currentHealth;
        [SerializeField] private DDAManager ddaManager;
        [SerializeField] private SceneMngr sceneMngr;
-
         private PlayerController player;
 
         private void Start()
@@ -31,22 +30,9 @@ namespace Player
         {
             if (currentHealth <= 0)
             {
-                //player.PauseGame();
-                //ddaManager.playerDead = true;
-                //Time.timeScale = 0;
+                ddaManager.playerDead = true;
                 currentHealth = health;
             }
-        }
-
-        private void OnCollisionEnter(Collision collision)
-        {
-            //EnemyBullet eBullet = hit.collider.GetComponent<EnemyBullet>();
-
-            //if (collision.gameObject == gameObject.GetComponent<EnemyBullet>())
-            //{
-            //    Debug.Log("hit");
-            //    health -= 1;
-            //}
         }
     }
 }

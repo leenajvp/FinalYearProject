@@ -20,7 +20,8 @@ MonoBehaviour:
   detectionRadius: 50
   detectionRayDistance: 50
   bulletDamage: 1
-  shootDistance: 5
+  shootDistance: 7
   lostDistance: 20
-  retreatDistance: 3
+  retreatDistance: 5
   shootSpeed: 1
+  adjust: 0

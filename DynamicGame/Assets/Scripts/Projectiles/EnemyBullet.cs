@@ -16,6 +16,7 @@ public class EnemyBullet : BulletController
         base.Start();
 
         ddaManager = FindObjectOfType<DDAManager>();
+        StartCoroutine(DestroyTimer());
     }
 
     private void OnTriggerEnter(Collider other)
@@ -32,5 +33,11 @@ public class EnemyBullet : BulletController
 
             pool.ReturnObject(gameObject);
         }
+    }
+
+    private IEnumerator DestroyTimer()
+    {
+        yield return new WaitForSeconds(2);
+        pool.ReturnObject(gameObject);
     }
 }

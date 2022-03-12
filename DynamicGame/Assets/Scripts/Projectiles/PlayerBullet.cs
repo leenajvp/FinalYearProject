@@ -18,17 +18,14 @@ public class PlayerBullet : BulletController
 
         ddaManager = FindObjectOfType<DDAManager>();
         player = FindObjectOfType<PlayerController>();
-    }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        ContactPoint contact = collision.GetContact(0);
+        StartCoroutine(DestroyTimer());
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other != null)
         {
+            pool.ReturnObject(gameObject);
             EnemyHealth enemy = other.gameObject.GetComponent<EnemyHealth>();
 
             if (enemy != null)
@@ -40,11 +37,13 @@ public class PlayerBullet : BulletController
                 if (player.isDisguised && !enemy.explorationNPC)
                     player.isDisguised = false;
             }
-
-            pool.ReturnObject(gameObject);
         }
+    }
 
-        
+    private IEnumerator DestroyTimer()
+    {
+        yield return new WaitForSeconds(1);
+        pool.ReturnObject(gameObject);
     }
 }
 

@@ -81,6 +81,14 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""GodMode"",
+                    ""type"": ""Button"",
+                    ""id"": ""77755255-832e-4330-9bab-1fd1c68e7acc"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -215,6 +223,17 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                     ""action"": ""Map"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b36cc44a-f2cc-4ee2-8d13-edde12559300"",
+                    ""path"": ""<Keyboard>/0"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GodMode"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -231,6 +250,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Pause = m_Player.FindAction("Pause", throwIfNotFound: true);
         m_Player_Map = m_Player.FindAction("Map", throwIfNotFound: true);
+        m_Player_GodMode = m_Player.FindAction("GodMode", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -288,6 +308,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Pause;
     private readonly InputAction m_Player_Map;
+    private readonly InputAction m_Player_GodMode;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -300,6 +321,7 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @Pause => m_Wrapper.m_Player_Pause;
         public InputAction @Map => m_Wrapper.m_Player_Map;
+        public InputAction @GodMode => m_Wrapper.m_Player_GodMode;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -333,6 +355,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Map.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
                 @Map.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
                 @Map.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMap;
+                @GodMode.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGodMode;
+                @GodMode.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGodMode;
+                @GodMode.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnGodMode;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -361,6 +386,9 @@ public class @PlayerControls : IInputActionCollection, IDisposable
                 @Map.started += instance.OnMap;
                 @Map.performed += instance.OnMap;
                 @Map.canceled += instance.OnMap;
+                @GodMode.started += instance.OnGodMode;
+                @GodMode.performed += instance.OnGodMode;
+                @GodMode.canceled += instance.OnGodMode;
             }
         }
     }
@@ -375,5 +403,6 @@ public class @PlayerControls : IInputActionCollection, IDisposable
         void OnInteract(InputAction.CallbackContext context);
         void OnPause(InputAction.CallbackContext context);
         void OnMap(InputAction.CallbackContext context);
+        void OnGodMode(InputAction.CallbackContext context);
     }
 }

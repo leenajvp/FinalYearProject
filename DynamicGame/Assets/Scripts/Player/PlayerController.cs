@@ -51,6 +51,9 @@ namespace Player
         [HideInInspector] public  InputAction interactAction;
         private InputAction pauseGame;
         private InputAction openMap;
+#if UNITY_EDITOR
+        private InputAction godMode;
+#endif
 
         private PlayerInventory inventory;
         private DDAManager ddaManager;
@@ -67,6 +70,9 @@ namespace Player
             interactAction = playerInput.actions["Interact"];
             pauseGame = playerInput.actions["Pause"];
             openMap = playerInput.actions["Map"];
+#if UNITY_EDITOR
+            godMode = playerInput.actions["GodMode"];
+#endif
 
             pHealth = GetComponent<PlayerHealth>();
             inventory = GetComponent<PlayerInventory>();
@@ -99,6 +105,15 @@ namespace Player
 
         void Update()
         {
+
+#if UNITY_EDITOR
+            if (godMode.triggered)
+            {
+                GetComponent<PlayerHealth>().currentHealth += 100;
+                inventory.bullets += 100;
+            }
+#endif
+
             Interact();
             Jump();
             Move();

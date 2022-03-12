@@ -17,6 +17,7 @@ namespace Enemies
         private float turnTime = 0;
         public bool turned;
 
+        private Transform t;
 
         public enum EnemyState
         {
@@ -31,6 +32,7 @@ namespace Enemies
 
         protected override void Start()
         {
+            t = transform;
             base.Start();
             guardPos = transform.position;
             defaultRot = transform.localEulerAngles.y;

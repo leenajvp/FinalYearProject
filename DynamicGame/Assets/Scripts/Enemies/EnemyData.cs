@@ -21,6 +21,6 @@ namespace Enemies
         [Tooltip("Seconds between shots")]
         public float shootSpeed = 1f;
 
-        // Search time?
+        public bool adjust = false;
     }
 }
