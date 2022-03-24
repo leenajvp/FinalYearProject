@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using Cinemachine;
 
@@ -8,8 +9,8 @@ public class SwitchCamera : MonoBehaviour
 {
     [SerializeField] private PlayerInput playerInput;
     [SerializeField] private int newPriority = 10;
-    [SerializeField] private Canvas tpCanvas;
-    [SerializeField] private Canvas aimCanvas;
+    [SerializeField] private Image tpCanvas;
+    [SerializeField] private Image aimCanvas;
     private InputAction aimAction;
     private CinemachineVirtualCamera vCamera;
 
@@ -18,6 +19,7 @@ public class SwitchCamera : MonoBehaviour
     {
         vCamera = GetComponent<CinemachineVirtualCamera>();
         aimAction = playerInput.actions["Aim"];
+        aimCanvas.enabled = false;
     }
 
     private void OnEnable()

@@ -9,10 +9,7 @@ public class ExplorationNpc : PatrollingEnemyBehaviour
     {
         agent.destination = targets[1].position;
 
-        if (isHit)
-        {
-            timer = 0;
-            CurrentState = EnemyState.ShootPlayer;
-        }
+        if (agent.remainingDistance < 0.1f)
+            currentState.CurrentState = EnemyStates.NPCSStateMachine.Idle;
     }
 }

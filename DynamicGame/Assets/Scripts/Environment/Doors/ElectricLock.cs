@@ -14,7 +14,7 @@ public class ElectricLock : MonoBehaviour, Iinteractive
     [SerializeField] protected GameObject puzzle;
 
     protected GameObject player;
-    protected Player.PlayerController playerController;
+    protected PlayerController playerController;
     protected SlidingDoor door;
 
     protected virtual void Start()
@@ -47,9 +47,9 @@ public class ElectricLock : MonoBehaviour, Iinteractive
 
         else
         {
-            puzzle.SetActive(false);
             playerController.interacting = false;
             playerController.DisablePlayer();
+            puzzle.SetActive(false);
         }
     }
     public void Unlock()

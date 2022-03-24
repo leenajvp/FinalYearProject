@@ -1,14 +1,16 @@
 using Bullets;
+using Cinemachine;
 using DDA;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Cinemachine;
+using Enemies;
+using System.Collections;
 
 namespace Player
 {
     [RequireComponent(typeof(PlayerController), typeof(PlayerInput), typeof(CharacterController))]
-    [RequireComponent(typeof(PlayerInventory), typeof (PlayerHealth))]
-
+    [RequireComponent(typeof(PlayerInventory), typeof(PlayerHealth))]
+    [RequireComponent(typeof(AudioSource))]
     public class PlayerController : MonoBehaviour, IPlayer
     {
         [Header("Player movement values")]
@@ -29,17 +31,22 @@ namespace Player
         [SerializeField] private ObjectPool bulletPool;
         [SerializeField] private ParticleSystem muzzleFlash;
         [SerializeField] private ParticleSystem impact;
+        private float shootTimer = 0.0f;
 
         [Header("Interactions")]
         public bool interacting = false;
         public bool availableInteraction = false;
         [SerializeField] private GameObject interactHUD;
 
+        [Header("Sound Effects")]
+        [SerializeField] private AudioSource collectSound;
+
         [Header("UI")]
         [SerializeField] private GameObject pauseMenu;
         [SerializeField] private GameObject map;
+        [SerializeField] private GameObject LockUI;
 
-         public bool isDisguised = false;
+        public bool isDisguised = false;
 
         private Transform cameraTransform;
         private CharacterController controller;
@@ -47,35 +54,41 @@ namespace Player
         private InputAction moveAction;
         private InputAction lookAction;
         private InputAction jumpAction;
+        private InputAction runAction;
         private InputAction shootAction;
-        [HideInInspector] public  InputAction interactAction;
+        [HideInInspector] public InputAction interactAction;
         private InputAction pauseGame;
         private InputAction openMap;
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
         private InputAction godMode;
-#endif
-
+        //#endif
         private PlayerInventory inventory;
         private DDAManager ddaManager;
         private PlayerHealth pHealth;
 
+        LayerMask layer_mask;
+        int layerMask;
+
         private void Awake()
         {
+            layer_mask = LayerMask.GetMask( "Default", "Environment", "Door", "Objects", "Ground");
             controller = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
             moveAction = playerInput.actions["Move"];
             lookAction = playerInput.actions["Look"];
             jumpAction = playerInput.actions["Jump"];
+            runAction = playerInput.actions["Run"];
             shootAction = playerInput.actions["Shoot"];
             interactAction = playerInput.actions["Interact"];
             pauseGame = playerInput.actions["Pause"];
             openMap = playerInput.actions["Map"];
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
             godMode = playerInput.actions["GodMode"];
-#endif
+//#endif
 
             pHealth = GetComponent<PlayerHealth>();
             inventory = GetComponent<PlayerInventory>();
+            collectSound = GetComponent<AudioSource>();
 
             if (ddaManager == null)
             {
@@ -85,6 +98,7 @@ namespace Player
 
         private void OnEnable()
         {
+
             shootAction.performed += _ => Shoot();
         }
 
@@ -106,19 +120,17 @@ namespace Player
         void Update()
         {
 
-#if UNITY_EDITOR
+//#if UNITY_EDITOR
             if (godMode.triggered)
             {
-                GetComponent<PlayerHealth>().currentHealth += 100;
-                inventory.bullets += 100;
+                GetComponent<PlayerHealth>().currentHealth += 10;
+                inventory.bullets += 10;
             }
-#endif
+//#endif
 
             Interact();
             Jump();
             Move();
-
-            // Check for GamePause and Map inputs
 
             if (pauseGame.triggered)
             {
@@ -134,13 +146,14 @@ namespace Player
                 {
                     pauseMenu.SetActive(true);
                     openMap.Disable();
+                    foreach (Transform child in LockUI.transform)
+                        child.gameObject.SetActive(false);
                 }
-                    
+
             }
 
             if (openMap.triggered)
             {
-                PauseGame();
                 DisablePlayer();
 
                 if (map.activeSelf)
@@ -148,14 +161,12 @@ namespace Player
                     map.SetActive(false);
                     pauseGame.Enable();
                 }
-                    
 
                 else
                 {
                     map.SetActive(true);
                     pauseGame.Disable();
                 }
-                    
             }
         }
 
@@ -165,7 +176,6 @@ namespace Player
             Vector3 move = new Vector3(input.x, 0, input.y);
             move = move.x * cameraTransform.right.normalized + move.z * cameraTransform.forward.normalized;
             move.y = 0f;
-
             controller.Move(move * Time.deltaTime * currentSpeed);
             playerVelocity.y += gravityValue * Time.deltaTime;
             controller.Move(playerVelocity * Time.deltaTime);
@@ -173,6 +183,7 @@ namespace Player
             //Rotate with camera
             Quaternion targetRotation = Quaternion.Euler(0, cameraTransform.eulerAngles.y, 0);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, rotSpeed * Time.deltaTime);
+
         }
 
         private void Jump()
@@ -192,37 +203,49 @@ namespace Player
 
         private void Shoot()
         {
+            if (Time.time < shootTimer + 0.01f)
+                return;
+
+            shootTimer = Time.time;
+
+
             if (inventory.bullets > 0)
             {
-                
-                inventory.bullets--;
                 ddaManager.currentsShots++;
 
                 muzzleFlash.Play();
 
                 RaycastHit hit;
-                GameObject newBullet = bulletPool.GetObject();
-                newBullet.transform.position = shootPoint.position;
-                newBullet.transform.rotation = shootPoint.rotation;
-                newBullet.SetActive(true);
-                BulletController bulletController = newBullet.GetComponent<BulletController>();
-
-                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, Mathf.Infinity))
+               // RaycastHit hit;
+                //QueryTriggerInteraction.Ignore
+                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 60, layer_mask))
                 {
-                    bulletController.target = hit.point;
-                    bulletController.hit = true;
-                    var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(newImpact, 0.1f);
+                    //shootPoint.LookAt(hit.point);
+                  //  Physics.Raycast(shootPoint.position, shootPoint.forward, out hit, 60, layer_mask);
+
+                    if (hit.collider.gameObject)
+                    {
+                        var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
+                        Destroy(newImpact, 0.5f);
+
+                        EnemyHealth enemy = hit.collider.gameObject.GetComponent<EnemyHealth>();
+
+                        if (enemy != null)
+                        {
+                            ddaManager.currentEHits++;
+                            enemy.currentHealth -= 1;
+                            enemy.gameObject.GetComponent<EnemyBehaviourBase>().isHit = true;
+                            enemy.ChangeMaterial();
+
+                            if (isDisguised && !enemy.explorationNPC)
+                                isDisguised = false;
+                        }
+                    }
                 }
 
-                else
-                {
-                    bulletController.target = cameraTransform.position + cameraTransform.forward * 25;
-                    //bulletController.hit = false;
-                }
+                ddaManager.currentShots++;
+                inventory.bullets--;
             }
-            // ddaManager.ManageEnemyHealth();
-
         }
 
         public void DisablePlayer()
@@ -267,6 +290,7 @@ namespace Player
                     if (interactAction.triggered)
                     {
                         interactive.GetInteraction();
+                        collectSound.Play();
                     }
                 }
 
@@ -277,6 +301,7 @@ namespace Player
 
                     if (interactAction.triggered)
                     {
+                        collectSound.Play();
                         interactHUD.SetActive(false);
                         collectable.collected = true;
                         inventory.AddItem(qItem);
@@ -295,7 +320,7 @@ namespace Player
                 interactHUD.SetActive(false);
                 return;
             }
-                
+
         }
 
         // Add push force to controller
@@ -307,12 +332,16 @@ namespace Player
             {
                 rb.velocity = hit.moveDirection * pushForce;
             }
+        }
 
-            GeneralCollectable collectable = hit.gameObject.GetComponent<GeneralCollectable>();
+        private void OnTriggerEnter(Collider other)
+        {
+            GeneralCollectable collectable = other.gameObject.GetComponent<GeneralCollectable>();
 
             if (collectable != null)
             {
-                if(collectable.type == GeneralCollectable.CollectableType.Bullets)
+                collectSound.Play();
+                if (collectable.type == GeneralCollectable.CollectableType.Bullets)
                 {
                     inventory.bullets += collectable.quantity;
                 }
@@ -321,7 +350,6 @@ namespace Player
                 {
                     pHealth.currentHealth += collectable.quantity;
                 }
-
                 collectable.Collect();
             }
         }
@@ -355,10 +383,12 @@ namespace Player
 
             else
             {
-                openMap.Enable();  
+                openMap.Enable();
                 pauseGame.Enable();
             }
         }
+
+
     }
 }
 

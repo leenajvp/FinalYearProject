@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Player;
+using DDA;
+using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -8,21 +10,27 @@ using UnityEditor;
 
 public class SceneMngr : MonoBehaviour
 {
+    [SerializeField] private GameObject player;
     [SerializeField] private GameObject gameOver;
     [SerializeField] private GameObject newGameMenu;
     [SerializeField] public Transform startpos;
     [SerializeField] private List<EnemyPools> checkPoints = new List<EnemyPools>();
-
-    private GameObject player;
     private PlayerHealth pHealth;
-    private Player.PlayerController pController;
+    private PlayerController pController;
+    [SerializeField] DDAManager dda;
+    [SerializeField] private GameObject LockUI;
 
     void Start()
     {
+
         PlayerPrefs.SetInt("Progression", 0);
-        pController = FindObjectOfType<PlayerController>();
-        pHealth = FindObjectOfType<PlayerHealth>();
-        player = pHealth.gameObject;
+        PlayerPrefs.SetInt("ExplorationSave", 0);
+
+        if (player == null)
+            player = FindObjectOfType<PlayerController>().gameObject;
+
+        pHealth = player.GetComponent<PlayerHealth>();
+        pController = player.GetComponent<PlayerController>();
 
         newGameMenu.SetActive(true);
         gameOver.SetActive(false);
@@ -31,7 +39,7 @@ public class SceneMngr : MonoBehaviour
 
     void Update()
     {
-        if (pHealth.currentHealth <= 0)
+        if (dda.playerDead)
         {
             DisablePlayer();
             gameOver.SetActive(true);
@@ -40,6 +48,7 @@ public class SceneMngr : MonoBehaviour
 
     public void NewGame()
     {
+        gameObject.SetActive(true);
         DisablePlayer();
         Time.timeScale = 1;
         newGameMenu.SetActive(false);
@@ -51,9 +60,17 @@ public class SceneMngr : MonoBehaviour
             checkPoint.ResetEnemies();
         }
 
+        for (int i = 0; i < LockUI.transform.childCount; i++)
+        {
+            var child = LockUI.transform.GetChild(i);
+            if (child.gameObject.activeSelf)
+                child.gameObject.SetActive(false);
+        }
+
     }
     public void Restart()
     {
+        player.SetActive(true);
         DisablePlayer();
         Time.timeScale = 1;
         gameOver.SetActive(false);
@@ -63,36 +80,47 @@ public class SceneMngr : MonoBehaviour
         if (PlayerPrefs.GetInt("Progression") == 0)
         {
             player.transform.position = startpos.position;
-            return;
         }
 
         foreach (EnemyPools checkPoint in checkPoints)
         {
+            checkPoint.ResetToLast();
+
             for (int i = 0; i < checkPoints.Count; i++)
             {
-                if (checkPoints[i].checkPointID == progression && PlayerPrefs.GetInt("ExplorationSave") == 0)
+                if (checkPoints[i].checkPointID == progression)
                 {
                     player.transform.position = checkPoints[i].gameObject.transform.position;
+                    
                 }
-
-                checkPoint.ResetToLast();
             }
+        }
+
+        for (int i = 0; i < LockUI.transform.childCount; i++)
+        {
+            var child = LockUI.transform.GetChild(i);
+            if (child.gameObject.activeSelf)
+                child.gameObject.SetActive(false);
         }
     }
 
-    private void DisablePlayer()
+    public void DisablePlayer()
     {
         pController.PauseGame();
         pController.DisablePlayer();
         pController.DisableMenus();
+
     }
 
     public void QuitGame()
     {
+
+
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else
         Application.Quit();
 #endif
     }
+
 }

@@ -10,7 +10,7 @@ public class ObjectPool : MonoBehaviour
     private List<GameObject> availableObjects;
      private List<GameObject> usedObjects;
 
-    private void Awake()
+    private void Start()
     {
         availableObjects = new List<GameObject>();
         usedObjects = new List<GameObject>();

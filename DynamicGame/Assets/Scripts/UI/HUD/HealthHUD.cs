@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class HealthHUD : MonoBehaviour
 {
     [SerializeField] private Image healthBarFill;
+    [SerializeField] private Text healthAmountText;
     private PlayerHealth health;
     private Slider hSlider;
 
@@ -16,6 +17,7 @@ public class HealthHUD : MonoBehaviour
 
     void Update()
     {
+        healthAmountText.text = health.currentHealth.ToString();  
         hSlider.value = health.currentHealth;
 
         if (health.currentHealth < 7)

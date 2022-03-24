@@ -30,6 +30,8 @@ public class SlidingDoor : MonoBehaviour
     private Transform doorPos;
     protected GameObject playerObj;
     protected EnemyBehaviourBase npc;
+   [SerializeField]protected AudioSource openSound;
+    [SerializeField]protected AudioSource closeSound;
 
     protected virtual void Start()
     {
@@ -53,8 +55,12 @@ public class SlidingDoor : MonoBehaviour
     {
         if (other.gameObject == playerObj || other.gameObject.tag == "NPC")
         {
-            if (!open)
+            if (!open && active)
+            {
                 open = true;
+                openSound.Play();
+            }
+                
         }
     }
 
@@ -63,7 +69,10 @@ public class SlidingDoor : MonoBehaviour
         if (other.gameObject == playerObj || other.gameObject.tag == "NPC")
         {
             if (open)
+            {
                 StartCoroutine(OpenTimer());
+                
+            }
         }
     }
 
@@ -104,6 +113,7 @@ public class SlidingDoor : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         open = false;
+        closeSound.Play();
     }
 
 }

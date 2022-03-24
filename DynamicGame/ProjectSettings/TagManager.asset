@@ -22,10 +22,10 @@ TagManager:
   - Postprocessing
   - MiniMap
   - Objects
-  - 
-  - 
-  - 
-  - 
+  - Player
+  - PlayerBullets
+  - BulletsIgnore
+  - Data
   - 
   - 
   - 

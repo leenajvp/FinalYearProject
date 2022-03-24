@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AI;
 
 namespace Enemies
@@ -7,95 +6,116 @@ namespace Enemies
     [RequireComponent(typeof(NavMeshAgent))]
     public class PatrollingEnemyBehaviour : EnemyBehaviourBase
     {
-        public enum EnemyState
-        {
-            Patrol,
-            PlayerSeen,
-            ShootPlayer,
-            AlertOthers
-        }
-
-        public EnemyState CurrentState;
-
         [Header("Patroling targets")]
         [SerializeField] protected Transform[] targets;
         private int destinationTarget = 0;
 
-        protected override void Start()
-        {
-            base.Start();
-            gameObject.transform.position = targets[0].position;
-        }
-
-        protected override void Update()
+        protected  void LateUpdate()
         {
             base.Update();
-            agent.speed = currentSpeed;
 
-            switch (CurrentState)
+            if (playerFound)
+                currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
+
+            switch (currentState.CurrentState)
             {
-                case EnemyState.Patrol:
-                    agent.speed = data.walkingSpeed;
-                    agent.isStopped = false;
-                    Raycast();
-
-                    if (!agent.pathPending && agent.remainingDistance < 0.5f)
-                        Patrolling();
-
-                    if (playerFound)
+                case EnemyStates.NPCSStateMachine.Idle:
                     {
-                        CurrentState = EnemyState.PlayerSeen;
+                        if (isHit)
+                        {
+                            HitReaction();
+                        }
+
+                        break;
                     }
 
-                    break;
-
-                case EnemyState.PlayerSeen:
-
-                    FollowPlayer();
-
-                    if (!playerFound)
+                case EnemyStates.NPCSStateMachine.Patrol:
                     {
-                        agent.destination = targets[0].position;
-                        CurrentState = EnemyState.Patrol;
+                        if (distance < 2f && !player.GetComponent<Player.PlayerController>().isDisguised)
+                        {
+                            playerFound = true;
+                            currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
+                        }
+
+                        else if (isHit)
+                        {
+                            HitReaction();
+                        }
+
+                        else if (agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance < 0.5f)
+                            Patrolling();
+                        break;
                     }
 
-                    break;
+                case EnemyStates.NPCSStateMachine.Chase:
+                    {
+                        ChasePlayer();
+                        break;
+                    }
 
-                case EnemyState.ShootPlayer:
+                case EnemyStates.NPCSStateMachine.Search:
+                    {
 
-                    FollowPlayer();
+                        LostTimer();
+                        break;
+                    }
 
-                    break;
+                case EnemyStates.NPCSStateMachine.Return:
+                    {
+                        if (playerFound)
+                            currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
 
-                case EnemyState.AlertOthers:
-                    // get enemies in radius and get them target the player
-                    break;
+                        if(isHit)
+                            HitReaction();
+
+                        Return();
+                        break;
+                    }
 
                 default:
-
-                    CurrentState = EnemyState.Patrol;
-
+                    currentState.CurrentState = EnemyStates.NPCSStateMachine.Patrol;
                     break;
             }
+        }
+
+        public override void Reset()
+        {
+            base.Reset();
+            currentState.CurrentState = EnemyStates.NPCSStateMachine.Patrol;
+            reset = false;
+
+        }
+
+        private void ChasePlayer()
+        {
+            currentSpeed = runSpeed;
+            FollowPlayer();
+
+            if (playerFound && !hitFront && !hitRight && !hitLeft && !hitUp)
+                LostTimer();
+
+            if (!playerFound)
+                currentState.CurrentState = EnemyStates.NPCSStateMachine.Return;
+        }
+
+        private void Return()
+        {
+            currentSpeed = walkSpeed;
+            agent.isStopped = false;
+            agent.destination = targets[0].position;
+            currentState.CurrentState = EnemyStates.NPCSStateMachine.Patrol;
         }
 
         //Patrol between set points when player is not detected
         protected virtual void Patrolling()
         {
+            currentSpeed = walkSpeed;
+            agent.isStopped = false;
             agent.destination = targets[destinationTarget].position;
             destinationTarget = (destinationTarget + 1) % targets.Length;
-
-            if (isHit)
-                StartCoroutine(ReactionTimer());
         }
 
-        private IEnumerator ReactionTimer()
-        {
-            yield return new WaitForSeconds(1);
-            CurrentState = EnemyState.ShootPlayer;
-            isHit = false;
-        }
-
+#if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
             for (int i = 0; i < targets.Length; i++)
@@ -108,6 +128,7 @@ namespace Enemies
                     Gizmos.DrawLine(targets[i].position, targets[0].position);
             }
         }
+#endif
 
     }
 }

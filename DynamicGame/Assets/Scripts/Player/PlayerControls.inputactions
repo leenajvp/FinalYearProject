@@ -38,6 +38,14 @@
                     "interactions": ""
                 },
                 {
+                    "name": "Run",
+                    "type": "Button",
+                    "id": "8cd8ef98-0eb3-47dc-b16b-ba5d11c581a1",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
                     "name": "Shoot",
                     "type": "Button",
                     "id": "0486d89e-41c1-4d82-a07b-39898cf8949a",
@@ -73,6 +81,14 @@
                     "name": "GodMode",
                     "type": "Button",
                     "id": "77755255-832e-4330-9bab-1fd1c68e7acc",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": ""
+                },
+                {
+                    "name": "Swap",
+                    "type": "Button",
+                    "id": "a82dec20-7f65-47ad-a291-a02f1436883d",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": ""
@@ -219,6 +235,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "GodMode",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "90682545-cd78-4733-8527-67ecc7bd9290",
+                    "path": "<Keyboard>/shift",
+                    "interactions": "Hold",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Run",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5d195237-b8d3-47ec-811d-2ade284c047c",
+                    "path": "<Mouse>/middleButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Swap",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

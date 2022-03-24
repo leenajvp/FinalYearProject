@@ -26,6 +26,5 @@ public class CollectableHelmet : QuestItems
         pRenderer.material.color = helmetColor;
         player.gameObject.GetComponent<PlayerController>().isDisguised = true; // fix this line
         npc.SetActive(true);
-        
     }
 }

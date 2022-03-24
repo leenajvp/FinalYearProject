@@ -1,49 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Enemies;
 using Bullets;
 using DDA;
+using Enemies;
 using Player;
+using UnityEngine;
 
 public class PlayerBullet : BulletController
 {
     public int bulletDamange;
-    private DDAManager ddaManager;
     private PlayerController player;
 
     protected override void Start()
     {
         base.Start();
-
-        ddaManager = FindObjectOfType<DDAManager>();
         player = FindObjectOfType<PlayerController>();
-        StartCoroutine(DestroyTimer());
+        Physics.IgnoreLayerCollision(14, 13);
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other != null)
-        {
-            pool.ReturnObject(gameObject);
-            EnemyHealth enemy = other.gameObject.GetComponent<EnemyHealth>();
+        pool.ReturnObject(gameObject);
+        EnemyHealth enemy = collision.gameObject.GetComponent<EnemyHealth>();
 
             if (enemy != null)
             {
                 enemy.currentHealth -= bulletDamange;
-                ddaManager.currentEHits++;
                 enemy.gameObject.GetComponent<EnemyBehaviourBase>().isHit = true;
 
                 if (player.isDisguised && !enemy.explorationNPC)
                     player.isDisguised = false;
             }
-        }
-    }
 
-    private IEnumerator DestroyTimer()
-    {
-        yield return new WaitForSeconds(1);
-        pool.ReturnObject(gameObject);
+            
+        
     }
 }
 

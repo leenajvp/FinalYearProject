@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,125 +9,113 @@ namespace Enemies
         [Header("NPC look around")]
         [SerializeField] private float turnAngle = 45.0f;
         [SerializeField] private float rotationSpeed = 0.01f;
-        private Vector3 guardPos;
+        [SerializeField] private float returnGuardDistance = 0.3f;
         private float newTurnAngle;
         private float defaultRot;
         private float currentRot;
         private float turnTime = 0;
         public bool turned;
 
-        private Transform t;
-
-        public enum EnemyState
-        {
-            Guard,
-            PlayerSeen,
-            ReturnGuard,
-            AlertOthers,
-            ShootPlayer
-        }
-
-        public EnemyState CurrentState;
-
         protected override void Start()
         {
-            t = transform;
             base.Start();
-            guardPos = transform.position;
             defaultRot = transform.localEulerAngles.y;
             currentRot = transform.localEulerAngles.y;
+            returnGuardDistance = data.returnGuardDistance;
             InvokeRepeating("TurnTimer", 0, 4);
         }
 
-        protected override void Update()
+        protected  void LateUpdate()
         {
             base.Update();
-            agent.speed = currentSpeed;
-
-            switch (CurrentState)
+            switch (currentState.CurrentState)
             {
-                case EnemyState.Guard:
+                case EnemyStates.NPCSStateMachine.Guard:
+                    {
+                        if (distance < 2f && !player.GetComponent<Player.PlayerController>().isDisguised)
+                        {
+                            playerFound = true;
+                            currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
+                        }
 
-                    Raycast();
-                    Quarding();
+                        if (isHit)
+                        {
+                            HitReaction();
+                        }
 
-                    if (playerFound)
-                        CurrentState = EnemyState.PlayerSeen;
+                        Guard();
+                        break;
+                    }
 
-                    break;
+                case EnemyStates.NPCSStateMachine.Chase:
+                    {
+                        ChasePlayer();
+                        break;
+                    }
 
-                case EnemyState.PlayerSeen:
+                case EnemyStates.NPCSStateMachine.Search:
+                    {
+                        LostTimer();
+                        break;
+                    }
 
-                    FollowPlayer();
-                    currentSpeed = data.runningSpeed;
+                case EnemyStates.NPCSStateMachine.Return:
+                    {
+                        if (playerFound)
+                            currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
 
-                    if (!playerFound)
-                        CurrentState = EnemyState.ReturnGuard;
+                        if (isHit)
+                            HitReaction();
 
-                    break;
-
-
-                case EnemyState.ReturnGuard:
-
-                    agent.speed = data.walkingSpeed;
-                    agent.isStopped = false;
-                    agent.destination = guardPos;
-
-                    if (agent.remainingDistance < 0.5f)
-                        CurrentState = EnemyState.Guard;
-
-
-
-                    break;
-
-                case EnemyState.ShootPlayer:
-
-                    FollowPlayer();
-                    currentSpeed = data.runningSpeed;
-
-                    break;
-
-                case EnemyState.AlertOthers:
-                    // get enemies in radius and get them target the player
-                    break;
+                        Return();
+                        break;
+                    }
 
                 default:
-
-                    CurrentState = EnemyState.Guard;
-
+                    currentState.CurrentState = EnemyStates.NPCSStateMachine.Guard;
                     break;
             }
         }
 
-        //Patrol between set points when player is not detected
-        private void Quarding()
+        public override void Reset()
         {
-            if (distance < detectionDistance)
-            {
-                if (turned)
-                    newTurnAngle = turnAngle;
-                else
-                    newTurnAngle = -turnAngle * 2;
+            base.Reset();
+            currentState.CurrentState = EnemyStates.NPCSStateMachine.Guard;
+            reset = false;
 
-                turnTime += Time.deltaTime * rotationSpeed;
-                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Mathf.LerpAngle(currentRot, defaultRot + newTurnAngle, turnTime), transform.localEulerAngles.z);
-                currentRot = transform.localEulerAngles.y;
-                turnTime = 0;
-                if (isHit)
-                {
-                    StartCoroutine(ReactionTimer());
-                }
-                    
-            }
         }
 
-        private IEnumerator ReactionTimer()
+        private void ChasePlayer()
         {
-            yield return new WaitForSeconds(1);
-            CurrentState = EnemyState.PlayerSeen;
-            isHit = false;
+            currentSpeed = runSpeed;
+            FollowPlayer();
+
+            if (playerFound && !hitFront && !hitRight && !hitLeft && !hitUp)
+                LostTimer();
         }
 
+        private void Return()
+        {
+            currentSpeed = walkSpeed;
+            agent.isStopped = false;
+            agent.destination = startPos;
+
+            if (agent.remainingDistance < returnGuardDistance)
+                currentState.CurrentState = EnemyStates.NPCSStateMachine.Guard;
+        }
+
+        private void Guard()
+        {
+            if (turned)
+                newTurnAngle = turnAngle;
+            else
+                newTurnAngle = -turnAngle * 2;
+
+            turnTime += Time.deltaTime * rotationSpeed;
+            transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, Mathf.LerpAngle(currentRot, defaultRot + newTurnAngle, turnTime), transform.localEulerAngles.z);
+            currentRot = transform.localEulerAngles.y;
+            turnTime = 0;
+        }
 
         private void TurnTimer()
         {

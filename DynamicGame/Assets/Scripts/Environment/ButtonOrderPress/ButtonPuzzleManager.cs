@@ -55,4 +55,11 @@ public class ButtonPuzzleManager : ElectricLock
         inputTxt += num;
         playerInputText.text = inputTxt;
     }
+
+    public void Reset()
+    {
+        enteredNums.Clear();
+        inputTxt = "";
+        playerInputText.text = inputTxt;
+    }
 }

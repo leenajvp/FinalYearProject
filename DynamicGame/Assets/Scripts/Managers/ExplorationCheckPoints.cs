@@ -5,17 +5,9 @@ using Player;
 
 public class ExplorationCheckPoints : MonoBehaviour
 {
-    [SerializeField] private GameObject player;
-    [SerializeField] private SceneMngr sceneMngr;
+    [SerializeField] private GameObject player => FindObjectOfType<PlayerController>().gameObject;
+    [SerializeField] private SceneMngr sceneMngr => FindObjectOfType<SceneMngr>();
 
-    private void Start()
-    {
-        if (player == null)
-            player = FindObjectOfType<PlayerController>().gameObject;
-
-        if(sceneMngr == null)
-            sceneMngr= FindObjectOfType<SceneMngr>();
-    }
     private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject == player)

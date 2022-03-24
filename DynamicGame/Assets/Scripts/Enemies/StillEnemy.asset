@@ -13,15 +13,19 @@ MonoBehaviour:
   m_Name: StillEnemy
   m_EditorClassIdentifier: 
   enemyName: GuardingNPC
-  health: 10
-  prefab: {fileID: 6085086730759123922, guid: d29aa3590431dfc48ae18cb0341c7669, type: 3}
+  health: 5
   walkingSpeed: 3
-  runningSpeed: 7
+  runningSpeed: 5
+  defaultMaterial: {fileID: 2100000, guid: ea5f87de460ee2b4198f96b5903537ad, type: 2}
+  hurtMaterial: {fileID: 2100000, guid: 0e22f0dc5c0910949a58af32a4ed431e, type: 2}
+  hitSound: {fileID: 8300000, guid: ffe3e0d0179296b43b28f0e1692f0c58, type: 3}
+  pHitEffect: {fileID: 0}
   detectionRadius: 50
-  detectionRayDistance: 50
+  detectionRayDistance: 100
+  rotationSpeed: 10
   bulletDamage: 1
-  shootDistance: 7
-  lostDistance: 20
-  retreatDistance: 5
-  shootSpeed: 1
+  shootDistance: 10
+  lostDistance: 30
+  retreatDistance: 2
+  shootSpeed: 0.5
   adjust: 0

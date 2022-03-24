@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DDA;
 
 namespace Bullets {
     public class BulletController : MonoBehaviour
@@ -14,6 +15,7 @@ namespace Bullets {
         protected virtual void Start()
         {
             pool = transform.parent.GetComponent<ObjectPool>();
+            StartCoroutine(DestroyTimer());
         }
 
         private void Update()
@@ -26,9 +28,9 @@ namespace Bullets {
             }
         }
 
-        private IEnumerator DestroyTimer()
+        protected IEnumerator DestroyTimer()
         {
-            yield return new WaitForSeconds(bulletData.timeToDestroy);
+            yield return new WaitForSeconds(2);
             pool.ReturnObject(gameObject);
         }
     }

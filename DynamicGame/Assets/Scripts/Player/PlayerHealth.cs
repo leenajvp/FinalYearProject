@@ -11,13 +11,9 @@ namespace Player
         public float health = 10;
         public float currentHealth;
        [SerializeField] private DDAManager ddaManager;
-       [SerializeField] private SceneMngr sceneMngr;
-        private PlayerController player;
 
         private void Start()
         {
-            player = GetComponent<PlayerController>();
-
             if(ddaManager == null)
             {
                 ddaManager = FindObjectOfType<DDAManager>();
@@ -30,6 +26,7 @@ namespace Player
         {
             if (currentHealth <= 0)
             {
+                gameObject.SetActive(false);
                 ddaManager.playerDead = true;
                 currentHealth = health;
             }
