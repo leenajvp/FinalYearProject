@@ -15,7 +15,6 @@ namespace DDA
         [SerializeField] public EnemyBehaviourBase[] npcBheaviour;
         [SerializeField] public EnemyPools[] npcPools;
         [SerializeField] private GeneralCollectable[] HealthBoxes, BulletBoxes;
-        [SerializeField] private Image tracker;
         private Renderer r;
 
         [Header("Game Statistics")]
@@ -36,7 +35,6 @@ namespace DDA
 
         void Start()
         {
-            r = tracker.GetComponent<Renderer>();
             pInventory = FindObjectOfType<PlayerInventory>();
 
             totalShots = 0;
@@ -59,7 +57,7 @@ namespace DDA
                 playerDead = false;
                 totalDeaths++;
                 pInventory.bullets = currentBullets;
-
+                totalPhits += currentPHits;
                 totalShots += currentShots;
                 totaEHits += currentEHits;
                 totalKills += currentKills;
@@ -76,14 +74,13 @@ namespace DDA
                
             }
 
-            if (!adjusted && currentKills == npcBheaviour.Length / 2 && currentPHits < 20)
+            if (!adjusted && currentKills == npcBheaviour.Length / 2 && currentPHits < 10)
             {
                 IncreaseEnemyShootingSpeed(0.2f);
                 IncreaseEnemyDetection(20);
                 Debug.Log("half enemies killed");
-                events += "\n half enemies killed ";
+                events += "\n half enemies killed with less than 10 damage ";
                 adjusted = true;
-                tracker.color = Color.gray;
             }
 
             if (!adjusted2 && currentShots == currentEHits && currentShots >= 30) // player is aiming well
@@ -94,8 +91,7 @@ namespace DDA
                 IncreaseShootDistance(30);
                 IncreaseRetreatDistance(30);
                 Debug.Log("Good Aimer");
-                events += "\n Good Aimer ";
-                tracker.color = Color.yellow;
+                events += "\n Good Aimer first 30 shots all hit an enemy ";
                 adjusted2 = true;
             }
 
@@ -106,7 +102,7 @@ namespace DDA
                     pool.stage0 = true;
                     ManageBulletCollectables(5);
                     ManageHealthCollectables(5);
-                    events += "\n died in thid stage " + Time.time.ToString();
+                    events += "\n died in third stage " + Time.time.ToString();
 
                     if (totalDeaths < 3)
                     {
@@ -134,28 +130,21 @@ namespace DDA
                 }
 
                 Debug.Log("Difficulty increase");
-                events += "\n Not hit on first part " + Time.time.ToString();
+                events += "\n Not hit on first part, first pool is added enemies " + Time.time.ToString();
             }
 
-            if (currentProgression >= 2 && totalDeaths == 0) // Player is very experienced
+            if (totalDeaths == 0 && currentProgression >= 2) // Player is very experienced
             {
                 npcPools[1].stage1 = true;
                 npcPools[1].stage2 = true;
-                IncreaseEnemyHealth(20);
                 ManageBulletCollectables(20);
                 IncreaseEnemyDetection(40);
                 IncreaseEnemyShootingSpeed(0.1f);
                 IncreaseEnemySpeed(5);
                 IncreaseShootDistance(20);
                 SetEnemyBulletDamage(2);
-                tracker.color = Color.black;
                 Debug.Log("Master");
-                events += " \n Master level activated " + Time.time.ToString();
-
-                if (currentPHits >= 20)
-                {
-                    ManageHealthCollectables(5);
-                }
+                events += " \n Master level activated player have not died before 3rd stage " + Time.time.ToString();
             }
 
             if (totalDeaths == 1 && currentProgression > 2) // Player is very experienced
@@ -173,15 +162,18 @@ namespace DDA
                 IncreaseEnemySpeed(5);
                 IncreaseShootDistance(20);
                 SetEnemyBulletDamage(1);
-                tracker.color = Color.red;
                 Debug.Log("Difficult");
-                events += "\n Difficult level activated " + Time.time.ToString();
+                events += "\n Difficult level activated player died less only once and is pass second stage " + Time.time.ToString();
             }
 
             // Decrease Difficulty
 
             if (totalDeaths == 3)
             {
+                foreach (EnemyPools pool in npcPools)
+                {
+                    pool.stage0 = true;
+                }
                 DecreaseEnemySpeed(10);
                 ManageBulletCollectables(5);
                 ManageHealthCollectables(5);
@@ -189,10 +181,9 @@ namespace DDA
                 LowerEnemyShootingSpeed(0.2f);
                 Debug.Log("died 3");
                 events += "\n player have died 3 times  " + Time.time.ToString();
-                tracker.color = Color.magenta;
             }
 
-            if (totalDeaths == 5 || totalDeaths == 10)
+            if (totalDeaths == 4 || totalDeaths == 6)
             {
                 foreach (EnemyPools pool in npcPools)
                 {
@@ -206,7 +197,6 @@ namespace DDA
                 DecreaseEnemySpeed(20);
                 Debug.Log("died 5 or 10");
                 events += "\n Died 5 or 10 times " + Time.time.ToString();
-                tracker.color = Color.green;
             }
 
             if (currentProgression <= 1 && totalDeaths >= 3) // Player have not completed first section and dies more than twice
@@ -220,15 +210,6 @@ namespace DDA
                 SetEnemyBulletDamage(1);
                 Debug.Log("Baby");
                 events += "\n Easiest level activated " + Time.time.ToString();
-                tracker.color = Color.white;
-            }
-        }
-
-        private void IncreaseEnemyHealth(float percentage)
-        {
-            foreach (EnemyHealth npcs in npcHealth)
-            {
-                npcs.currentHealth += (npcs.currentHealth * percentage / 100); // increase health by %
             }
         }
 
@@ -264,7 +245,7 @@ namespace DDA
         {
             foreach (EnemyBehaviourBase npcs in npcBheaviour)
             {
-                if (npcs.shootFrequency > -3f)
+                if (npcs.shootFrequency > -0.1f)
                     npcs.shootFrequency -= seconds; // shorten shoot wait time by sec as long as its above min speed
             }
         }
@@ -324,11 +305,13 @@ namespace DDA
                 b.quantity += quantity; // increase bullet box quantity by X
         }
 
+
+        //EMAIL DATA
+
         const string kSenderEmailAddress = "gamestudydata@gmail.com";
         const string kSenderPassword = "ugStudy10";
         const string kReceiverEmailAddress = "gamestudydata@gmail.com";
 
-        // Method 1: Direct message
         public void SendAnEmail()
         {
             // Create mail
@@ -336,7 +319,7 @@ namespace DDA
             mail.From = new MailAddress(kSenderEmailAddress);
             mail.To.Add(kReceiverEmailAddress);
             mail.Subject = "Email Title";
-            mail.Body = "hits: " + totaEHits + "\n kills: " + totalKills + "\n shots: " + totalShots + "\n gameovers: " + totalDeaths + "\n kills: " + totalKills + "\n kills: " + totalKills + events + "\n total time " +Time.time;
+            mail.Body = "Players total enemy hits: " + totaEHits +  "\n Players shots: " + totalShots + "\n Player died: " + totalDeaths + "\n Player killed enemies: " + totalKills + "\n Player been hit: " + totalPhits + events + "\n total time " +Time.time;
             // mail.Attachments.Add(new Attachment("DynamicGame/screenshot.png"));
 
             // Setup server 

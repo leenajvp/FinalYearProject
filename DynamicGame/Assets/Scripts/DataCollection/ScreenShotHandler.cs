@@ -45,37 +45,27 @@ public class ScreenShotHandler : MonoBehaviour
     //}
 
     //string folder = "ScreenShots";
-
     //private string realFolder = "";
 
+    //private void Start()
+    //{
+    //    realFolder = folder;
+    //    int count = 1;
+    //    while (System.IO.Directory.Exists(realFolder))
+    //    {
+    //        realFolder = folder + count;
+    //        count++;
+    //    }
 
-//    private void  Start()
-//    {
-//        // Set the playback framerate!
-//        // (real time doesn't influence time anymore)
+    //    System.IO.Directory.CreateDirectory(realFolder); // Create the folder
+    //    realFolder = System.IO.Directory.GetCurrentDirectory() + "\\" + realFolder;
+    //}
 
-//        // Find a folder that doesn't exist yet by appending numbers!
-//        realFolder = folder;
-//         int count = 1;
-//        while (System.IO.Directory.Exists(realFolder))
-//        {
-//            realFolder = folder + count;
-//            count++;
-//        }
-//        // Create the folder
-//        System.IO.Directory.CreateDirectory(realFolder);
-//        realFolder = System.IO.Directory.GetCurrentDirectory() + "\\" + realFolder;
-//}
-
-//    public void  SaveScreenShot()
-//    {
-//        // name is "realFolder/0005 shot.png"
-//        var name = string.Format("\\ shot.png", realFolder, Time.frameCount);
-
-//        // Capture the screenshot
-//        ScreenCapture.CaptureScreenshot(name);
-//    }
-
+    //public void SaveScreenShot()
+    //{
+    //    var name = string.Format("\\ shot.png", realFolder);
+    //    ScreenCapture.CaptureScreenshot(name);
+    //}
 
 }
 

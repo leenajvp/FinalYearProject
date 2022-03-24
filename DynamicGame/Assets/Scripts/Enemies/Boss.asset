@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: Enemy
   health: 20
-  walkingSpeed: 3
-  runningSpeed: 5
+  walkingSpeed: 2
+  runningSpeed: 3
+  returnGuardDistance: 1
   defaultMaterial: {fileID: 2100000, guid: 0eeadfd07679a034fb70e2d918bf7ba8, type: 2}
   hurtMaterial: {fileID: 2100000, guid: d39f4b1f92076c142958848de68c6aa0, type: 2}
   hitSound: {fileID: 8300000, guid: ffe3e0d0179296b43b28f0e1692f0c58, type: 3}

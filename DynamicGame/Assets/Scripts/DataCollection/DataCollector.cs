@@ -20,24 +20,24 @@ public class DataCollector : MonoBehaviour
 
     public void GetDataScreen()
     {
-        // screenShotHandler.GetScreenShot(500,500);
+        // // screenShotHandler.GetScreenShot(500,500);
         UI.SetActive(false);
         UITokeep.SetActive(true);
         camera.ForEach(c => c.gameObject.SetActive(false));
         dataCam.gameObject.SetActive(true);
 
-        //string folderPath = "DynamicGame_Data/"; // the path of your project folder
+        // string folderPath = "DynamicGame_Data/"; // the path of your project folder
 
-        //if (!System.IO.Directory.Exists(folderPath)) // if this path does not exist yet
-        //    System.IO.Directory.CreateDirectory(folderPath);  // it will get created
+        // if (!System.IO.Directory.Exists(folderPath)) // if this path does not exist yet
+        //     System.IO.Directory.CreateDirectory(folderPath);  // it will get created
 
-        //var screenshotName =
-        //                        "screenshot.png";
-        //                       // System.DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss") + // puts the current time right into the screenshot name
-        //                      // ".png"; // put youre favorite data format here
-        //ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, screenshotName), 2); // takes the sceenshot, the "2" is for the scaled resolution, you can put this to 600 but it will take really long to scale the image up
-        //Debug.Log(folderPath + screenshotName); // You get instant feedback in the console
-        //StartCoroutine(wait());
+        // var screenshotName =
+        //                         "screenshot.png";
+        // // System.DateTime.Now.ToString("dd-MM-yyyy-HH-mm-ss") + // puts the current time right into the screenshot name
+        // // ".png"; // put youre favorite data format here
+        // ScreenCapture.CaptureScreenshot(System.IO.Path.Combine(folderPath, screenshotName), 2); // takes the sceenshot, the "2" is for the scaled resolution, you can put this to 600 but it will take really long to scale the image up
+        // Debug.Log(folderPath + screenshotName); // You get instant feedback in the console
+        //// StartCoroutine(wait());
 
     }
 

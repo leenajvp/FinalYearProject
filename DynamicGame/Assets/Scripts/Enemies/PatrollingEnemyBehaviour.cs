@@ -120,7 +120,7 @@ namespace Enemies
         {
             for (int i = 0; i < targets.Length; i++)
             {
-                Gizmos.DrawWireSphere(targets[i].position, 0.30f);
+                Gizmos.DrawWireSphere(targets[i].position, 0.50f);
 
                 if (i + 1 < targets.Length)
                     Gizmos.DrawLine(targets[i].position, targets[i + 1].position);

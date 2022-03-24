@@ -81,7 +81,7 @@ namespace Enemies
             layerMask = layer_mask;
             timer = 0;
             name = data.enemyName;
-            agent.autoBraking = false;
+            agent.autoBraking = true;
             currentSpeed = data.walkingSpeed;
             rotSpeed = data.rotationSpeed;
             shootFrequency = data.shootSpeed;
@@ -327,14 +327,20 @@ namespace Enemies
 
         protected IEnumerator AlertOthersTimer()
         {
-            yield return new WaitForSeconds(2); // if player does not kill npc within 2 sec they will alert others in same pool
+            yield return new WaitForSeconds(2); // if player does not kill npc within 2 sec they will alert 3 others in same pool
 
             if (ePool != null)
             {
                 foreach (Transform child in ePool.transform)
                 {
-                    child.GetComponent<EnemyBehaviourBase>().playerFound = true;
-                    child.GetComponent<EnemyStates>().CurrentState = EnemyStates.NPCSStateMachine.Chase;
+                    for(int i =0; i < ePool.originalCount; i++)
+                    {
+                        if(i < 3 && i< ePool.originalCount) 
+                        {
+                            child.GetComponent<EnemyBehaviourBase>().playerFound = true;
+                            child.GetComponent<EnemyStates>().CurrentState = EnemyStates.NPCSStateMachine.Chase;
+                        }
+                    }
                 }
             }
         }

@@ -59,9 +59,9 @@ namespace Player
         [HideInInspector] public InputAction interactAction;
         private InputAction pauseGame;
         private InputAction openMap;
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
         private InputAction godMode;
-        //#endif
+        #endif
         private PlayerInventory inventory;
         private DDAManager ddaManager;
         private PlayerHealth pHealth;
@@ -71,7 +71,7 @@ namespace Player
 
         private void Awake()
         {
-            layer_mask = LayerMask.GetMask( "Default", "Environment", "Door", "Objects", "Ground");
+            layer_mask = LayerMask.GetMask( "Default", "Environment", "Objects", "Ground");
             controller = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
             moveAction = playerInput.actions["Move"];
@@ -82,9 +82,9 @@ namespace Player
             interactAction = playerInput.actions["Interact"];
             pauseGame = playerInput.actions["Pause"];
             openMap = playerInput.actions["Map"];
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
             godMode = playerInput.actions["GodMode"];
-//#endif
+#endif
 
             pHealth = GetComponent<PlayerHealth>();
             inventory = GetComponent<PlayerInventory>();
@@ -120,13 +120,13 @@ namespace Player
         void Update()
         {
 
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
             if (godMode.triggered)
             {
                 GetComponent<PlayerHealth>().currentHealth += 10;
                 inventory.bullets += 10;
             }
-//#endif
+#endif
 
             Interact();
             Jump();
