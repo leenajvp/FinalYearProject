@@ -60,7 +60,7 @@ namespace Enemies
         private EnemyHealth health;
         private EnemyPools ePool;
         protected EnemyStates currentState;
-        private float searchTime = 5;
+        private float searchTime = 4;
 
 
         protected bool reset = false;
@@ -314,6 +314,10 @@ namespace Enemies
         public virtual void Reset()
         {
             reset = true;
+            hitFront = false;
+            hitRight = false;
+            hitLeft = false;
+            hitUp = false;
             transform.position = startPos;
             playerFound = false;
             gameObject.GetComponent<Renderer>().material = data.defaultMaterial;

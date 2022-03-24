@@ -330,7 +330,11 @@ namespace Player
 
             if (rb != null && !rb.isKinematic && rb.mass < 2f)
             {
+                float maxVelocity = rb.velocity.magnitude;
+
+                if(maxVelocity < 2)
                 rb.velocity = hit.moveDirection * pushForce;
+                
             }
         }
 

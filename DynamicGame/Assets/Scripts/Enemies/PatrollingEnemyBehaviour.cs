@@ -42,7 +42,7 @@ namespace Enemies
                             HitReaction();
                         }
 
-                        else if (agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance < 0.5f)
+                        else if (agent.isOnNavMesh && !agent.pathPending && agent.remainingDistance < 0.3f)
                             Patrolling();
                         break;
                     }

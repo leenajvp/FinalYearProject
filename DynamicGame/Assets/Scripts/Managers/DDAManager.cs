@@ -70,6 +70,7 @@ namespace DDA
                     npcs.Reset();
                 }
 
+                events += "\n Player died " + Time.time.ToString() ;
                 ManageGameDifficulty();
                
             }
