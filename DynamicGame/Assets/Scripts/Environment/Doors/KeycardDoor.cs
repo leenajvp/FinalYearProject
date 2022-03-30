@@ -3,14 +3,18 @@ using UnityEngine;
 public class KeycardDoor : SlidingDoor
 {
     [Header("Required item to open")]
-    [SerializeField] private GameObject requiredObject;
-    private string requiredObjName;
+    [SerializeField] private GameObject requiredObject1;
+    [SerializeField] private GameObject requiredObject2;
+    private string requiredObjName1;
+    private string requiredObjName2;
     private PlayerInventory pInventory;
+    public bool allowNPCEntry= true;
 
     protected override void Start()
     {
         base.Start();
-        requiredObjName = requiredObject.name;
+        requiredObjName1 = requiredObject1.name;
+        requiredObjName2 = requiredObject2.name;
         pInventory = player.GetComponent<PlayerInventory>();
         active = false;
     }
@@ -30,7 +34,7 @@ public class KeycardDoor : SlidingDoor
             {
                 for (int i = 0; i < collectedObjs.Count; i++)
                 {
-                    if (collectedObjs[i].name == requiredObjName)
+                    if (collectedObjs[i].name == requiredObjName1 || collectedObjs[i].name == requiredObjName2)
                     {
                         if (!open)
                         {
@@ -43,12 +47,15 @@ public class KeycardDoor : SlidingDoor
             }
         }
 
-        if (other.gameObject.tag == "NPC")
+        if (allowNPCEntry)
         {
-            if (!open)
+            if (other.gameObject.tag == "NPC" && other.gameObject.GetComponent<EnemyHealth>().explorationNPC==true)
             {
-                active = true;
-                open = true;
+                if (!open)
+                {
+                    active = true;
+                    open = true;
+                }
             }
         }
     }

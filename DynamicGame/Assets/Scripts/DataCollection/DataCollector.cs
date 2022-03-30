@@ -43,10 +43,7 @@ public class DataCollector : MonoBehaviour
 
     private void Start()
     {
-    }
-    private void LateUpdate()
-    {
-        Instantiate(tracker, player.transform.position, player.transform.rotation, dataHolder.transform);
+        InvokeRepeating("InstatianteTracker", 0, 0.5f);
     }
 
     private void Update()
@@ -57,7 +54,7 @@ public class DataCollector : MonoBehaviour
         }
     }
 
-    private void IstatianteTracker()
+    private void InstatianteTracker()
     {
         Instantiate(tracker, player.transform.position, player.transform.rotation, dataHolder.transform);
     }

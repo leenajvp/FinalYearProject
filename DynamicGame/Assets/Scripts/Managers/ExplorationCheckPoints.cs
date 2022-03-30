@@ -1,18 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Player;
+using UnityEngine;
 
 public class ExplorationCheckPoints : MonoBehaviour
 {
-    [SerializeField] private GameObject player => FindObjectOfType<PlayerController>().gameObject;
-    [SerializeField] private SceneMngr sceneMngr => FindObjectOfType<SceneMngr>();
+    private GameObject player => FindObjectOfType<PlayerController>().gameObject;
+    private SceneMngr sceneMngr => FindObjectOfType<SceneMngr>();
+    private DDA.DDAManager ddaManager => FindObjectOfType<DDA.DDAManager>();
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject == player)
+        if (other.gameObject == player)
         {
             sceneMngr.startpos = gameObject.transform;
+            ddaManager.events += "\n Player have saved on exploration path, survivor path progression is " + PlayerPrefs.GetInt("Progression").ToString() + "  " + Time.time.ToString();
         }
     }
 }

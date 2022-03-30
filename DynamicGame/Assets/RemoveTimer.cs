@@ -12,11 +12,12 @@ public class RemoveTimer : MonoBehaviour
     private void Start()
     {
         image = GetComponent<Image>();
+        gameObject.SetActive(false);    
     }
 
     private void Update()
     {
-        if (image.enabled)
+        if (gameObject.activeSelf)
             StartCoroutine(Timer());
 
     }
@@ -24,6 +25,6 @@ public class RemoveTimer : MonoBehaviour
     private IEnumerator Timer() 
     { 
         yield return new WaitForSeconds(removeTimer);
-        image.enabled = false;
+        gameObject.SetActive(false);
     }
 }

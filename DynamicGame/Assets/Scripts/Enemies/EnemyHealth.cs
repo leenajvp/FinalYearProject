@@ -54,7 +54,6 @@ public class EnemyHealth : MonoBehaviour
             if (spawnObject)
             {
                 Instantiate(objectToSpawn, transform.position, objectToSpawn.transform.rotation);
-                spawnObject = false;
             }
 
             ddaManager.currentKills++;

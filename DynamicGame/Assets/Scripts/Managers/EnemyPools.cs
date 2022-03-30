@@ -4,31 +4,33 @@ using UnityEngine;
 
 public class EnemyPools : MonoBehaviour
 {
-    [SerializeField] public List<EnemyHealth> enemyPool = new List<EnemyHealth>();
-    [SerializeField] public List<GeneralCollectable> areaCollectables = new List<GeneralCollectable>();
+    [Header("Enemy Pool settings")]
     [SerializeField] private DDAManager ddaManager;
-    [SerializeField] private List<EnemyHealth> extraEnemies = new List<EnemyHealth>();
-    [SerializeField] private List<EnemyHealth> extraEnemies2 = new List<EnemyHealth>();
     public int checkPointID = 0;
     public int defeats = 0;
-    public int enemies;
-    public bool completed = false;
+    public int originalCount;
+    public int currentCount;
 
+    [Header("Managing NPC numbers")]
+    [SerializeField] public List<EnemyHealth> enemyPool = new List<EnemyHealth>();
+    [SerializeField] private List<EnemyHealth> extraEnemies = new List<EnemyHealth>();
+    [SerializeField] private List<EnemyHealth> extraEnemies2 = new List<EnemyHealth>();
     public bool stage1 = false;
     public bool stage2 = false;
-
     public bool stage0 = false;
 
-    public int originalCount;
+    [Header("Resetting Collectables")]
+    [SerializeField] public List<GeneralCollectable> areaCollectables = new List<GeneralCollectable>();
 
-    private bool check;
-    private bool check2;
+    [Header("UI")]
+    [SerializeField] private GameObject savingHUD;
 
-    // private bool isDefeated;
+
+    private List<Enemies.EnemyBehaviourBase> behaviourPool = new List<Enemies.EnemyBehaviourBase>();
 
     private void Start()
     {
-        enemies = enemyPool.Count;
+        currentCount = enemyPool.Count;
         originalCount = enemyPool.Count;
 
         if (ddaManager == null)
@@ -43,9 +45,9 @@ public class EnemyPools : MonoBehaviour
         {
             enemy.gameObject.SetActive(false);
         }
-    }
 
-   
+        enemyPool.ForEach(enemy => behaviourPool.Add(enemy.GetComponent<Enemies.EnemyBehaviourBase>()));
+    }
 
     private void Update()
     {
@@ -54,13 +56,10 @@ public class EnemyPools : MonoBehaviour
             for (int i = originalCount; i < enemyPool.Count; i++)
             {
                 enemyPool[i].gameObject.SetActive(false);
-                enemyPool.RemoveAt(i);
-                i--;
             }
 
-          //  enemyPool.RemoveAll(enemy => !enemy.gameObject.activeSelf);
-
-            enemies = enemyPool.Count;
+            enemyPool.RemoveAll(enemy => !enemy.gameObject.activeSelf);
+            currentCount = enemyPool.Count;
             stage0 = false;
         }
 
@@ -70,8 +69,9 @@ public class EnemyPools : MonoBehaviour
             {
                 extraEnemies[i].gameObject.SetActive(true);
                 enemyPool.Add(extraEnemies[i]);
+                behaviourPool.Add(extraEnemies[i].GetComponent<Enemies.EnemyBehaviourBase>());
             }
-            enemies = enemyPool.Count;
+            currentCount = enemyPool.Count;
             stage1 = false;
         }
 
@@ -81,8 +81,9 @@ public class EnemyPools : MonoBehaviour
             {
                 extraEnemies2[i].gameObject.SetActive(true);
                 enemyPool.Add(extraEnemies2[i]);
+                behaviourPool.Add(extraEnemies[i].GetComponent<Enemies.EnemyBehaviourBase>());
             }
-            enemies = enemyPool.Count;
+            currentCount = enemyPool.Count;
             stage2 = false;
         }
     }
@@ -98,16 +99,15 @@ public class EnemyPools : MonoBehaviour
             }
         }
 
-        if (defeats >= enemies && PlayerPrefs.GetInt("Progression") < checkPointID)
+        if (defeats >= currentCount && PlayerPrefs.GetInt("Progression") < checkPointID)
         {
+            savingHUD.SetActive(true);
             PlayerPrefs.SetInt("Progression", checkPointID);
+            ddaManager.events += "\n Player progressions " + PlayerPrefs.GetInt("Progression").ToString() + "  " + Time.time.ToString();
             ddaManager.ManageGameDifficulty();
             Debug.Log(PlayerPrefs.GetInt("Progression"));
             defeats = 0;
-
         }
-
-        
     }
 
     public void ResetToLast()
@@ -131,9 +131,13 @@ public class EnemyPools : MonoBehaviour
         foreach (EnemyHealth enemy in enemyPool)
         {
             enemy.currentHealth = enemy.health;
-            //   isDefeated = false;
             enemy.gameObject.SetActive(true);
             defeats = 0;
+        }
+
+        foreach (Enemies.EnemyBehaviourBase enemy in behaviourPool)
+        {
+            enemy.Reset();
         }
 
         foreach (GeneralCollectable item in areaCollectables)

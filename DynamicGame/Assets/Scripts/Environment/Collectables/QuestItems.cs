@@ -20,12 +20,19 @@ public class QuestItems : CollectableBase, IQuestItems
     [SerializeField] private string itemInfo = "";
     [TextArea(2, 2)]
     [SerializeField] private string actionInfo = "";
+
     [Header("Sprite in Inventory")]
     [SerializeField] private Sprite image = null;
 
-    [HideInInspector] public bool inInventory = false;
+    public bool inInventory = false;
     public Sprite setImage { get { return image; } }
     public string name { get { return ObjectName; } }
+
+
+    [Header("Boss Keycard settings")]
+    [SerializeField] private bool isBossKeyCard = false;
+    [SerializeField] private EnemyHealth bossHealth;
+    private PlayerInventory inventory => FindObjectOfType<PlayerInventory>();
 
     protected override void Start()
     {
@@ -38,6 +45,13 @@ public class QuestItems : CollectableBase, IQuestItems
     {
         base.Update();
         CheckStatus();
+    }
+
+    public void ResetInventory()
+    {
+        inventory.RemoveItem();
+        inInventory = false;
+        Debug.Log("BKeycard removed?");
     }
 
     private void CheckStatus()

@@ -32,7 +32,7 @@ namespace Enemies
         private int layerMask;
         [Header("Shooting")]
         [Tooltip("Position to shoot bullet from")]
-        [SerializeField] private Image hitEffect;
+        [SerializeField] private GameObject hitEffect;
         [SerializeField] protected Transform shootPoint;
         /*[HideInInspector]*/
         public float shootFrequency;
@@ -60,10 +60,11 @@ namespace Enemies
         private EnemyHealth health;
         private EnemyPools ePool;
         protected EnemyStates currentState;
-        private float searchTime = 4;
+        public float searchTime = 10;
 
 
         protected bool reset = false;
+        private PlayerInventory pInventory => FindObjectOfType<PlayerInventory>();
 
         protected void Awake()
         {
@@ -108,7 +109,7 @@ namespace Enemies
             if (reset)
             {
                 playerFound = false;
-                searchTime = 0.01f;
+                searchTime = 0;
                 StopAllCoroutines();
             }
                 
@@ -121,6 +122,9 @@ namespace Enemies
             distance = Vector3.Distance(transform.position, playerPos);
 
             Raycast();
+
+            if (health.currentHealth <= 0)
+                Reset();
 
             if (playerFound)
                 currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
@@ -135,7 +139,12 @@ namespace Enemies
         protected virtual void Raycast()
         {
             if (hitFront || hitRight || hitLeft || hitUp)
+            {
+                searchTime = 5;
                 playerFound = true;
+                StartCoroutine(AlertOthersTimer(3));
+            }
+                
 
             if (playerNear && !player.GetComponent<PlayerController>().isDisguised)
             {
@@ -246,6 +255,8 @@ namespace Enemies
 
                 if (hitFront || hitUp || hitLeft || hitRight)
                 {
+                    
+
                     while (distance <= shootDist && distance >= retreatDist)
                     {
                         agent.isStopped = true;
@@ -286,7 +297,7 @@ namespace Enemies
 
                 if (playerHit != null)
                 {
-                    hitEffect.enabled = true;
+                    hitEffect.SetActive(true);  
                     playerHit.currentHealth -= bDamage;
                     ddaManager.currentPHits++;
                     var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
@@ -300,7 +311,7 @@ namespace Enemies
 
                 if (playerHit != null)
                 {
-                    hitEffect.enabled = true;
+                    hitEffect.SetActive(false);
                     playerHit.currentHealth -= bDamage;
                     ddaManager.currentPHits++;
                     var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
@@ -320,7 +331,14 @@ namespace Enemies
             hitUp = false;
             transform.position = startPos;
             playerFound = false;
+            searchTime = 0;
             gameObject.GetComponent<Renderer>().material = data.defaultMaterial;
+
+            if (isBoss)
+            {
+                IQuestItems keycard = health.objectToSpawn.GetComponent<IQuestItems>();
+                pInventory.RemoveItem();
+            }
 
             if (agent.isOnNavMesh && agent.isActiveAndEnabled)
             {
@@ -329,7 +347,7 @@ namespace Enemies
 
         }
 
-        protected IEnumerator AlertOthersTimer()
+        protected IEnumerator AlertOthersTimer(int numberToAlert)
         {
             yield return new WaitForSeconds(2); // if player does not kill npc within 2 sec they will alert 3 others in same pool
 
@@ -339,7 +357,7 @@ namespace Enemies
                 {
                     for(int i =0; i < ePool.originalCount; i++)
                     {
-                        if(i < 3 && i< ePool.originalCount) 
+                        if(i < numberToAlert && i< ePool.originalCount) 
                         {
                             child.GetComponent<EnemyBehaviourBase>().playerFound = true;
                             child.GetComponent<EnemyStates>().CurrentState = EnemyStates.NPCSStateMachine.Chase;
@@ -351,17 +369,11 @@ namespace Enemies
 
         protected void HitReaction()
         {
+            searchTime = 10;
             playerFound = true;
             currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
-            player.GetComponent<Player.PlayerController>().isDisguised = false;
-            StartCoroutine(AlertOthersTimer());
+            StartCoroutine(AlertOthersTimer(6));
             isHit = false;
-        }
-
-        private IEnumerator SearchReset()
-        {
-            yield return new WaitForSeconds(2f);
-            searchTime = 5;
         }
     }
 }

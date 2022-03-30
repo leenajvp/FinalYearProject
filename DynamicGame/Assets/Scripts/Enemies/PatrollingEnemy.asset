@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyName: PatrollingNPC
   health: 5
-  walkingSpeed: 3
+  walkingSpeed: 4
   runningSpeed: 4
   returnGuardDistance: 1
   defaultMaterial: {fileID: 2100000, guid: ea5f87de460ee2b4198f96b5903537ad, type: 2}

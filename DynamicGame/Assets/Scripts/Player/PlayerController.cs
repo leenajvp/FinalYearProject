@@ -1,10 +1,8 @@
-using Bullets;
 using Cinemachine;
 using DDA;
+using Enemies;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using Enemies;
-using System.Collections;
 
 namespace Player
 {
@@ -37,6 +35,7 @@ namespace Player
         public bool interacting = false;
         public bool availableInteraction = false;
         [SerializeField] private GameObject interactHUD;
+        [SerializeField] GameObject crossHairs;
 
         [Header("Sound Effects")]
         [SerializeField] private AudioSource collectSound;
@@ -61,7 +60,7 @@ namespace Player
         private InputAction openMap;
 #if UNITY_EDITOR
         private InputAction godMode;
-        #endif
+#endif
         private PlayerInventory inventory;
         private DDAManager ddaManager;
         private PlayerHealth pHealth;
@@ -71,7 +70,7 @@ namespace Player
 
         private void Awake()
         {
-            layer_mask = LayerMask.GetMask( "Default", "Environment", "Objects", "Ground");
+            layer_mask = LayerMask.GetMask("NPC", "Default", "Environment", "Objects", "Ground");
             controller = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
             moveAction = playerInput.actions["Move"];
@@ -123,8 +122,8 @@ namespace Player
 #if UNITY_EDITOR
             if (godMode.triggered)
             {
-                GetComponent<PlayerHealth>().currentHealth += 10;
-                inventory.bullets += 10;
+                GetComponent<PlayerHealth>().currentHealth += 2;
+                inventory.bullets += 2;
             }
 #endif
 
@@ -212,17 +211,11 @@ namespace Player
             if (inventory.bullets > 0)
             {
                 ddaManager.currentsShots++;
-
                 muzzleFlash.Play();
-
                 RaycastHit hit;
-               // RaycastHit hit;
-                //QueryTriggerInteraction.Ignore
+
                 if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 60, layer_mask))
                 {
-                    //shootPoint.LookAt(hit.point);
-                  //  Physics.Raycast(shootPoint.position, shootPoint.forward, out hit, 60, layer_mask);
-
                     if (hit.collider.gameObject)
                     {
                         var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
@@ -252,6 +245,7 @@ namespace Player
         {
             if (interacting)
             {
+                crossHairs.SetActive(false);
                 Camera.main.GetComponent<CinemachineBrain>().enabled = false;
                 moveAction.Disable();
                 jumpAction.Disable();
@@ -263,6 +257,7 @@ namespace Player
 
             else
             {
+                crossHairs.SetActive(true);
                 Camera.main.GetComponent<CinemachineBrain>().enabled = true;
                 moveAction.Enable();
                 jumpAction.Enable();
@@ -332,9 +327,8 @@ namespace Player
             {
                 float maxVelocity = rb.velocity.magnitude;
 
-                if(maxVelocity < 2)
-                rb.velocity = hit.moveDirection * pushForce;
-                
+                if (maxVelocity < 2)
+                    rb.velocity = hit.moveDirection * pushForce;
             }
         }
 

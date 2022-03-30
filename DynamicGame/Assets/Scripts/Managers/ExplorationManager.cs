@@ -11,12 +11,15 @@ public class ExplorationManager : MonoBehaviour
     [Header("Choose Keycard npc")]
     [SerializeField] CollectableHelmet helmet;
     [SerializeField] private GameObject boss;
+    [SerializeField] private GameObject explorationNpc;
+    private EnemyHealth bHealth;
 
     private void Start()
     {
         extraDoorToOpen.active = false;
         boss.GetComponent<EnemyHealth>().spawnObject = true;
         addNPC.SetActive(false);
+        bHealth= boss.GetComponent<EnemyHealth>();
     }
 
     private void Update()
@@ -33,6 +36,11 @@ public class ExplorationManager : MonoBehaviour
         {
             boss.GetComponent<EnemyHealth>().spawnObject = false;
             helmet.inInventory = false;
+        }
+
+        if(bHealth.currentHealth <= 0)
+        {
+            explorationNpc.GetComponent<EnemyHealth>().spawnObject= false;
         }
     }
 }
