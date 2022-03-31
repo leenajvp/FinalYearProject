@@ -214,25 +214,25 @@ namespace Player
                 muzzleFlash.Play();
                 RaycastHit hit;
 
-                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 60, layer_mask))
+                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 100, layer_mask))
                 {
                     if (hit.collider.gameObject)
                     {
-                        var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
-                        Destroy(newImpact, 0.5f);
-
                         EnemyHealth enemy = hit.collider.gameObject.GetComponent<EnemyHealth>();
 
                         if (enemy != null)
                         {
-                            ddaManager.currentEHits++;
                             enemy.currentHealth -= 1;
                             enemy.gameObject.GetComponent<EnemyBehaviourBase>().isHit = true;
                             enemy.ChangeMaterial();
+                            ddaManager.currentEHits++;
 
                             if (isDisguised && !enemy.explorationNPC)
                                 isDisguised = false;
                         }
+
+                        var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
+                        Destroy(newImpact, 0.5f);
                     }
                 }
 

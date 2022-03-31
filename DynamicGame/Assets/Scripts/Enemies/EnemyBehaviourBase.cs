@@ -329,7 +329,8 @@ namespace Enemies
             hitRight = false;
             hitLeft = false;
             hitUp = false;
-            transform.position = startPos;
+            gameObject.GetComponent<Rigidbody>().MovePosition(startPos);
+            //transform.position = startPos;
             playerFound = false;
             searchTime = 0;
             gameObject.GetComponent<Renderer>().material = data.defaultMaterial;

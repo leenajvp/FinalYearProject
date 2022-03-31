@@ -12,7 +12,7 @@ public class CollectableBase : MonoBehaviour, ICollectable
     public bool isInventoryItem { get; set; }
     public bool collected { get; set; }
     
-    protected Transform player;
+    protected GameObject player;
     protected float uiYPos;
 
     protected virtual void Start()
@@ -20,20 +20,23 @@ public class CollectableBase : MonoBehaviour, ICollectable
         if (player == null)
             playerController = FindObjectOfType<PlayerController>();
 
-        player = playerController.transform;
+        player = playerController.gameObject;
         collected = false;
     }
 
     protected virtual void Update()
     {
-        Vector3 playerPos = player.transform.position;
-        float distance = Vector3.Distance(transform.position, playerPos);
+        if(player!= null)
+        {
+            Vector3 playerPos = player.transform.position;
+            float distance = Vector3.Distance(transform.position, playerPos);
 
-        if (distance < detectionDistance && !collected)
-            ActivateUI();
+            if (distance < detectionDistance && !collected)
+                ActivateUI();
 
-        else if (distance > detectionDistance && distance < detectionDistance + 3)
-            itemUICanvas.enabled = false;
+            else if (distance > detectionDistance && distance < detectionDistance + 3)
+                itemUICanvas.enabled = false;
+        }
     }
 
     public virtual void Collect()

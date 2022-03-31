@@ -11,7 +11,7 @@ public class ElectricLock : MonoBehaviour, Iinteractive
 
     [Header("Puzzle UI")]
     [Tooltip("HUD to inform player of available interaction")]
-    [SerializeField] protected GameObject puzzle;
+    public GameObject puzzle;
 
     protected GameObject player;
     protected PlayerController playerController;

@@ -14,6 +14,11 @@ public class ExplorationManager : MonoBehaviour
     [SerializeField] private GameObject explorationNpc;
     private EnemyHealth bHealth;
 
+    [Header("Manage GamePath")]
+    [SerializeField] private ChangeLocks locks;
+
+    
+
     private void Start()
     {
         extraDoorToOpen.active = false;
@@ -29,6 +34,8 @@ public class ExplorationManager : MonoBehaviour
             extraDoorToOpen.active = true;
             addNPC.SetActive(true);
             activated = true;
+            locks.activateExploration = true;
+            
         }
 
         // If player collects the helmet to disguise, activate npc to enter with keycard and remove keycard from the boss
