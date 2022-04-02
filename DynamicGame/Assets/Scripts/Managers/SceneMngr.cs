@@ -3,6 +3,7 @@ using UnityEngine;
 using Player;
 using DDA;
 using System.Collections;
+using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -19,6 +20,7 @@ public class SceneMngr : MonoBehaviour
     private PlayerController pController;
     [SerializeField] DDAManager dda;
     [SerializeField] private GameObject LockUI;
+    [SerializeField] private List <SlidingDoor> doorsToLockOnReset = new List<SlidingDoor>();
 
     void Start()
     {
@@ -74,6 +76,7 @@ public class SceneMngr : MonoBehaviour
         DisablePlayer();
         Time.timeScale = 1;
         gameOver.SetActive(false);
+        doorsToLockOnReset.ForEach(door => door.active = false);
 
         int progression = PlayerPrefs.GetInt("Progression");
 
@@ -109,13 +112,10 @@ public class SceneMngr : MonoBehaviour
         pController.PauseGame();
         pController.DisablePlayer();
         pController.DisableMenus();
-
     }
 
     public void QuitGame()
     {
-
-
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #else

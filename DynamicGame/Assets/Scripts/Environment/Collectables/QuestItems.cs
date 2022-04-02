@@ -34,10 +34,9 @@ public class QuestItems : CollectableBase, IQuestItems
     [SerializeField] private EnemyHealth bossHealth;
     private PlayerInventory inventory => FindObjectOfType<PlayerInventory>();
 
-    protected override void Start()
+    protected virtual void Start()
     {
         gameObject.name = name;
-        base.Start();
         isInventoryItem = true;
     }
 

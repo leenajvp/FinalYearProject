@@ -18,9 +18,8 @@ public class GeneralCollectable : CollectableBase
     [Tooltip("Text in canvas to display quantity")]
     [SerializeField] protected Text quantityText;
 
-    protected override void Start()
+    protected void Start()
     {
-        base.Start();
         isInventoryItem = false;
     }
 

@@ -1,8 +1,5 @@
 using Enemies;
-using System.Net;
-using System.Net.Mail;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace DDA
@@ -10,10 +7,10 @@ namespace DDA
     public class DDAManager : MonoBehaviour
     {
         [Header("All NPCs affected by DDA")]
-        [SerializeField] public EnemyHealth[] npcHealth;
-        [SerializeField] public EnemyBehaviourBase[] npcBheaviour;
-        [SerializeField] public EnemyPools[] npcPools;
-        [SerializeField] private GeneralCollectable[] HealthBoxes, BulletBoxes;
+        public List<EnemyHealth> npcHealth = new List<EnemyHealth>();
+        public List<EnemyBehaviourBase> npcBehaviour = new List<EnemyBehaviourBase>();
+        public List<EnemyPools> npcPools = new List<EnemyPools>();
+        [SerializeField] private List<GeneralCollectable> healthBoxes, bulletBoxes = new List<GeneralCollectable>();
 
         [Header("Game Statistics")]
         public int currentShots, currentEHits, currentPHits, currentKills, currentsShots;
@@ -21,16 +18,16 @@ namespace DDA
         public int currentProgression = 0;
         public string events = "";
 
-        [HideInInspector] public bool eAdjusted = false, hAdjusted = false, bAdjsuted = false, eLowered = false;
+       // [HideInInspector] public bool eAdjusted = false, hAdjusted = false, bAdjsuted = false, eLowered = false;
         [HideInInspector] public bool playerDead = false;
-
 
         private PlayerInventory pInventory;
 
+        private bool masterActivated = false;
+        private bool difficultActivated = false;
         private bool adjusted = true;
         private bool adjusted2 = true;
         private int currentBullets;
-
         public bool gameComplete;
 
         void Start()
@@ -66,10 +63,10 @@ namespace DDA
                 currentPHits = 0;
                 currentKills = 0;
 
-                foreach (EnemyBehaviourBase npcs in npcBheaviour)
-                {
-                    npcs.Reset();
-                }
+                //foreach (EnemyBehaviourBase npcs in npcBehaviour)
+                //{
+                //    npcs.Reset();
+                //}
 
                 ManageGameDifficulty();
                 events += "\n Player died " + Time.time.ToString();
@@ -86,7 +83,7 @@ namespace DDA
                 gameComplete = false;
             }
 
-            if (!adjusted && currentKills == npcBheaviour.Length / 2 && currentPHits < 20)
+            if (!adjusted && currentKills > 1 && currentKills == npcBehaviour.Count / 2 && currentPHits < 20)
             {
                 IncreaseEnemyShootingSpeed(0.2f);
                 IncreaseEnemyDetection(20);
@@ -101,7 +98,6 @@ namespace DDA
                 IncreaseEnemyDetection(20);
                 IncreaseEnemySpeed(10);
                 IncreaseShootDistance(30);
-                IncreaseRetreatDistance(30);
                 Debug.Log("Good Aimer");
                 events += "\n Good Aimer, first 30 shots all hit an enemy ";
                 adjusted2 = true;
@@ -111,13 +107,14 @@ namespace DDA
             {
                 foreach (EnemyPools pool in npcPools)
                 {
-                    pool.stage0 = true;
+                     pool.stage0 = true;
                     ManageBulletCollectables(10);
                     ManageHealthCollectables(5);
-                    events += "\n died in third stage, ammo and health collectables increaset 10,5 " + Time.time.ToString();
+                    events += "\n died in third stage, ammo and health collectables increased 10,5 " + Time.time.ToString();
 
                     if (totalDeaths < 3)
                     {
+                        npcPools[1].available1 = true;
                         npcPools[1].stage1 = true;
 
                         events += "\n Third stage with under 3 deaths " + Time.time.ToString();
@@ -130,6 +127,7 @@ namespace DDA
         {
             gameComplete = true;
         }
+
 
         public void SteamThroughDifficulty()
         {
@@ -178,6 +176,7 @@ namespace DDA
 
             if (totalDeaths == 0 && currentProgression >= 2) // Player is very experienced
             {
+                masterActivated = true;
                 npcPools[1].stage1 = true;
                 npcPools[1].stage2 = true;
                 ManageBulletCollectables(10);
@@ -190,20 +189,23 @@ namespace DDA
                 events += " \n Mastery level activated player have not died before 3rd stage, Diddiculty increased, ammo collectables increased, damage x2 " + Time.time.ToString();
             }
 
-            if (totalDeaths == 1 && currentProgression > 2) // Player is very experienced
+            if (totalDeaths <= 3 && currentProgression >= 2) // Player is very experienced
             {
-                foreach (EnemyPools pool in npcPools)
+                if (!masterActivated)
                 {
-                    npcPools[1].stage1 = true;
-                    npcPools[1].stage2 = true;
+                    foreach (EnemyPools pool in npcPools)
+                    {
+                        npcPools[1].stage1 = true;
+                    }
+
+                    ManageBulletCollectables(5);
+                    ManageHealthCollectables(5);
+                    IncreaseEnemyDetection(40);
+                    IncreaseEnemyShootingSpeed(0.1f);
+                    IncreaseEnemySpeed(5);
+                    IncreaseShootDistance(20);
                 }
 
-                ManageBulletCollectables(5);
-                ManageHealthCollectables(5);
-                IncreaseEnemyDetection(40);
-                IncreaseEnemyShootingSpeed(0.1f);
-                IncreaseEnemySpeed(5);
-                IncreaseShootDistance(20);
                 SetEnemyBulletDamage(1);
                 Debug.Log("Difficult");
                 events += "\n Difficult level activated player died only once and is pass second stage, all collectables increased " + Time.time.ToString();
@@ -211,12 +213,25 @@ namespace DDA
 
             // Decrease Difficulty
 
+            if(totalDeaths == 2)
+            {
+                ManageBulletCollectables(5);
+                ManageHealthCollectables(5);
+            }
+
             if (totalDeaths == 3)
             {
                 foreach (EnemyPools pool in npcPools)
                 {
                     pool.stage0 = true;
+
+                    if(masterActivated || difficultActivated)
+                    {
+                        npcPools[1].available2 = true;
+                        npcPools[1].stage2 = true;
+                    }
                 }
+
                 DecreaseEnemySpeed(10);
                 ManageBulletCollectables(5);
                 ManageHealthCollectables(5);
@@ -242,7 +257,7 @@ namespace DDA
                 events += "\n Died 4 or 6 times, difficulty lowered,  " + Time.time.ToString();
             }
 
-            if (currentProgression <= 1 && totalDeaths >= 3) // Player have not completed first section and dies more than twice
+            if (currentProgression <= 1 && totalDeaths >= 2) // Player have not completed first section and dies more than twice
             {
                 foreach (EnemyPools pool in npcPools)
                 {
@@ -252,10 +267,10 @@ namespace DDA
                 LowerEnemyShootingSpeed(0.3f);
                 SetEnemyBulletDamage(1);
                 Debug.Log("Baby");
-                events += "\n Easiest level activated, health collectables +5  " + Time.time.ToString();
+                events += "\n Easiest level activated " + Time.time.ToString();
             }
 
-            if (currentProgression <= 1 && totalDeaths > 1) // Player have not completed first section and dies more than twice
+            if (currentProgression <= 1 && totalDeaths > 2) // Player have not completed first section and dies more than twice
             {
                 foreach (EnemyPools pool in npcPools)
                 {
@@ -265,114 +280,137 @@ namespace DDA
                 ManageHealthCollectables(5);
                 SetEnemyBulletDamage(1);
                 Debug.Log("Baby");
-                events += "\n Easiest level activated, health collectables +5  " + Time.time.ToString();
+                events += "\n Easiest level activated  " + Time.time.ToString();
             }
         }
 
         public void LowerEnemyHealth(float percentage)
         {
-            foreach (EnemyHealth npcs in npcHealth)
+            npcHealth.ForEach(npc =>
             {
-                if (npcs.currentHealth > 3)
-                    npcs.currentHealth -= (npcs.currentHealth * percentage / 100); // decrease health by %
-            }
+                if (npc.currentHealth > 3)
+                {
+                    npc.currentHealth -= (npc.currentHealth * percentage / 100); // decrease all npc health by %
+                }
+            });
+
+            events += "\n NPCs health decreased by " + percentage + "% " + Time.time.ToString();
         }
 
         private void IncreaseEnemySpeed(float percentage)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            npcBehaviour.ForEach(npc =>
             {
-                if (npcs.runSpeed < 7)
-                    npcs.runSpeed += (npcs.runSpeed * percentage / 100); //increase run speed by %
-            }
+                if (npc.runSpeed < 7)
+                {
+                    npc.runSpeed += (npc.runSpeed * percentage / 100); // increase enemy speed by %
+                }
+            }); 
+
+            events += "\n NPCs health increased by " + percentage + "% " + Time.time.ToString();
         }
 
         private void DecreaseEnemySpeed(float percentage)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            npcBehaviour.ForEach(npc =>
             {
-                if (npcs.runSpeed > npcs.data.runningSpeed)
+                if (npc.runSpeed < npc.data.runningSpeed)
                 {
-                    npcs.runSpeed -= (npcs.runSpeed * percentage / 100); //increase run speed by %
+                    npc.runSpeed -= (npc.runSpeed * percentage / 100);  // decrease speed by %
                 }
-            }
+            });
+
+            events += "\n NPCs speed decreased by " + percentage + "% " + Time.time.ToString();
         }
 
         private void IncreaseEnemyShootingSpeed(float seconds)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            npcBehaviour.ForEach(npc =>
             {
-                if (npcs.shootFrequency > 0f)
-                    npcs.shootFrequency -= seconds; // shorten shoot wait time by sec as long as its above min speed
-            }
+                if (npc.shootFrequency > 0.1f)
+                {
+                    npc.shootFrequency -= seconds; // shorten shoot wait time by sec as long as its above min speed
+                }
+            });
+
+            events += "\n NPCs shoot speed increased by " + seconds + " " + Time.time.ToString();
         }
 
         private void LowerEnemyShootingSpeed(float seconds)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            npcBehaviour.ForEach(npc =>
             {
-                if (npcs.shootFrequency < 1.5f)
-                    npcs.shootFrequency += seconds; // increase shoot wait time by sec
-            }
+                if (npc.shootFrequency < 1.5f)
+                {
+                    npc.shootFrequency += seconds; // increase shoot wait time by sec
+                }
+            });
 
+            events += "\n NPCs shoot speed increased by " + seconds + " " + Time.time.ToString();
         }
 
         private void SetEnemyBulletDamage(float newValue)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
-                npcs.bDamage = newValue;
+            npcBehaviour.ForEach(npc => npc.bDamage = newValue);
+            events += "\n NPC bullet damage set: " + newValue + " " + Time.time.ToString();
         }
 
         private void IncreaseEnemyDetection(float percentage)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
-                npcs.detectionDistance += (npcs.detectionDistance * percentage / 100);  // increase detection raycast distance by %
+            npcBehaviour.ForEach(npc => npc.detectionDistance += (npc.detectionDistance * percentage / 100)); // increase detection raycast distance by %
+
+            events += "\n NPC detection distance increased by " + percentage + "% " + Time.time.ToString();
         }
 
         private void LowerEnemyDetection(float percentage)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
+            npcBehaviour.ForEach(npc =>
             {
-                if (npcs.detectionDistance > 20)
-                    npcs.detectionDistance -= (npcs.detectionDistance * percentage / 100);  // lower detection raycast distance by %
-            }
+                if (npc.detectionDistance > 20)
+                {
+                    npc.detectionDistance -= (npc.detectionDistance * percentage / 100); // increase shoot wait time by sec
+                }
+            });
+
+            events += "\n NPC detection distance lowered by " + percentage + "% " + Time.time.ToString();
         }
 
         private void IncreaseShootDistance(float percentage)
         {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
-                npcs.shootDist += (npcs.shootDist * percentage / 100);  // lower detection raycast distance by %
-        }
-
-        private void IncreaseRetreatDistance(float percentage)
-        {
-            foreach (EnemyBehaviourBase npcs in npcBheaviour)
-                npcs.retreatDist += (npcs.retreatDist * percentage / 100);  // lower detection raycast distance by %
+            npcBehaviour.ForEach(npc =>
+            {
+                if (npc.shootFrequency < 1.5f)
+                {
+                    npc.shootDist += (npc.shootDist * percentage / 100); // increase shoot distance by %
+                }
+            });
+            events += "\n NPC shoot distance increased by " + percentage + "% " + Time.time.ToString();
         }
 
         private void ManageHealthCollectables(int quantity)
         {
-            foreach (GeneralCollectable h in HealthBoxes)
+            healthBoxes.ForEach(h =>
             {
                 if (h.quantity < 30)
-                    h.quantity += quantity; // increase health box quantity by X
-            }
+                {
+                    h.quantity += quantity;
+                }
+            });
 
+            events += "\n Health collectables increased by " + quantity + " " + Time.time.ToString();
         }
 
         private void ManageBulletCollectables(int quantity)
         {
-            foreach (GeneralCollectable b in BulletBoxes)
+            bulletBoxes.ForEach(b =>
             {
                 if (b.quantity < 45)
-                    b.quantity += quantity; // increase bullet box quantity by X
-            }
+                {
+                    b.quantity += quantity;
+                }
+            });
 
+            events += "\n Ammo collectables increased by " + quantity + " " + Time.time.ToString();
         }
-
-
-        //EMAIL DATA
-
-
     }
 }

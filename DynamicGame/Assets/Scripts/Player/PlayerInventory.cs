@@ -42,13 +42,11 @@ public class PlayerInventory : MonoBehaviour
             {
                 if (collectedQItems[i].name == "BKeycard")
                 {
-                    for (int j = 0; j < inventoryPanel.transform.childCount; j++)
+                    if (inventoryPanel.transform.GetChild(i).GetComponent<Image>().sprite.name == collectedQItems[i].setImage.name)
                     {
-                        if (inventoryPanel.transform.GetChild(j).GetComponent<Image>().sprite.name == collectedQItems[j].setImage.name)
-                        {
-                            Destroy(inventoryPanel.transform.GetChild(j).gameObject);
-                        }
+                        Destroy(inventoryPanel.transform.GetChild(i).gameObject);
                     }
+
                     collectedQItems.Remove(collectedQItems[i]);
                 }
             }

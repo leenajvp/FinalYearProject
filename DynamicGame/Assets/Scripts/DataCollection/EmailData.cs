@@ -8,9 +8,9 @@ public class EmailData : MonoBehaviour
 {
     private DDA.DDAManager ddaManager => FindObjectOfType<DDA.DDAManager>();
 
-    const string kSenderEmailAddress = "xx";
-    const string kSenderPassword = "xx";
-    const string kReceiverEmailAddress = "xx";
+    const string kSenderEmailAddress = "xxx";
+    const string kSenderPassword = "xxx";
+    const string kReceiverEmailAddress = "xxx";
 
     public void SendAnEmail()
     {

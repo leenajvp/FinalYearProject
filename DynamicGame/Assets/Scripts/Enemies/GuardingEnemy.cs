@@ -25,7 +25,7 @@ namespace Enemies
             InvokeRepeating("TurnTimer", 0, 4);
         }
 
-        protected  void LateUpdate()
+        protected void LateUpdate()
         {
             base.Update();
             switch (currentState.CurrentState)

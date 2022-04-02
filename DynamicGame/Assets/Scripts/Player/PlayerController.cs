@@ -26,7 +26,7 @@ namespace Player
         [Tooltip("Position to shoot bullet from")]
         [SerializeField] private Transform shootPoint;
         [Tooltip("Object pool for bullets")]
-        [SerializeField] private ObjectPool bulletPool;
+        [SerializeField] private ObjectPool impactPool;
         [SerializeField] private ParticleSystem muzzleFlash;
         [SerializeField] private ParticleSystem impact;
         private float shootTimer = 0.0f;
@@ -41,9 +41,8 @@ namespace Player
         [SerializeField] private AudioSource collectSound;
 
         [Header("UI")]
-        [SerializeField] private GameObject pauseMenu;
-        [SerializeField] private GameObject map;
-        [SerializeField] private GameObject LockUI;
+        [SerializeField] private GameObject pauseMenu, map, LockUI;
+        [SerializeField] private Camera mapCamera;
 
         public bool isDisguised = false;
 
@@ -70,6 +69,7 @@ namespace Player
 
         private void Awake()
         {
+            
             layer_mask = LayerMask.GetMask("NPC", "Default", "Environment", "Objects", "Ground");
             controller = GetComponent<CharacterController>();
             playerInput = GetComponent<PlayerInput>();
@@ -108,6 +108,7 @@ namespace Player
 
         private void Start()
         {
+            mapCamera.gameObject.SetActive(false);
             cameraTransform = Camera.main.transform;
             currentSpeed = playerSpeed;
             interactHUD.SetActive(false);
@@ -122,8 +123,8 @@ namespace Player
 #if UNITY_EDITOR
             if (godMode.triggered)
             {
-                GetComponent<PlayerHealth>().currentHealth += 2;
-                inventory.bullets += 2;
+                GetComponent<PlayerHealth>().currentHealth += 10;
+                inventory.bullets += 10;
             }
 #endif
 
@@ -157,12 +158,14 @@ namespace Player
 
                 if (map.activeSelf)
                 {
+                    mapCamera.gameObject.SetActive(false);
                     map.SetActive(false);
                     pauseGame.Enable();
                 }
 
                 else
                 {
+                    mapCamera.gameObject.SetActive(true);
                     map.SetActive(true);
                     pauseGame.Disable();
                 }
@@ -210,11 +213,12 @@ namespace Player
 
             if (inventory.bullets > 0)
             {
-                ddaManager.currentsShots++;
+                ddaManager.currentShots++;
+                inventory.bullets--;
                 muzzleFlash.Play();
                 RaycastHit hit;
 
-                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 100, layer_mask))
+                if (Physics.Raycast(cameraTransform.position, cameraTransform.forward, out hit, 38, layer_mask))
                 {
                     if (hit.collider.gameObject)
                     {
@@ -231,13 +235,13 @@ namespace Player
                                 isDisguised = false;
                         }
 
-                        var newImpact = Instantiate(impact, hit.point, Quaternion.LookRotation(hit.normal));
-                        Destroy(newImpact, 0.5f);
+                        
+                        GameObject newImpact = impactPool.GetObject();
+                        newImpact.transform.position = hit.point;
+                        newImpact.transform.rotation = Quaternion.LookRotation(hit.normal);
+                        newImpact.SetActive(true);
                     }
                 }
-
-                ddaManager.currentShots++;
-                inventory.bullets--;
             }
         }
 

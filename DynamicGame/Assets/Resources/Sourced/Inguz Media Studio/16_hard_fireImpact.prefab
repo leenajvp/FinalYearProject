@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2837485218032734686}
   - component: {fileID: 2842563568361544248}
   - component: {fileID: 2842563568361544249}
-  - component: {fileID: -2686326072324289043}
   - component: {fileID: -8243971395279706936}
+  - component: {fileID: -2665768518959080342}
   m_Layer: 0
   m_Name: 16_hard_fireImpact
   m_TagString: Untagged
@@ -4826,18 +4826,6 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
---- !u!114 &-2686326072324289043
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2842563568361544254}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 50a80de86a8f1894080fed23f271838f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!82 &-8243971395279706936
 AudioSource:
   m_ObjectHideFlags: 0
@@ -4934,6 +4922,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &-2665768518959080342
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2842563568361544254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50a80de86a8f1894080fed23f271838f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2842953459243825204
 GameObject:
   m_ObjectHideFlags: 0

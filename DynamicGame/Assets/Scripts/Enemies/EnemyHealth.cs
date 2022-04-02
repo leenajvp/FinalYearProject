@@ -50,7 +50,6 @@ public class EnemyHealth : MonoBehaviour
             if (pool != null)
               pool.UpdateProgress();
 
-
             if (spawnObject)
             {
                 Instantiate(objectToSpawn, transform.position, objectToSpawn.transform.rotation);

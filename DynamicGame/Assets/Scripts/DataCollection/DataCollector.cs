@@ -43,7 +43,7 @@ public class DataCollector : MonoBehaviour
 
     private void Start()
     {
-        InvokeRepeating("InstatianteTracker", 0, 0.5f);
+        InvokeRepeating("InstatianteTracker", 0, 0.3f);
     }
 
     private void Update()
@@ -57,5 +57,11 @@ public class DataCollector : MonoBehaviour
     private void InstatianteTracker()
     {
         Instantiate(tracker, player.transform.position, player.transform.rotation, dataHolder.transform);
+    }
+
+    public void SetDataActive()
+    {
+        foreach (Transform child in dataHolder.transform)
+            child.gameObject.SetActive(true);
     }
 }

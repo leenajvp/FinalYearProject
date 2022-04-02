@@ -21,7 +21,7 @@ MonoBehaviour:
   hurtMaterial: {fileID: 2100000, guid: d39f4b1f92076c142958848de68c6aa0, type: 2}
   hitSound: {fileID: 8300000, guid: ffe3e0d0179296b43b28f0e1692f0c58, type: 3}
   pHitEffect: {fileID: 0}
-  detectionRadius: 50
+  detectionRadius: 40
   detectionRayDistance: 40
   rotationSpeed: 20
   bulletDamage: 5

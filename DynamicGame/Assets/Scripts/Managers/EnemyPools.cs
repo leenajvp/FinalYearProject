@@ -16,8 +16,10 @@ public class EnemyPools : MonoBehaviour
     [SerializeField] private List<EnemyHealth> extraEnemies = new List<EnemyHealth>();
     [SerializeField] private List<EnemyHealth> extraEnemies2 = new List<EnemyHealth>();
     public bool stage1 = false;
-    public bool stage2 = false;
+    public bool stage2 = true;
     public bool stage0 = false;
+    public bool available1 = true;
+    public bool available2 = true;
 
     [Header("Resetting Collectables")]
     [SerializeField] public List<GeneralCollectable> areaCollectables = new List<GeneralCollectable>();
@@ -47,6 +49,7 @@ public class EnemyPools : MonoBehaviour
         }
 
         enemyPool.ForEach(enemy => behaviourPool.Add(enemy.GetComponent<Enemies.EnemyBehaviourBase>()));
+        stage2 = true;
     }
 
     private void Update()
@@ -56,14 +59,15 @@ public class EnemyPools : MonoBehaviour
             for (int i = originalCount; i < enemyPool.Count; i++)
             {
                 enemyPool[i].gameObject.SetActive(false);
+                enemyPool.RemoveAt(i);
+                i--;
             }
 
-            enemyPool.RemoveAll(enemy => !enemy.gameObject.activeSelf);
             currentCount = enemyPool.Count;
             stage0 = false;
         }
 
-        if (stage1 == true)
+        if (stage1 == true && available1)
         {
             for (int i = 0; i < extraEnemies.Count; i++)
             {
@@ -72,10 +76,11 @@ public class EnemyPools : MonoBehaviour
                 behaviourPool.Add(extraEnemies[i].GetComponent<Enemies.EnemyBehaviourBase>());
             }
             currentCount = enemyPool.Count;
+            available1 = false;
             stage1 = false;
         }
 
-        if (stage2 == true)
+        if (stage2 == true && available2)
         {
             for (int i = 0; i < extraEnemies2.Count; i++)
             {
@@ -84,6 +89,7 @@ public class EnemyPools : MonoBehaviour
                 behaviourPool.Add(extraEnemies[i].GetComponent<Enemies.EnemyBehaviourBase>());
             }
             currentCount = enemyPool.Count;
+            available2 = false;
             stage2 = false;
         }
     }
@@ -128,11 +134,12 @@ public class EnemyPools : MonoBehaviour
 
     public void ResetEnemies()
     {
+        defeats = 0;
+
         foreach (EnemyHealth enemy in enemyPool)
         {
             enemy.currentHealth = enemy.health;
             enemy.gameObject.SetActive(true);
-            defeats = 0;
         }
 
         foreach (Enemies.EnemyBehaviourBase enemy in behaviourPool)

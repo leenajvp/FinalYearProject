@@ -8,18 +8,15 @@ public class CollectableBase : MonoBehaviour, ICollectable
 
     [Header("Distance to player for UI activation")]
     [SerializeField] protected float detectionDistance = 6f;
-    [SerializeField] protected PlayerController playerController;
+    [SerializeField] protected PlayerController playerController => FindObjectOfType<PlayerController>();
     public bool isInventoryItem { get; set; }
     public bool collected { get; set; }
-    
-    protected GameObject player;
+
+    [SerializeField]protected GameObject player;
     protected float uiYPos;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
-        if (player == null)
-            playerController = FindObjectOfType<PlayerController>();
-
         player = playerController.gameObject;
         collected = false;
     }

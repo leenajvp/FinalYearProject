@@ -3,7 +3,6 @@ using Player;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UI;
 namespace Enemies
 {
     [RequireComponent(typeof(EnemyStates))]
@@ -41,6 +40,7 @@ namespace Enemies
         /*[HideInInspector]*/
         public float bDamage;
         [Header("Shooting SFX")]
+        [SerializeField] private ObjectPool impactPool;
         [SerializeField] protected ParticleSystem muzzleFlash;
         [SerializeField] protected ParticleSystem impactEffect;
         [SerializeField] protected float impactTimer = 0.5f;
@@ -68,12 +68,13 @@ namespace Enemies
 
         protected void Awake()
         {
+            if (impactPool == null)
+                impactPool = GameObject.Find("SmallImpactPool").GetComponent<ObjectPool>();
+
+            hitEffect = GameObject.Find("BloodShot");
             agent = GetComponent<NavMeshAgent>();
             currentState = GetComponent<EnemyStates>();
             startPos = transform.position;
-
-            if (agent == null || startPos == null)
-                Debug.Log(name +("agent not found"));
         }
 
         protected virtual void Start()
@@ -112,7 +113,7 @@ namespace Enemies
                 searchTime = 0;
                 StopAllCoroutines();
             }
-                
+
         }
 
         protected virtual void Update()
@@ -122,9 +123,6 @@ namespace Enemies
             distance = Vector3.Distance(transform.position, playerPos);
 
             Raycast();
-
-            if (health.currentHealth <= 0)
-                Reset();
 
             if (playerFound)
                 currentState.CurrentState = EnemyStates.NPCSStateMachine.Chase;
@@ -144,7 +142,7 @@ namespace Enemies
                 playerFound = true;
                 StartCoroutine(AlertOthersTimer(3));
             }
-                
+
 
             if (playerNear && !player.GetComponent<PlayerController>().isDisguised)
             {
@@ -225,8 +223,14 @@ namespace Enemies
 
         protected void LostTimer()
         {
-            if (!reset && playerFound)
+            if (!playerNear)
+                timer = 20;
+
+            if (playerFound)
             {
+                if (reset)
+                    return;
+
                 timer += 1 * Time.deltaTime;
 
                 if (hitFront || hitRight || hitLeft || hitUp)
@@ -255,7 +259,7 @@ namespace Enemies
 
                 if (hitFront || hitUp || hitLeft || hitRight)
                 {
-                    
+
 
                     while (distance <= shootDist && distance >= retreatDist)
                     {
@@ -297,11 +301,16 @@ namespace Enemies
 
                 if (playerHit != null)
                 {
-                    hitEffect.SetActive(true);  
+                    if (hitEffect != null)
+                        hitEffect.SetActive(true);
+
                     playerHit.currentHealth -= bDamage;
                     ddaManager.currentPHits++;
-                    var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(newImpact, impactTimer);
+
+                    GameObject newImpact = impactPool.GetObject();
+                    newImpact.transform.position = hit.point;
+                    newImpact.transform.rotation = Quaternion.LookRotation(hit.normal);
+                    newImpact.SetActive(true);
                 }
             }
 
@@ -311,11 +320,13 @@ namespace Enemies
 
                 if (playerHit != null)
                 {
-                    hitEffect.SetActive(false);
+                    hitEffect.SetActive(true);
                     playerHit.currentHealth -= bDamage;
                     ddaManager.currentPHits++;
-                    var newImpact = Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                    Destroy(newImpact, impactTimer);
+                    GameObject newImpact = impactPool.GetObject();
+                    newImpact.transform.position = hit.point;
+                    newImpact.transform.rotation = Quaternion.LookRotation(hit.normal);
+                    newImpact.SetActive(true);
                 }
             }
 
@@ -329,8 +340,7 @@ namespace Enemies
             hitRight = false;
             hitLeft = false;
             hitUp = false;
-            gameObject.GetComponent<Rigidbody>().MovePosition(startPos);
-            //transform.position = startPos;
+            transform.position = startPos;
             playerFound = false;
             searchTime = 0;
             gameObject.GetComponent<Renderer>().material = data.defaultMaterial;
@@ -356,9 +366,9 @@ namespace Enemies
             {
                 foreach (Transform child in ePool.transform)
                 {
-                    for(int i =0; i < ePool.originalCount; i++)
+                    for (int i = 0; i < ePool.originalCount; i++)
                     {
-                        if(i < numberToAlert && i< ePool.originalCount) 
+                        if (i < numberToAlert && i < ePool.originalCount)
                         {
                             child.GetComponent<EnemyBehaviourBase>().playerFound = true;
                             child.GetComponent<EnemyStates>().CurrentState = EnemyStates.NPCSStateMachine.Chase;
